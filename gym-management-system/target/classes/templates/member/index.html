@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>会员中心 - 健身房管理系统</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <style>
+        .card {
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            min-width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>欢迎使用健身房管理系统</h2>
+            </div>
+            <div class="card-body">
+                <h3 class="text-center" th:text="'您好，' + ${session.user.name}"></h3>
+                <p class="text-center mt-4">请选择您要进行的操作：</p>
+                
+                <div class="btn-group mt-5">
+                    <a href="/member/card" class="btn btn-primary btn-lg">
+                        会员卡管理
+                    </a>
+                    <a href="/member/courses" class="btn btn-primary btn-lg">
+                        课程预约
+                    </a>
+                    <a href="/member/bookings" class="btn btn-primary btn-lg">
+                        我的预约
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+</body>
+</html>

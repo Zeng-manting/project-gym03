@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>课程预约 - 健身房管理系统</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <style>
+        .card {
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .btn-sm {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">可用课程列表</h2>
+            </div>
+            <div class="card-body">
+                
+                <!-- 显示成功消息 -->
+                <div th:if="${success}" class="message alert alert-success">
+                    <strong>成功：</strong><span th:text="${success}"></span>
+                </div>
+                
+                <!-- 显示错误消息 -->
+                <div th:if="${error}" class="message alert alert-danger">
+                    <strong>错误：</strong><span th:text="${error}"></span>
+                </div>
+                
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr class="table-primary">
+                            <th>课程名称</th>
+                            <th>上课时间</th>
+                            <th>教练ID</th>
+                            <th>当前人数/最大容量</th>
+                            <th>操作<th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="course : ${courses}">
+                            <td th:text="${course.name}">课程名称</td>
+                            <td th:text="${course.scheduleTime}">上课时间</td>
+                            <td th:text="${course.trainerId}">教练ID</td>
+                            <td th:text="${course.currentCount} + '/' + ${course.maxCapacity}">
+                                人数/容量
+                            </td>
+                            <td>
+                                <form th:action="@{/member/book/{id}(id=${course.id})}" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-primary btn-sm"
+                                            th:disabled="${course.currentCount >= course.maxCapacity}"
+                                            th:classappend="${course.currentCount >= course.maxCapacity} ? 'btn-secondary' : 'btn-primary'">
+                                        <span th:if="${course.currentCount < course.maxCapacity}">预约</span>
+                                        <span th:else>已满</span>
+                                    </button>
+                                </form>
+                            <td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div th:if="${courses.isEmpty()}" class="text-center text-muted">
+                    暂无可用课程
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+</body>
+</html>
