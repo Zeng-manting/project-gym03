@@ -1,0 +1,75 @@
+@startuml 健身房管理系统用例图
+
+skinparam backgroundColor white
+skinparam handwritten false
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 14
+
+' 定义参与者
+actor "会员" as Member
+actor "教练" as Coach
+actor "管理员" as Admin
+
+' 会员模块用例包
+package "会员模块" {
+  usecase "注册/登录" as Login
+  usecase "查看会员卡" as ViewMembership
+  usecase "课程预约" as BookCourse
+  usecase "我的预约" as ViewBookings
+  
+  ' 会员模块内部关系
+  Login --> ViewMembership
+  Login --> BookCourse
+  Login --> ViewBookings
+}
+
+' 教练模块用例包
+package "教练模块" {
+  usecase "查看我的课程" as ViewCourses
+  usecase "查看预约会员" as ViewCourseMembers
+  
+  ' 教练模块内部关系
+  ViewCourses --> ViewCourseMembers
+}
+
+' 管理员模块用例包
+package "管理员模块" {
+  usecase "会员管理" as ManageMembers
+  usecase "教练管理" as ManageCoaches
+  usecase "课程管理" as ManageCourses
+  usecase "会员卡管理" as ManageCardTypes
+}
+
+' 参与者与用例的关联
+Member --> Login
+Member --> ViewMembership
+Member --> BookCourse
+Member --> ViewBookings
+
+Coach --> ViewCourses
+Coach --> ViewCourseMembers
+
+Admin --> ManageMembers
+Admin --> ManageCoaches
+Admin --> ManageCourses
+Admin --> ManageCardTypes
+
+' 添加说明文本
+note right of Member
+  会员是系统的主要用户，
+  可以进行注册、登录、
+  查看会员卡、预约课程等操作。
+end note
+
+note right of Coach
+  教练可以查看自己负责的
+  课程以及预约该课程的会员。
+end note
+
+note right of Admin
+  管理员负责系统的日常管理，
+  包括会员管理、教练管理、
+  课程管理和会员卡管理。
+end note
+
+@enduml
