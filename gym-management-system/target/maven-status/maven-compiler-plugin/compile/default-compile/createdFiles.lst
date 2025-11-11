@@ -21,4 +21,5 @@ com\gym\service\impl\CourseServiceImpl.class
 com\gym\service\impl\UserServiceImpl.class
 com\gym\config\WebConfig.class
 com\gym\exception\GlobalExceptionHandler.class
+com\gym\controller\CoachController.class
 com\gym\service\BookingService.class

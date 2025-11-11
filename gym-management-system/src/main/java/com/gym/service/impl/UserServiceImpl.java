@@ -1,18 +1,15 @@
 package com.gym.service.impl;
 
 import com.gym.entity.User;
-import com.gym.exception.BusinessException;
 import com.gym.mapper.UserMapper;
 import com.gym.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder; // ← 改为导入接口
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,11 +19,14 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder; // ← 字段类型改为接口
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    // 使用构造函数注入（推荐）
+    public UserServiceImpl(UserMapper userMapper, PasswordEncoder passwordEncoder) {
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     /**
      * 用户注册实现
@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setPhone(phone);
         // 密码加密
-        user.setPassword(passwordEncoder.encode(password));
+        user.setPassword(passwordEncoder.encode(password)); // ← 调用方式完全一样！
         // 默认注册为会员
         user.setRole("member");
 
@@ -83,7 +83,6 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<User> searchMembers(String keyword) {
-        // 实现SQL LIKE查询，模糊匹配手机号
         return userMapper.searchMembersByKeyword(keyword);
     }
 

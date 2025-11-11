@@ -1,6 +1,8 @@
 package com.gym.service.impl;
 
 import com.gym.entity.Course;
+import com.gym.entity.User;
+import com.gym.mapper.BookingMapper;
 import com.gym.mapper.CourseMapper;
 import com.gym.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * 课程服务实现类
@@ -18,6 +22,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Autowired
     private CourseMapper courseMapper;
+    
+    @Autowired
+    private BookingMapper bookingMapper;
 
     /**
      * 获取所有可用课程
@@ -70,5 +77,26 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<Course> getMyCourses(Long trainerId) {
         return courseMapper.selectByTrainerId(trainerId);
+    }
+    
+    /**
+     * 通过课程ID获取该课程的所有预约会员
+     * 通过booking表JOIN user表查询，将结果转换为User对象列表
+     */
+    @Override
+    public List<User> getMembersByCourseId(Long courseId) {
+        // 调用BookingMapper查询会员信息
+        List<Map<String, Object>> memberMaps = bookingMapper.selectCourseMembers(courseId);
+        List<User> members = new ArrayList<>();
+        
+        // 将查询结果转换为User对象
+        for (Map<String, Object> map : memberMaps) {
+            User user = new User();
+            user.setId(Long.valueOf(map.get("user_id").toString()));
+            user.setPhone(map.get("phone").toString());
+            members.add(user);
+        }
+        
+        return members;
     }
 }

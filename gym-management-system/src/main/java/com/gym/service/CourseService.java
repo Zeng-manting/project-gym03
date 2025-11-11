@@ -1,6 +1,7 @@
 package com.gym.service;
 
 import com.gym.entity.Course;
+import com.gym.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,4 +41,12 @@ public interface CourseService {
      * @return 教练的课程列表
      */
     List<Course> getMyCourses(Long trainerId);
+    
+    /**
+     * 通过课程ID获取该课程的所有预约会员
+     * 通过booking表JOIN user表查询
+     * @param courseId 课程ID
+     * @return 会员列表
+     */
+    List<User> getMembersByCourseId(Long courseId);
 }

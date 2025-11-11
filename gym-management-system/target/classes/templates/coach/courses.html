@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的课程 - 健身房管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <header class="bg-primary text-white py-3">
+        <div class="container">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-auto">
+                    <h1 class="h3 mb-0">健身房管理系统 - 教练端</h1>
+                </div>
+                <div class="col-auto">
+                    <a th:href="@{/coach}" class="text-white mr-3">首页</a>
+                    <a th:href="@{/logout}" class="text-white">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h2 class="h5 mb-0">我的课程</h2>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${courses.isEmpty()}" class="alert alert-info">
+                            暂无课程信息
+                        </div>
+                        <div th:unless="${courses.isEmpty()}">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>课程名称</th>
+                                        <th>上课时间</th>
+                                        <th>最大容量</th>
+                                        <th>当前报名人数</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="course : ${courses}">
+                                        <td th:text="${course.name}"></td>
+                                        <td th:text="${#temporals.format(course.scheduleTime, 'yyyy-MM-dd HH:mm')}"></td>
+                                        <td th:text="${course.maxCapacity}"></td>
+                                        <td th:text="${course.currentCount}"></td>
+                                        <td>
+                                            <span th:class="${course.currentCount >= course.maxCapacity ? 'badge bg-danger' : 'badge bg-success'}">
+                                                <span th:text="${course.currentCount >= course.maxCapacity ? '已满' : '可预约'}"></span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/coach/course/{id}/members(id=${course.id})}" class="btn btn-primary btn-sm">
+                                                查看学员
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-light py-3 mt-4">
+        <div class="container text-center">
+            <p class="text-muted mb-0">© 2023 健身房管理系统</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

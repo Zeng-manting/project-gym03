@@ -2,6 +2,7 @@ package com.gym.service;
 
 import com.gym.dto.BookingDTO;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 预约服务接口
@@ -28,4 +29,11 @@ public interface BookingService {
      * @param bookingId 预约记录ID
      */
     void cancelBooking(Long bookingId);
+    
+    /**
+     * 查询指定课程的所有预约会员
+     * @param courseId 课程ID
+     * @return 预约会员信息列表
+     */
+    List<Map<String, Object>> getCourseMembers(Long courseId);
 }

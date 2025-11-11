@@ -46,8 +46,8 @@ public class BookingServiceImpl implements BookingService {
         if (courseService.isFull(courseId)) {
             throw new RuntimeException("课程已满，无法预约");
         }
-
-        // 检查是否已经预约过该课程（防重复预约）
+    
+    // 检查是否已经预约过该课程（防重复预约）
         if (bookingMapper.existsByUserIdAndCourseId(userId, courseId)) {
             throw new RuntimeException("您已经预约过该课程");
         }
@@ -120,5 +120,14 @@ public class BookingServiceImpl implements BookingService {
             int newCount = Math.max(0, course.getCurrentCount() - 1); // 确保人数不为负数
             courseMapper.updateCurrentCount(courseId, newCount);
         }
+    }
+    
+    /**
+     * 查询指定课程的所有预约会员实现
+     * 直接调用Mapper层方法获取JOIN后的会员信息
+     */
+    @Override
+    public List<Map<String, Object>> getCourseMembers(Long courseId) {
+        return bookingMapper.selectCourseMembers(courseId);
     }
 }

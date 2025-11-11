@@ -61,4 +61,14 @@ public interface BookingMapper {
      */
     @Select("SELECT * FROM booking WHERE id = #{id}")
     Booking selectById(Long id);
+    
+    /**
+     * 查询指定课程的所有预约会员信息
+     * JOIN user表获取会员详情
+     * @param courseId 课程ID
+     * @return 预约会员信息列表
+     */
+    @Select("SELECT b.id as booking_id, u.id as user_id, u.phone, b.booking_time " +
+            "FROM booking b JOIN user u ON b.user_id = u.id WHERE b.course_id = #{courseId}")
+    List<Map<String, Object>> selectCourseMembers(Long courseId);
 }
