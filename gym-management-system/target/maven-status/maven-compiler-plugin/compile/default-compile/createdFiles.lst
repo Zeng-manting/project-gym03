@@ -4,7 +4,6 @@ com\gym\controller\AuthController.class
 com\gym\exception\BusinessException.class
 com\gym\entity\User.class
 com\gym\mapper\BookingMapper.class
-com\gym\service\impl\UserDetailsServiceImpl.class
 com\gym\config\MyBatisConfig.class
 com\gym\entity\Course.class
 com\gym\GymManagementApplication.class
@@ -15,7 +14,6 @@ com\gym\mapper\UserMapper.class
 com\gym\service\CourseService.class
 com\gym\util\PasswordUtil.class
 com\gym\mapper\CourseMapper.class
-com\gym\config\CustomUserDetailsService.class
 com\gym\entity\Booking.class
 com\gym\service\impl\CourseServiceImpl.class
 com\gym\service\impl\UserServiceImpl.class

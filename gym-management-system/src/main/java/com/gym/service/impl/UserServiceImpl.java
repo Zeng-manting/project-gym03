@@ -5,8 +5,9 @@ import com.gym.mapper.UserMapper;
 import com.gym.service.UserService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService; // ← 新增导入
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder; // ← 改为导入接口
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,15 +15,14 @@ import java.util.List;
 
 /**
  * 用户服务实现类
- * 实现用户相关的业务逻辑
+ * 实现用户相关的业务逻辑，并支持 Spring Security 认证
  */
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService { // ← 实现 UserDetailsService
 
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder; // ← 字段类型改为接口
+    private final PasswordEncoder passwordEncoder;
 
-    // 使用构造函数注入（推荐）
     public UserServiceImpl(UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
@@ -30,56 +30,54 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 用户注册实现
-     * 1. 检查手机号是否已存在
-     * 2. 对密码进行加密
-     * 3. 创建用户记录
      */
     @Override
     public boolean register(String phone, String password) {
-        // 检查手机号是否已存在
         User existingUser = userMapper.findByPhone(phone);
         if (existingUser != null) {
             return false;
         }
 
-        // 创建新用户
         User user = new User();
         user.setPhone(phone);
-        // 密码加密
-        user.setPassword(passwordEncoder.encode(password)); // ← 调用方式完全一样！
-        // 默认注册为会员
-        user.setRole("member");
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole("member"); // 默认角色为小写 "member"
 
-        // 插入用户信息
         userMapper.insertUser(user);
         return true;
     }
 
     /**
-     * 根据手机号加载用户详情（Spring Security使用）
+     * 根据手机号加载用户详情（供内部使用）
      */
     @Override
     public UserDetails loadUserByPhone(String phone) {
         User user = userMapper.findByPhone(phone);
         if (user == null) {
-            throw new UsernameNotFoundException("用户不存在");
+            throw new UsernameNotFoundException("用户不存在: " + phone);
         }
 
-        // 将用户角色转换为Spring Security的权限
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().toUpperCase()));
+        // 将数据库中的 role（如 "member"）转为 "ROLE_MEMBER"
+        String role = user.getRole() != null ? user.getRole().toUpperCase() : "MEMBER";
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
 
-        // 返回Spring Security的User对象
         return new org.springframework.security.core.userdetails.User(
                 user.getPhone(),
-                user.getPassword(),
+                user.getPassword(), // 必须是 BCrypt 加密后的
                 authorities
         );
     }
 
+    // ✅ 关键：实现 UserDetailsService 接口的方法
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // Spring Security 表单提交的 "username" 字段实际是手机号
+        return loadUserByPhone(username);
+    }
+
     /**
      * 搜索会员
-     * 根据关键词模糊查询手机号
      */
     @Override
     public List<User> searchMembers(String keyword) {
@@ -88,7 +86,6 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 禁用用户
-     * 通过更新用户状态实现
      */
     @Override
     public void disableUser(Long userId) {
