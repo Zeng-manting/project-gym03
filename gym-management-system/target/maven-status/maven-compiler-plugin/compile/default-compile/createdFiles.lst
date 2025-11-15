@@ -1,6 +1,7 @@
 com\gym\service\impl\BookingServiceImpl.class
 com\gym\service\UserService.class
 com\gym\controller\AuthController.class
+com\gym\config\DataInitializer.class
 com\gym\exception\BusinessException.class
 com\gym\entity\User.class
 com\gym\mapper\BookingMapper.class

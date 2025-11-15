@@ -22,6 +22,10 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    @org.springframework.context.annotation.Lazy
+    private org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
+
 
     /**
      * 配置密码编码器 - 使用 BCryptPasswordEncoder
@@ -47,6 +51,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthenticationSuccessHandler successHandler() {
         return (request, response, authentication) -> {
+            // 记录登录成功的用户名，便于调试
+            org.slf4j.LoggerFactory.getLogger(SecurityConfig.class)
+                    .info("认证成功，用户：{}", authentication.getName());
             // Spring Security 中角色权限格式为 ROLE_XXX
             boolean isAdmin = authentication.getAuthorities().stream()
                     .anyMatch(auth -> "ROLE_ADMIN".equals(auth.getAuthority()));
@@ -56,14 +63,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .anyMatch(auth -> "ROLE_MEMBER".equals(auth.getAuthority()));
 
             if (isAdmin) {
-                response.sendRedirect("/admin/dashboard");
+                // 管理员首页在项目中映射为 /admin
+                response.sendRedirect("/admin");
             } else if (isTrainer) {
-                response.sendRedirect("/coach/dashboard");
+                // 教练首页映射为 /coach
+                response.sendRedirect("/coach");
             } else if (isMember) {
-                response.sendRedirect("/member/dashboard");
+                // 会员首页映射为 /member（该路径会进一步重定向到课程列表）
+                response.sendRedirect("/member");
             } else {
                 // 无有效角色时跳回登录页并提示错误
                 response.sendRedirect("/login?error=无有效用户角色");
+            }
+        };
+    }
+
+    /**
+     * 自定义失败处理器：记录失败原因并重定向到带友好消息的登录页
+     */
+    @Bean
+    public org.springframework.security.web.authentication.AuthenticationFailureHandler failureHandler() {
+        return (request, response, exception) -> {
+            org.slf4j.LoggerFactory.getLogger(SecurityConfig.class)
+                    .warn("认证失败：{}", exception.getMessage());
+            // 将通用错误信息返回到登录页，避免直接暴露异常详情
+            // Location header 必须为可编码的 ASCII 字符串，先进行 URL 编码
+            try {
+                String msg = java.net.URLEncoder.encode("用户名或密码错误", java.nio.charset.StandardCharsets.UTF_8.name());
+                response.sendRedirect("/login?error=" + msg);
+            } catch (java.io.UnsupportedEncodingException e) {
+                // 回退到不含中文的错误标识
+                response.sendRedirect("/login?error=true");
             }
         };
     }
@@ -98,7 +128,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .usernameParameter("username")     // 表单中用户名字段名
                 .passwordParameter("password")     // 表单中密码字段名
                 .successHandler(successHandler())  // 登录成功处理器
-                .failureUrl("/login?error=true")   // 登录失败跳转
+                .failureHandler(failureHandler())   // 登录失败处理器（记录并友好提示）
                 .permitAll()
                 .and()
 
@@ -115,5 +145,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement()
                 .maximumSessions(1)
                 .expiredUrl("/login?expired=true");
+    }
+
+    /**
+     * 配置认证管理，使用自定义的 UserDetailsService 和 BCrypt 密码编码器
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 }

@@ -34,7 +34,7 @@
         
         <!-- 显示错误信息 -->
         <div th:if="${param.error}" class="alert alert-danger" role="alert">
-            <span th:text="${param.error}">用户名或密码错误</span>
+            <span th:text="${param.error == 'true' ? '用户名或密码错误' : param.error}">用户名或密码错误</span>
         </div>
         
         <!-- 显示注册成功信息 -->

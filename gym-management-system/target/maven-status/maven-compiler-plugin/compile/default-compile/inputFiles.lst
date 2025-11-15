@@ -9,6 +9,7 @@ D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\mapper\UserMapper.
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\impl\UserServiceImpl.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\dto\BookingDTO.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\UserService.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\config\DataInitializer.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\exception\GlobalExceptionHandler.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\config\SecurityConfig.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\mapper\BookingMapper.java
