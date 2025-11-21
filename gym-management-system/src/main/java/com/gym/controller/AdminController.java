@@ -3,6 +3,7 @@ package com.gym.controller;
 import com.gym.entity.User;
 import com.gym.service.UserService;
 import com.gym.service.CourseService;
+import com.gym.service.MembershipCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -21,11 +22,13 @@ public class AdminController {
 
     private final UserService userService;
     private final CourseService courseService;
+    private final MembershipCardService membershipCardService;
 
     @Autowired
-    public AdminController(UserService userService, CourseService courseService) {
+    public AdminController(UserService userService, CourseService courseService, MembershipCardService membershipCardService) {
         this.userService = userService;
         this.courseService = courseService;
+        this.membershipCardService = membershipCardService;
     }
 
     /**
@@ -122,4 +125,6 @@ public class AdminController {
         model.addAttribute("courses", courses);
         return "admin/courses";
     }
+    
+
 }

@@ -1,11 +1,15 @@
 com\gym\service\impl\BookingServiceImpl.class
 com\gym\config\SecurityConfig$1.class
+com\gym\mapper\MembershipCardMapper.class
 com\gym\service\UserService.class
 com\gym\controller\AuthController.class
+com\gym\service\impl\MembershipCardServiceImpl.class
 com\gym\config\DataInitializer.class
 com\gym\exception\BusinessException.class
 com\gym\entity\User.class
 com\gym\mapper\BookingMapper.class
+com\gym\controller\MembershipCardController.class
+com\gym\entity\MembershipCard.class
 com\gym\config\MyBatisConfig.class
 com\gym\entity\Course.class
 com\gym\GymManagementApplication.class
@@ -20,6 +24,7 @@ com\gym\entity\Booking.class
 com\gym\service\impl\CourseServiceImpl.class
 com\gym\controller\AdminController.class
 com\gym\service\impl\UserServiceImpl.class
+com\gym\service\MembershipCardService.class
 com\gym\config\WebConfig.class
 com\gym\exception\GlobalExceptionHandler.class
 com\gym\controller\CoachController.class

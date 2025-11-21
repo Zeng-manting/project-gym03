@@ -8,6 +8,9 @@ D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\entity\Course.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\GymManagementApplication.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\entity\Booking.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\impl\BookingServiceImpl.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\entity\MembershipCard.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\MembershipCardController.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\impl\MembershipCardServiceImpl.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\impl\CourseServiceImpl.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\config\WebConfig.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\entity\User.java
@@ -21,6 +24,8 @@ D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\mapper\CourseMappe
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\impl\UserServiceImpl.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\config\DataInitializer.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\exception\GlobalExceptionHandler.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\MembershipCardService.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\config\SecurityConfig.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\mapper\BookingMapper.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\CoachController.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\mapper\MembershipCardMapper.java
