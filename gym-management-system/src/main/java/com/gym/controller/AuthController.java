@@ -48,7 +48,8 @@ public class AuthController {
         boolean success = userService.register(phone, password);
         
         if (success) {
-            return "redirect:/login?success=注册成功";
+            redirectAttributes.addAttribute("success", "注册成功");
+            return "redirect:/login";
         } else {
             redirectAttributes.addFlashAttribute("error", "手机号已被注册");
             return "redirect:/register";
