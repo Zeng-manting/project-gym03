@@ -3,6 +3,7 @@ D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\mapper\UserMapper.
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\AdminController.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\dto\BookingDTO.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\UserService.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\CourseController.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\entity\Course.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\GymManagementApplication.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\entity\Booking.java

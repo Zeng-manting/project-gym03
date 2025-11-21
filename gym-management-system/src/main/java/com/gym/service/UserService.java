@@ -41,4 +41,24 @@ public interface UserService {
      * @param userId 用户ID
      */
     void disableUser(Long userId);
+    
+    /**
+     * 根据手机号查找用户
+     * @param phone 手机号
+     * @return 用户对象，如果不存在则返回null
+     */
+    User findByPhone(String phone);
+    
+    /**
+     * 创建教练用户
+     * @param phone 手机号
+     * @param password 密码
+     */
+    void createTrainer(String phone, String password);
+    
+    /**
+     * 获取所有教练用户
+     * @return 教练用户列表
+     */
+    List<User> findTrainers();
 }

@@ -1,4 +1,5 @@
 com\gym\service\impl\BookingServiceImpl.class
+com\gym\config\SecurityConfig$1.class
 com\gym\service\UserService.class
 com\gym\controller\AuthController.class
 com\gym\config\DataInitializer.class
@@ -22,4 +23,5 @@ com\gym\service\impl\UserServiceImpl.class
 com\gym\config\WebConfig.class
 com\gym\exception\GlobalExceptionHandler.class
 com\gym\controller\CoachController.class
+com\gym\controller\CourseController.class
 com\gym\service\BookingService.class

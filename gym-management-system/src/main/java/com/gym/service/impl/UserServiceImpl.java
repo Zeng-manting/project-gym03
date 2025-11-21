@@ -91,4 +91,32 @@ public class UserServiceImpl implements UserService, UserDetailsService { // ←
     public void disableUser(Long userId) {
         userMapper.updateStatus(userId, "disabled");
     }
+    
+    /**
+     * 根据手机号查找用户
+     */
+    @Override
+    public User findByPhone(String phone) {
+        return userMapper.findByPhone(phone);
+    }
+    
+    /**
+     * 创建教练用户
+     */
+    @Override
+    public void createTrainer(String phone, String password) {
+        User user = new User();
+        user.setPhone(phone);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole("trainer"); // 设置角色为教练
+        userMapper.insertUser(user);
+    }
+    
+    /**
+     * 获取所有教练用户
+     */
+    @Override
+    public List<User> findTrainers() {
+        return userMapper.findTrainers();
+    }
 }
