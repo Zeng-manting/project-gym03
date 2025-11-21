@@ -17,6 +17,7 @@ com\gym\util\PasswordUtil.class
 com\gym\mapper\CourseMapper.class
 com\gym\entity\Booking.class
 com\gym\service\impl\CourseServiceImpl.class
+com\gym\controller\AdminController.class
 com\gym\service\impl\UserServiceImpl.class
 com\gym\config\WebConfig.class
 com\gym\exception\GlobalExceptionHandler.class

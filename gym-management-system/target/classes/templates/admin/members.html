@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>会员管理 - 健身房管理系统</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            margin-bottom: 20px;
+        }
+        .card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .search-form {
+            margin-bottom: 20px;
+        }
+        .message {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/admin">健身房管理系统</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">控制台</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/admin/members">会员管理</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">退出登录</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- 成功消息显示 -->
+        <div th:if="${message != null}" class="alert alert-success message">
+            <p th:text="${message}"></p>
+        </div>
+
+        <!-- 搜索框 -->
+        <div class="card">
+            <div class="card-body">
+                <form class="form-inline search-form" action="/admin/members" method="get">
+                    <div class="form-group mx-sm-3 mb-2">
+                        <label for="keyword" class="sr-only">搜索</label>
+                        <input type="text" class="form-control" id="keyword" name="keyword" 
+                               placeholder="输入手机号搜索" th:value="${keyword}">
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">搜索</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 会员列表 -->
+        <div class="card">
+            <div class="card-header">
+                <h3>会员列表</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>手机号</th>
+                                <th>角色</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="member : ${members}">
+                                <td th:text="${member.id}"></td>
+                                <td th:text="${member.phone}"></td>
+                                <td th:text="${member.role == 'member' ? '会员' : member.role}"></td>
+                                <td>
+                                    <form th:action="@{/admin/members/{id}/disable(id=${member.id})}" 
+                                          method="post" style="display: inline;">
+                                        <input type="hidden" name="_method" value="post">
+                                        <button type="submit" class="btn btn-danger btn-sm" 
+                                                onclick="return confirm('确定要禁用该会员账号吗？');">
+                                            禁用账号
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:if="${members.size() == 0}" class="alert alert-info">
+                    <p>暂无会员数据</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>
