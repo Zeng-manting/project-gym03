@@ -71,6 +71,19 @@ public class AdminController {
     }
 
     /**
+     * 显示教练列表页面
+     * @param model 模型对象
+     * @return 教练列表视图
+     */
+    @GetMapping("/admin/coaches")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String listCoaches(Model model) {
+        List<User> coaches = userService.findTrainers();
+        model.addAttribute("coaches", coaches);
+        return "admin/coaches";
+    }
+    
+    /**
      * 创建教练用户
      * @param phone 手机号
      * @param password 密码

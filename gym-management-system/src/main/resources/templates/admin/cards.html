@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会员卡设置 - 健身房管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
+        }
+        .sidebar h4 {
+            border-bottom: 1px solid #34495e;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .sidebar a {
+            color: #ecf0f1;
+            display: block;
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.25rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #34495e;
+            color: #3498db;
+        }
+        .content {
+            padding: 2rem;
+        }
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        .card-form {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .table-container {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        .table thead {
+            background-color: #f8f9fa;
+        }
+        .table th,
+        .table td {
+            padding: 0.75rem 1rem;
+            vertical-align: middle;
+        }
+        .btn {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.75rem;
+            margin: 0 0.25rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .input-group-text {
+            background-color: #f8f9fa;
+        }
+        .card-type-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .badge-platinum {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+        .badge-gold {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .badge-silver {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        .badge-bronze {
+            background-color: #fce7f3;
+            color: #9d174d;
+        }
+        .badge-standard {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .badge-trial {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .card-image {
+            width: 120px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+        }
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+        .feature-item i {
+            margin-right: 0.75rem;
+            color: #10b981;
+        }
+        .color-preview {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+            border: 1px solid #e5e7eb;
+        }
+        .card-benefit {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+        }
+        .card-benefit i {
+            color: #3498db;
+            margin-right: 0.5rem;
+        }
+        .custom-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .custom-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #2196F3;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        .feature-checkbox {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .feature-checkbox input {
+            margin-right: 0.75rem;
+            width: 18px;
+            height: 18px;
+        }
+        .feature-checkbox label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 侧边栏 -->
+            <div class="col-md-3 sidebar">
+                <h4>管理系统</h4>
+                <a href="/admin/index">首页</a>
+                <a href="/admin/members">会员管理</a>
+                <a href="/admin/coaches">教练管理</a>
+                <a href="/admin/courses">课程管理</a>
+                <a href="/admin/cards" class="active">会员卡设置</a>
+                <a href="/logout">退出登录</a>
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="col-md-9 content">
+                <h2 class="mb-4">会员卡类型设置</h2>
+
+                <!-- 会员卡类型表单 -->
+                <div class="card-form mb-4">
+                    <h4 class="mb-3">添加会员卡类型</h4>
+                    <form id="cardForm" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="cardName" class="form-label">会员卡名称</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa fa-id-card"></i></span>
+                                    <input type="text" class="form-control" id="cardName" placeholder="请输入会员卡名称" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cardType" class="form-label">卡片等级</label>
+                                <select class="form-select" id="cardType" required>
+                                    <option value="">请选择卡片等级</option>
+                                    <option value="platinum">铂金卡</option>
+                                    <option value="gold">金卡</option>
+                                    <option value="silver">银卡</option>
+                                    <option value="bronze">铜卡</option>
+                                    <option value="standard">标准卡</option>
+                                    <option value="trial">体验卡</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="cardPrice" class="form-label">价格 (¥)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">¥</span>
+                                    <input type="number" class="form-control" id="cardPrice" min="0" step="0.01" placeholder="请输入价格" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="cardDuration" class="form-label">有效期 (天)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                    <input type="number" class="form-control" id="cardDuration" min="1" placeholder="请输入有效期天数" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="cardColor" class="form-label">卡片颜色</label>
+                                <div class="input-group">
+                                    <div class="input-group-text" style="padding: 0.25rem;">
+                                        <div class="color-preview" id="colorPreview" style="background-color: #3498db;"></div>
+                                    </div>
+                                    <input type="color" class="form-control form-control-color" id="cardColor" value="#3498db" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cardMaxEntries" class="form-label">最大使用次数</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa fa-ticket"></i></span>
+                                    <input type="number" class="form-control" id="cardMaxEntries" min="1" placeholder="请输入最大使用次数，0表示无限制">
+                                </div>
+                                <small class="form-text text-muted">0表示无使用次数限制</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cardMaxCourses" class="form-label">免费课程次数</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa fa-graduation-cap"></i></span>
+                                    <input type="number" class="form-control" id="cardMaxCourses" min="0" placeholder="请输入免费课程次数，0表示无免费课程">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cardImage" class="form-label">卡片图片</label>
+                                <input type="file" class="form-control" id="cardImage" accept="image/*">
+                                <small class="form-text text-muted">支持JPG、PNG格式，建议尺寸400x300</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cardPriority" class="form-label">优先级</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa fa-sort"></i></span>
+                                    <input type="number" class="form-control" id="cardPriority" min="1" max="100" value="1" required>
+                                </div>
+                                <small class="form-text text-muted">数值越小优先级越高</small>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">会员特权</label>
+                                <div class="feature-checkbox">
+                                    <input type="checkbox" id="featureUnlimitedAccess" checked>
+                                    <label for="featureUnlimitedAccess">无限制使用基础健身设备</label>
+                                </div>
+                                <div class="feature-checkbox">
+                                    <input type="checkbox" id="featureGroupClasses">
+                                    <label for="featureGroupClasses">免费参加团体课程</label>
+                                </div>
+                                <div class="feature-checkbox">
+                                    <input type="checkbox" id="featurePersonalTraining">
+                                    <label for="featurePersonalTraining">享受私教课程折扣</label>
+                                </div>
+                                <div class="feature-checkbox">
+                                    <input type="checkbox" id="featureLockerRoom">
+                                    <label for="featureLockerRoom">免费使用储物柜</label>
+                                </div>
+                                <div class="feature-checkbox">
+                                    <input type="checkbox" id="featureNutrition">
+                                    <label for="featureNutrition">营养咨询服务</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="cardDescription" class="form-label">会员卡描述</label>
+                                <textarea class="form-control" id="cardDescription" rows="4" placeholder="请输入会员卡详细描述"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label d-block">是否启用</label>
+                                <label class="custom-toggle">
+                                    <input type="checkbox" id="cardEnabled" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label d-block">是否为推荐卡</label>
+                                <label class="custom-toggle">
+                                    <input type="checkbox" id="cardRecommended">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-12">
+                                <button type="button" class="btn btn-primary" onclick="saveCardType()">
+                                    <i class="fa fa-save"></i> 保存会员卡类型
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
+                                    <i class="fa fa-refresh"></i> 重置
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 会员卡类型列表 -->
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>会员卡类型列表</h4>
+                        <div class="input-group" style="width: 300px;">
+                            <input type="text" class="form-control" id="searchCard" placeholder="搜索会员卡名称">
+                            <button class="btn btn-primary" onclick="searchCardTypes()">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>图片</th>
+                                <th>会员卡名称</th>
+                                <th>等级</th>
+                                <th>价格</th>
+                                <th>有效期</th>
+                                <th>使用次数</th>
+                                <th>免费课程</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cardTableBody">
+                            <!-- 模拟数据 -->
+                            <tr>
+                                <td><img src="https://picsum.photos/id/20/120/80" class="card-image" alt="铂金卡"></td>
+                                <td>铂金会员卡</td>
+                                <td><span class="card-type-badge badge-platinum">铂金卡</span></td>
+                                <td>¥3999</td>
+                                <td>365天</td>
+                                <td>无限制</td>
+                                <td>不限</td>
+                                <td><span class="badge bg-success">启用</span></td>
+                                <td>
+                                    <button class="btn btn-info" onclick="viewCardType(1)"><i class="fa fa-eye"></i></button>
+                                    <button class="btn btn-warning" onclick="editCardType(1)"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger" onclick="deleteCardType(1)"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://picsum.photos/id/21/120/80" class="card-image" alt="金卡"></td>
+                                <td>黄金会员卡</td>
+                                <td><span class="card-type-badge badge-gold">金卡</span></td>
+                                <td>¥2999</td>
+                                <td>180天</td>
+                                <td>无限制</td>
+                                <td>20次</td>
+                                <td><span class="badge bg-success">启用</span></td>
+                                <td>
+                                    <button class="btn btn-info" onclick="viewCardType(2)"><i class="fa fa-eye"></i></button>
+                                    <button class="btn btn-warning" onclick="editCardType(2)"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger" onclick="deleteCardType(2)"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://picsum.photos/id/22/120/80" class="card-image" alt="银卡"></td>
+                                <td>白银会员卡</td>
+                                <td><span class="card-type-badge badge-silver">银卡</span></td>
+                                <td>¥1999</td>
+                                <td>90天</td>
+                                <td>无限制</td>
+                                <td>10次</td>
+                                <td><span class="badge bg-success">启用</span></td>
+                                <td>
+                                    <button class="btn btn-info" onclick="viewCardType(3)"><i class="fa fa-eye"></i></button>
+                                    <button class="btn btn-warning" onclick="editCardType(3)"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger" onclick="deleteCardType(3)"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://picsum.photos/id/23/120/80" class="card-image" alt="铜卡"></td>
+                                <td>青铜会员卡</td>
+                                <td><span class="card-type-badge badge-bronze">铜卡</span></td>
+                                <td>¥999</td>
+                                <td>60天</td>
+                                <td>30次</td>
+                                <td>5次</td>
+                                <td><span class="badge bg-success">启用</span></td>
+                                <td>
+                                    <button class="btn btn-info" onclick="viewCardType(4)"><i class="fa fa-eye"></i></button>
+                                    <button class="btn btn-warning" onclick="editCardType(4)"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger" onclick="deleteCardType(4)"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://picsum.photos/id/24/120/80" class="card-image" alt="体验卡"></td>
+                                <td>新人体验卡</td>
+                                <td><span class="card-type-badge badge-trial">体验卡</span></td>
+                                <td>¥99</td>
+                                <td>7天</td>
+                                <td>3次</td>
+                                <td>1次</td>
+                                <td><span class="badge bg-success">启用</span></td>
+                                <td>
+                                    <button class="btn btn-info" onclick="viewCardType(5)"><i class="fa fa-eye"></i></button>
+                                    <button class="btn btn-warning" onclick="editCardType(5)"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger" onclick="deleteCardType(5)"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 分页控件 -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted">显示 1-5 条，共 5 条</div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li class="page-item disabled"><a class="page-link" href="#">上一页</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item disabled"><a class="page-link" href="#">下一页</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 会员卡详情模态框 -->
+    <div class="modal fade" id="cardDetailModal" tabindex="-1" aria-labelledby="cardDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cardDetailModalLabel">会员卡详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="cardDetailContent">
+                    <!-- 会员卡详情内容将通过JavaScript动态填充 -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 会员卡对比模态框 -->
+    <div class="modal fade" id="cardCompareModal" tabindex="-1" aria-labelledby="cardCompareModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cardCompareModalLabel">会员卡对比</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa fa-info-circle"></i> 选择两张会员卡进行对比
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="compareCard1" class="form-label">选择会员卡 1</label>
+                            <select class="form-select" id="compareCard1">
+                                <option value="">请选择会员卡</option>
+                                <option value="1">铂金会员卡</option>
+                                <option value="2">黄金会员卡</option>
+                                <option value="3">白银会员卡</option>
+                                <option value="4">青铜会员卡</option>
+                                <option value="5">新人体验卡</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="compareCard2" class="form-label">选择会员卡 2</label>
+                            <select class="form-select" id="compareCard2">
+                                <option value="">请选择会员卡</option>
+                                <option value="1">铂金会员卡</option>
+                                <option value="2">黄金会员卡</option>
+                                <option value="3">白银会员卡</option>
+                                <option value="4">青铜会员卡</option>
+                                <option value="5">新人体验卡</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary mb-3" onclick="compareCards()">
+                        <i class="fa fa-exchange"></i> 对比会员卡
+                    </button>
+                    <div id="comparisonResult" class="row">
+                        <!-- 对比结果将通过JavaScript动态填充 -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化模态框
+        const cardDetailModal = new bootstrap.Modal(document.getElementById('cardDetailModal'));
+        const cardCompareModal = new bootstrap.Modal(document.getElementById('cardCompareModal'));
+
+        // 颜色选择器事件监听
+        document.getElementById('cardColor').addEventListener('input', function() {
+            document.getElementById('colorPreview').style.backgroundColor = this.value;
+        });
+
+        // 保存会员卡类型
+        function saveCardType() {
+            // 验证表单
+            if (!validateForm()) {
+                alert('请填写必填字段并确保格式正确');
+                return;
+            }
+
+            // 获取表单数据
+            const formData = new FormData();
+            formData.append('name', document.getElementById('cardName').value);
+            formData.append('type', document.getElementById('cardType').value);
+            formData.append('price', document.getElementById('cardPrice').value);
+            formData.append('duration', document.getElementById('cardDuration').value);
+            formData.append('color', document.getElementById('cardColor').value);
+            formData.append('maxEntries', document.getElementById('cardMaxEntries').value || 0);
+            formData.append('maxCourses', document.getElementById('cardMaxCourses').value || 0);
+            formData.append('priority', document.getElementById('cardPriority').value);
+            formData.append('description', document.getElementById('cardDescription').value);
+            formData.append('enabled', document.getElementById('cardEnabled').checked);
+            formData.append('recommended', document.getElementById('cardRecommended').checked);
+            
+            // 获取会员特权
+            formData.append('unlimitedAccess', document.getElementById('featureUnlimitedAccess').checked);
+            formData.append('groupClasses', document.getElementById('featureGroupClasses').checked);
+            formData.append('personalTraining', document.getElementById('featurePersonalTraining').checked);
+            formData.append('lockerRoom', document.getElementById('featureLockerRoom').checked);
+            formData.append('nutrition', document.getElementById('featureNutrition').checked);
+            
+            // 添加卡片图片
+            const imageFile = document.getElementById('cardImage').files[0];
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            // 这里可以通过AJAX请求保存数据
+            console.log('保存会员卡类型:', formData);
+            
+            // 模拟保存成功
+            alert('会员卡类型保存成功！');
+            resetForm();
+        }
+
+        // 重置表单
+        function resetForm() {
+            document.getElementById('cardForm').reset();
+            document.getElementById('colorPreview').style.backgroundColor = '#3498db';
+        }
+
+        // 表单验证
+        function validateForm() {
+            const name = document.getElementById('cardName').value;
+            const type = document.getElementById('cardType').value;
+            const price = document.getElementById('cardPrice').value;
+            const duration = document.getElementById('cardDuration').value;
+
+            // 简单验证
+            if (!name || !type || !price || !duration) {
+                return false;
+            }
+
+            return true;
+        }
+
+        // 搜索会员卡类型
+        function searchCardTypes() {
+            const keyword = document.getElementById('searchCard').value;
+            console.log('搜索会员卡:', keyword);
+            alert(`搜索关键词: ${keyword}`);
+        }
+
+        // 查看会员卡详情
+        function viewCardType(id) {
+            console.log('查看会员卡详情:', id);
+            
+            // 模拟会员卡详情数据
+            const cardDetails = {
+                id: id,
+                name: ['铂金会员卡', '黄金会员卡', '白银会员卡', '青铜会员卡', '新人体验卡'][id - 1],
+                type: ['platinum', 'gold', 'silver', 'bronze', 'trial'][id - 1],
+                price: [3999, 2999, 1999, 999, 99][id - 1],
+                duration: [365, 180, 90, 60, 7][id - 1],
+                maxEntries: [0, 0, 0, 30, 3][id - 1],
+                maxCourses: [0, 20, 10, 5, 1][id - 1],
+                color: ['#e5e7eb', '#fef3c7', '#dbeafe', '#fce7f3', '#fee2e2'][id - 1],
+                description: `这是${['铂金会员卡', '黄金会员卡', '白银会员卡', '青铜会员卡', '新人体验卡'][id - 1]}的详细描述，包含多项特权。`,
+                image: `https://picsum.photos/id/${19 + id}/400/300`,
+                features: {
+                    unlimitedAccess: true,
+                    groupClasses: id <= 3,
+                    personalTraining: id <= 2,
+                    lockerRoom: true,
+                    nutrition: id <= 2
+                },
+                enabled: true,
+                recommended: id === 2
+            };
+
+            // 类型映射
+            const typeMap = {
+                platinum: { text: '铂金卡', class: 'badge-platinum' },
+                gold: { text: '金卡', class: 'badge-gold' },
+                silver: { text: '银卡', class: 'badge-silver' },
+                bronze: { text: '铜卡', class: 'badge-bronze' },
+                trial: { text: '体验卡', class: 'badge-trial' }
+            };
+
+            // 构建详情HTML
+            const detailHTML = `
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="${cardDetails.image}" class="img-fluid" style="border-radius: 8px;" alt="会员卡图片">
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong>价格：</strong>
+                                <span class="text-primary fs-5">¥${cardDetails.price}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong>有效期：</strong>
+                                <span>${cardDetails.duration}天</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong>使用次数：</strong>
+                                <span>${cardDetails.maxEntries === 0 ? '无限制' : cardDetails.maxEntries + '次'}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong>免费课程：</strong>
+                                <span>${cardDetails.maxCourses === 0 ? '不限' : cardDetails.maxCourses + '次'}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong>状态：</strong>
+                                <span class="badge ${cardDetails.enabled ? 'bg-success' : 'bg-danger'}">${cardDetails.enabled ? '启用' : '禁用'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <h4>${cardDetails.name}</h4>
+                        <p><span class="card-type-badge ${typeMap[cardDetails.type].class}">${typeMap[cardDetails.type].text}</span></p>
+                        <div class="mb-3">
+                            <h5>会员特权</h5>
+                            <ul class="feature-list">
+                                <li class="feature-item">
+                                    <i class="fa fa-check-circle"></i>
+                                    无限制使用基础健身设备
+                                </li>
+                                ${cardDetails.features.groupClasses ? `<li class="feature-item">
+                                    <i class="fa fa-check-circle"></i>
+                                    免费参加团体课程
+                                </li>` : ''}
+                                ${cardDetails.features.personalTraining ? `<li class="feature-item">
+                                    <i class="fa fa-check-circle"></i>
+                                    享受私教课程折扣
+                                </li>` : ''}
+                                <li class="feature-item">
+                                    <i class="fa fa-check-circle"></i>
+                                    免费使用储物柜
+                                </li>
+                                ${cardDetails.features.nutrition ? `<li class="feature-item">
+                                    <i class="fa fa-check-circle"></i>
+                                    营养咨询服务
+                                </li>` : ''}
+                            </ul>
+                        </div>
+                        <div>
+                            <h5>详细描述</h5>
+                            <p>${cardDetails.description}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 填充详情内容
+            document.getElementById('cardDetailContent').innerHTML = detailHTML;
+            
+            // 显示模态框
+            cardDetailModal.show();
+        }
+
+        // 编辑会员卡类型
+        function editCardType(id) {
+            console.log('编辑会员卡类型:', id);
+            
+            // 模拟获取会员卡信息并填充表单
+            const cardNames = ['铂金会员卡', '黄金会员卡', '白银会员卡', '青铜会员卡', '新人体验卡'];
+            const cardTypes = ['platinum', 'gold', 'silver', 'bronze', 'trial'];
+            const cardPrices = [3999, 2999, 1999, 999, 99];
+            const cardDurations = [365, 180, 90, 60, 7];
+            const cardMaxEntries = [0, 0, 0, 30, 3];
+            const cardMaxCourses = [0, 20, 10, 5, 1];
+            const cardColors = ['#e5e7eb', '#fef3c7', '#dbeafe', '#fce7f3', '#fee2e2'];
+            const cardDescriptions = [
+                '铂金会员卡 - 最高级别会员卡，包含所有特权和无限制服务',
+                '黄金会员卡 - 高级会员卡，适合长期健身爱好者',
+                '白银会员卡 - 中级会员卡，性价比高',
+                '青铜会员卡 - 入门级会员卡，适合初次体验',
+                '新人体验卡 - 短期体验卡，帮助新人了解健身房'
+            ];
+
+            // 填充表单
+            document.getElementById('cardName').value = cardNames[id - 1];
+            document.getElementById('cardType').value = cardTypes[id - 1];
+            document.getElementById('cardPrice').value = cardPrices[id - 1];
+            document.getElementById('cardDuration').value = cardDurations[id - 1];
+            document.getElementById('cardMaxEntries').value = cardMaxEntries[id - 1];
+            document.getElementById('cardMaxCourses').value = cardMaxCourses[id - 1];
+            document.getElementById('cardColor').value = cardColors[id - 1];
+            document.getElementById('colorPreview').style.backgroundColor = cardColors[id - 1];
+            document.getElementById('cardDescription').value = cardDescriptions[id - 1];
+            document.getElementById('cardEnabled').checked = true;
+            document.getElementById('cardRecommended').checked = id === 2;
+            
+            // 设置会员特权
+            document.getElementById('featureUnlimitedAccess').checked = true;
+            document.getElementById('featureGroupClasses').checked = id <= 3;
+            document.getElementById('featurePersonalTraining').checked = id <= 2;
+            document.getElementById('featureLockerRoom').checked = true;
+            document.getElementById('featureNutrition').checked = id <= 2;
+            
+            // 滚动到表单顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 删除会员卡类型
+        function deleteCardType(id) {
+            if (confirm(`确定要删除ID为${id}的会员卡类型吗？`)) {
+                console.log('删除会员卡类型:', id);
+                alert(`会员卡类型ID: ${id} 已删除`);
+                // 这里可以通过AJAX请求删除会员卡类型
+            }
+        }
+
+        // 对比会员卡
+        function compareCards() {
+            const card1Id = document.getElementById('compareCard1').value;
+            const card2Id = document.getElementById('compareCard2').value;
+            
+            if (!card1Id || !card2Id || card1Id === card2Id) {
+                alert('请选择两张不同的会员卡进行对比');
+                return;
+            }
+            
+            console.log('对比会员卡:', card1Id, card2Id);
+            
+            // 模拟会员卡数据
+            const getCardData = (id) => ({
+                id: id,
+                name: ['铂金会员卡', '黄金会员卡', '白银会员卡', '青铜会员卡', '新人体验卡'][id - 1],
+                type: ['platinum', 'gold', 'silver', 'bronze', 'trial'][id - 1],
+                price: [3999, 2999, 1999, 999, 99][id - 1],
+                duration: [365, 180, 90, 60, 7][id - 1],
+                maxEntries: [0, 0, 0, 30, 3][id - 1],
+                maxCourses: [0, 20, 10, 5, 1][id - 1],
+                image: `https://picsum.photos/id/${19 + id}/400/300`,
+                features: {
+                    unlimitedAccess: true,
+                    groupClasses: id <= 3,
+                    personalTraining: id <= 2,
+                    lockerRoom: true,
+                    nutrition: id <= 2
+                }
+            });
+            
+            const card1 = getCardData(card1Id);
+            const card2 = getCardData(card2Id);
+            
+            // 类型映射
+            const typeMap = {
+                platinum: { text: '铂金卡', class: 'badge-platinum' },
+                gold: { text: '金卡', class: 'badge-gold' },
+                silver: { text: '银卡', class: 'badge-silver' },
+                bronze: { text: '铜卡', class: 'badge-bronze' },
+                trial: { text: '体验卡', class: 'badge-trial' }
+            };
+            
+            // 构建对比HTML
+            const comparisonHTML = `
+                <div class="row">
+                    <div class="col-md-6 border-right">
+                        <div class="text-center mb-3">
+                            <img src="${card1.image}" class="img-fluid" style="max-height: 200px; border-radius: 8px;" alt="会员卡图片">
+                            <h4>${card1.name}</h4>
+                            <p><span class="card-type-badge ${typeMap[card1.type].class}">${typeMap[card1.type].text}</span></p>
+                            <p class="text-primary fs-4">¥${card1.price}</p>
+                        </div>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <i class="fa fa-calendar"></i>
+                                <span class="w-32">有效期：</span>
+                                <span class="font-weight-medium">${card1.duration}天</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-ticket"></i>
+                                <span class="w-32">使用次数：</span>
+                                <span class="font-weight-medium">${card1.maxEntries === 0 ? '无限制' : card1.maxEntries + '次'}</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-graduation-cap"></i>
+                                <span class="w-32">免费课程：</span>
+                                <span class="font-weight-medium">${card1.maxCourses === 0 ? '不限' : card1.maxCourses + '次'}</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-dumbbell"></i>
+                                <span class="w-32">基础健身：</span>
+                                <span class="font-weight-medium">✓</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-users"></i>
+                                <span class="w-32">团体课程：</span>
+                                <span class="font-weight-medium">${card1.features.groupClasses ? '✓' : '✗'}</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-user-circle"></i>
+                                <span class="w-32">私教折扣：</span>
+                                <span class="font-weight-medium">${card1.features.personalTraining ? '✓' : '✗'}</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-shield"></i>
+                                <span class="w-32">储物柜：</span>
+                                <span class="font-weight-medium">✓</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-cutlery"></i>
+                                <span class="w-32">营养咨询：</span>
+                                <span class="font-weight-medium">${card1.features.nutrition ? '✓' : '✗'}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-center mb-3">
+                            <img src="${card2.image}" class="img-fluid" style="max-height: 200px; border-radius: 8px;" alt="会员卡图片">
+                            <h4>${card2.name}</h4>
+                            <p><span class="card-type-badge ${typeMap[card2.type].class}">${typeMap[card2.type].text}</span></p>
+                            <p class="text-primary fs-4">¥${card2.price}</p>
+                        </div>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <i class="fa fa-calendar"></i>
+                                <span class="w-32">有效期：</span>
+                                <span class="font-weight-medium">${card2.duration}天</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-ticket"></i>
+                                <span class="w-32">使用次数：</span>
+                                <span class="font-weight-medium">${card2.maxEntries === 0 ? '无限制' : card2.maxEntries + '次'}</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-graduation-cap"></i>
+                                <span class="w-32">免费课程：</span>
+                                <span class="font-weight-medium">${card2.maxCourses === 0 ? '不限' : card2.maxCourses + '次'}</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-dumbbell"></i>
+                                <span class="w-32">基础健身：</span>
+                                <span class="font-weight-medium">✓</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-users"></i>
+                                <span class="w-32">团体课程：</span>
+                                <span class="font-weight-medium">${card2.features.groupClasses ? '✓' : '✗'}</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-user-circle"></i>
+                                <span class="w-32">私教折扣：</span>
+                                <span class="font-weight-medium">${card2.features.personalTraining ? '✓' : '✗'}</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-shield"></i>
+                                <span class="w-32">储物柜：</span>
+                                <span class="font-weight-medium">✓</span>
+                            </li>
+                            <li class="feature-item">
+                                <i class="fa fa-cutlery"></i>
+                                <span class="w-32">营养咨询：</span>
+                                <span class="font-weight-medium">${card2.features.nutrition ? '✓' : '✗'}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            // 填充对比结果
+            document.getElementById('comparisonResult').innerHTML = comparisonHTML;
+        }
+
+        // 显示会员卡对比模态框
+        function showCardCompareModal() {
+            cardCompareModal.show();
+        }
+
+        // 页面加载完成后执行
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('会员卡设置页面已加载');
+        });
+    </script>
+</body>
+</html>

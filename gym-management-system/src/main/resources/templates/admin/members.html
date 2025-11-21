@@ -1,119 +1,426 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>会员管理 - 健身房管理系统</title>
-    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
     <style>
         body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #f8f9fa;
         }
-        .navbar {
-            margin-bottom: 20px;
+        .sidebar {
+            min-height: 100vh;
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
+        }
+        .sidebar h4 {
+            border-bottom: 1px solid #34495e;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .sidebar a {
+            color: #ecf0f1;
+            display: block;
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.25rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #34495e;
+            color: #3498db;
+        }
+        .content {
+            padding: 2rem;
         }
         .card {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        .search-form {
-            margin-bottom: 20px;
+        .search-container {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
         }
-        .message {
-            margin-top: 20px;
-            margin-bottom: 20px;
+        .table-container {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        .table thead {
+            background-color: #f8f9fa;
+        }
+        .table th,
+        .table td {
+            padding: 0.75rem 1rem;
+            vertical-align: middle;
+        }
+        .btn {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.75rem;
+            margin: 0 0.25rem;
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+        }
+        .status-active {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .status-inactive {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .status-expired {
+            background-color: #fef3c7;
+            color: #92400e;
         }
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/admin">健身房管理系统</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin">控制台</a>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/admin/members">会员管理</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/logout">退出登录</a>
-                    </li>
-                </ul>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 侧边栏 -->
+            <div class="col-md-3 sidebar">
+                <h4>管理系统</h4>
+                <a href="/admin/index">首页</a>
+                <a href="/admin/members" class="active">会员管理</a>
+                <a href="/admin/coaches">教练管理</a>
+                <a href="/admin/courses">课程管理</a>
+                <a href="/admin/cards">会员卡设置</a>
+                <a href="/logout">退出登录</a>
             </div>
-        </div>
-    </nav>
 
-    <div class="container">
-        <!-- 成功消息显示 -->
-        <div th:if="${message != null}" class="alert alert-success message">
-            <p th:text="${message}"></p>
-        </div>
+            <!-- 主内容区 -->
+            <div class="col-md-9 content">
+                <h2 class="mb-4">会员管理</h2>
 
-        <!-- 搜索框 -->
-        <div class="card">
-            <div class="card-body">
-                <form class="form-inline search-form" action="/admin/members" method="get">
-                    <div class="form-group mx-sm-3 mb-2">
-                        <label for="keyword" class="sr-only">搜索</label>
-                        <input type="text" class="form-control" id="keyword" name="keyword" 
-                               placeholder="输入手机号搜索" th:value="${keyword}">
+                <!-- 搜索区域 -->
+                <div class="search-container">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="searchName" class="form-label">会员姓名</label>
+                            <input type="text" class="form-control" id="searchName" placeholder="请输入姓名">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="searchPhone" class="form-label">手机号</label>
+                            <input type="text" class="form-control" id="searchPhone" placeholder="请输入手机号">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="searchStatus" class="form-label">状态</label>
+                            <select class="form-select" id="searchStatus">
+                                <option value="">全部</option>
+                                <option value="active">活跃</option>
+                                <option value="inactive">未激活</option>
+                                <option value="expired">已过期</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="searchCardType" class="form-label">卡类型</label>
+                            <select class="form-select" id="searchCardType">
+                                <option value="">全部</option>
+                                <option value="month">月卡</option>
+                                <option value="quarter">季卡</option>
+                                <option value="year">年卡</option>
+                                <option value="unlimited">无限卡</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <button class="btn btn-primary" onclick="searchMembers()">
+                                <i class="fa fa-search"></i> 搜索
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="resetSearch()">
+                                <i class="fa fa-refresh"></i> 重置
+                            </button>
+                            <button class="btn btn-success" onclick="addMember()">
+                                <i class="fa fa-plus"></i> 新增会员
+                            </button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary mb-2">搜索</button>
-                </form>
-            </div>
-        </div>
+                </div>
 
-        <!-- 会员列表 -->
-        <div class="card">
-            <div class="card-header">
-                <h3>会员列表</h3>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
+                <!-- 会员表格 -->
+                <div class="table-container">
+                    <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>姓名</th>
                                 <th>手机号</th>
-                                <th>角色</th>
+                                <th>性别</th>
+                                <th>年龄</th>
+                                <th>会员卡类型</th>
+                                <th>有效期至</th>
+                                <th>状态</th>
                                 <th>操作</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr th:each="member : ${members}">
-                                <td th:text="${member.id}"></td>
-                                <td th:text="${member.phone}"></td>
-                                <td th:text="${member.role == 'member' ? '会员' : member.role}"></td>
+                        <tbody id="memberTableBody">
+                            <!-- 表格数据将通过JavaScript动态生成 -->
+                            <!-- 模拟数据 -->
+                            <tr>
+                                <td>1</td>
+                                <td>张三</td>
+                                <td>13800138001</td>
+                                <td>男</td>
+                                <td>28</td>
+                                <td>年卡</td>
+                                <td>2024-12-31</td>
+                                <td><span class="status-badge status-active">活跃</span></td>
                                 <td>
-                                    <form th:action="@{/admin/members/{id}/disable(id=${member.id})}" 
-                                          method="post" style="display: inline;">
-                                        <input type="hidden" name="_method" value="post">
-                                        <button type="submit" class="btn btn-danger btn-sm" 
-                                                onclick="return confirm('确定要禁用该会员账号吗？');">
-                                            禁用账号
-                                        </button>
-                                    </form>
+                                    <button class="btn btn-info" onclick="viewMember(1)"><i class="fa fa-eye"></i></button>
+                                    <button class="btn btn-warning" onclick="editMember(1)"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger" onclick="deleteMember(1)"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>李四</td>
+                                <td>13800138002</td>
+                                <td>女</td>
+                                <td>25</td>
+                                <td>月卡</td>
+                                <td>2023-12-01</td>
+                                <td><span class="status-badge status-expired">已过期</span></td>
+                                <td>
+                                    <button class="btn btn-info" onclick="viewMember(2)"><i class="fa fa-eye"></i></button>
+                                    <button class="btn btn-warning" onclick="editMember(2)"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger" onclick="deleteMember(2)"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>王五</td>
+                                <td>13800138003</td>
+                                <td>男</td>
+                                <td>35</td>
+                                <td>季卡</td>
+                                <td>2024-03-15</td>
+                                <td><span class="status-badge status-active">活跃</span></td>
+                                <td>
+                                    <button class="btn btn-info" onclick="viewMember(3)"><i class="fa fa-eye"></i></button>
+                                    <button class="btn btn-warning" onclick="editMember(3)"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger" onclick="deleteMember(3)"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>赵六</td>
+                                <td>13800138004</td>
+                                <td>女</td>
+                                <td>22</td>
+                                <td>无限卡</td>
+                                <td>永久有效</td>
+                                <td><span class="status-badge status-active">活跃</span></td>
+                                <td>
+                                    <button class="btn btn-info" onclick="viewMember(4)"><i class="fa fa-eye"></i></button>
+                                    <button class="btn btn-warning" onclick="editMember(4)"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger" onclick="deleteMember(4)"><i class="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>钱七</td>
+                                <td>13800138005</td>
+                                <td>男</td>
+                                <td>30</td>
+                                <td>月卡</td>
+                                <td>2024-02-28</td>
+                                <td><span class="status-badge status-inactive">未激活</span></td>
+                                <td>
+                                    <button class="btn btn-info" onclick="viewMember(5)"><i class="fa fa-eye"></i></button>
+                                    <button class="btn btn-warning" onclick="editMember(5)"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger" onclick="deleteMember(5)"><i class="fa fa-trash"></i></button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                </div>
-                <div th:if="${members.size() == 0}" class="alert alert-info">
-                    <p>暂无会员数据</p>
+
+                    <!-- 分页控件 -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted">显示 1-5 条，共 236 条</div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li class="page-item disabled"><a class="page-link" href="#">上一页</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">...</a></li>
+                                <li class="page-item"><a class="page-link" href="#">48</a></li>
+                                <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"></script>
-    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <!-- 新增/编辑会员模态框 -->
+    <div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="memberModalLabel">会员信息</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="memberForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="memberName" class="form-label">姓名</label>
+                                <input type="text" class="form-control" id="memberName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="memberPhone" class="form-label">手机号</label>
+                                <input type="tel" class="form-control" id="memberPhone" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="memberGender" class="form-label">性别</label>
+                                <select class="form-select" id="memberGender" required>
+                                    <option value="男">男</option>
+                                    <option value="女">女</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="memberAge" class="form-label">年龄</label>
+                                <input type="number" class="form-control" id="memberAge" min="1" max="120" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="memberCardType" class="form-label">会员卡类型</label>
+                                <select class="form-select" id="memberCardType" required>
+                                    <option value="月卡">月卡</option>
+                                    <option value="季卡">季卡</option>
+                                    <option value="年卡">年卡</option>
+                                    <option value="无限卡">无限卡</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="memberExpireDate" class="form-label">有效期至</label>
+                                <input type="date" class="form-control" id="memberExpireDate">
+                            </div>
+                            <div class="col-md-12">
+                                <label for="memberNote" class="form-label">备注</label>
+                                <textarea class="form-control" id="memberNote" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="saveMember()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化模态框
+        const memberModal = new bootstrap.Modal(document.getElementById('memberModal'));
+
+        // 搜索会员
+        function searchMembers() {
+            // 获取搜索条件
+            const name = document.getElementById('searchName').value;
+            const phone = document.getElementById('searchPhone').value;
+            const status = document.getElementById('searchStatus').value;
+            const cardType = document.getElementById('searchCardType').value;
+
+            // 这里可以通过AJAX请求搜索数据
+            console.log('搜索条件:', { name, phone, status, cardType });
+            
+            // 模拟搜索效果
+            alert('搜索功能已触发，在实际应用中将根据条件过滤数据');
+        }
+
+        // 重置搜索
+        function resetSearch() {
+            document.getElementById('searchName').value = '';
+            document.getElementById('searchPhone').value = '';
+            document.getElementById('searchStatus').value = '';
+            document.getElementById('searchCardType').value = '';
+        }
+
+        // 添加会员
+        function addMember() {
+            // 重置表单
+            document.getElementById('memberForm').reset();
+            document.getElementById('memberModalLabel').textContent = '新增会员';
+            
+            // 显示模态框
+            memberModal.show();
+        }
+
+        // 查看会员
+        function viewMember(id) {
+            console.log('查看会员:', id);
+            alert(`查看会员ID: ${id}`);
+        }
+
+        // 编辑会员
+        function editMember(id) {
+            document.getElementById('memberModalLabel').textContent = '编辑会员';
+            
+            // 这里可以通过AJAX请求获取会员信息并填充表单
+            console.log('编辑会员:', id);
+            
+            // 模拟填充数据
+            document.getElementById('memberName').value = `会员${id}`;
+            document.getElementById('memberPhone').value = `13800138${String(id).padStart(3, '0')}`;
+            document.getElementById('memberAge').value = 25 + id;
+            
+            // 显示模态框
+            memberModal.show();
+        }
+
+        // 删除会员
+        function deleteMember(id) {
+            if (confirm(`确定要删除ID为${id}的会员吗？`)) {
+                console.log('删除会员:', id);
+                alert(`会员ID: ${id} 已删除`);
+                // 这里可以通过AJAX请求删除会员
+            }
+        }
+
+        // 保存会员
+        function saveMember() {
+            // 验证表单
+            if (!document.getElementById('memberForm').checkValidity()) {
+                document.getElementById('memberForm').reportValidity();
+                return;
+            }
+
+            // 获取表单数据
+            const name = document.getElementById('memberName').value;
+            const phone = document.getElementById('memberPhone').value;
+            const gender = document.getElementById('memberGender').value;
+            const age = document.getElementById('memberAge').value;
+            const cardType = document.getElementById('memberCardType').value;
+            const expireDate = document.getElementById('memberExpireDate').value;
+            const note = document.getElementById('memberNote').value;
+
+            // 这里可以通过AJAX请求保存数据
+            console.log('保存会员:', { name, phone, gender, age, cardType, expireDate, note });
+            
+            // 显示保存成功消息
+            alert('会员信息保存成功！');
+            
+            // 关闭模态框
+            memberModal.hide();
+        }
+    </script>
 </body>
 </html>

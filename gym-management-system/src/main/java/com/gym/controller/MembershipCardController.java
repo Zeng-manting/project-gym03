@@ -28,11 +28,11 @@ public class MembershipCardController {
      * @param model 模型对象
      * @return 会员卡列表视图
      */
-    @GetMapping("/admin/membership-cards")
+    @GetMapping("/admin/cards")
     @PreAuthorize("hasRole('ADMIN')")
     public String listCards(Model model) {
         model.addAttribute("cards", membershipCardService.findAllCards());
-        return "admin/membership-cards";
+        return "admin/cards";
     }
 
     /**
@@ -40,7 +40,7 @@ public class MembershipCardController {
      * @param model 模型对象
      * @return 创建会员卡视图
      */
-    @GetMapping("/admin/membership-cards/create")
+    @GetMapping("/admin/cards/create")
     @PreAuthorize("hasRole('ADMIN')")
     public String showCreateForm(Model model) {
         model.addAttribute("card", new MembershipCard());
@@ -53,7 +53,7 @@ public class MembershipCardController {
      * @param attributes 重定向属性
      * @return 重定向到会员卡列表页面
      */
-    @PostMapping("/admin/membership-cards")
+    @PostMapping("/admin/cards")
     @PreAuthorize("hasRole('ADMIN')")
     public String createCard(@ModelAttribute MembershipCard card, RedirectAttributes attributes) {
         try {
@@ -61,9 +61,9 @@ public class MembershipCardController {
             attributes.addFlashAttribute("message", "会员卡创建成功");
         } catch (Exception e) {
             attributes.addFlashAttribute("error", "会员卡创建失败：" + e.getMessage());
-            return "redirect:/admin/membership-cards/create";
+            return "redirect:/admin/cards/create";
         }
-        return "redirect:/admin/membership-cards";
+        return "redirect:/admin/cards";
     }
 
     /**
@@ -72,12 +72,12 @@ public class MembershipCardController {
      * @param model 模型对象
      * @return 编辑会员卡视图
      */
-    @GetMapping("/admin/membership-cards/edit/{id}")
+    @GetMapping("/admin/cards/edit/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
         MembershipCard card = membershipCardService.findCardById(id);
         if (card == null) {
-            return "redirect:/admin/membership-cards";
+            return "redirect:/admin/cards";
         }
         model.addAttribute("card", card);
         return "admin/edit-membership-card";
@@ -90,7 +90,7 @@ public class MembershipCardController {
      * @param attributes 重定向属性
      * @return 重定向到会员卡列表页面
      */
-    @PostMapping("/admin/membership-cards/edit/{id}")
+    @PostMapping("/admin/cards/edit/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String updateCard(@PathVariable("id") Long id, @ModelAttribute MembershipCard card, RedirectAttributes attributes) {
         try {
@@ -100,9 +100,9 @@ public class MembershipCardController {
             attributes.addFlashAttribute("message", "会员卡更新成功");
         } catch (Exception e) {
             attributes.addFlashAttribute("error", "会员卡更新失败：" + e.getMessage());
-            return "redirect:/admin/membership-cards/edit/" + id;
+            return "redirect:/admin/cards/edit/" + id;
         }
-        return "redirect:/admin/membership-cards";
+        return "redirect:/admin/cards";
     }
 
     /**
@@ -111,7 +111,7 @@ public class MembershipCardController {
      * @param attributes 重定向属性
      * @return 重定向到会员卡列表页面
      */
-    @PostMapping("/admin/membership-cards/delete/{id}")
+    @PostMapping("/admin/cards/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteCard(@PathVariable("id") Long id, RedirectAttributes attributes) {
         try {
@@ -120,7 +120,7 @@ public class MembershipCardController {
         } catch (Exception e) {
             attributes.addFlashAttribute("error", "会员卡删除失败：" + e.getMessage());
         }
-        return "redirect:/admin/membership-cards";
+        return "redirect:/admin/cards";
     }
 
     /**
@@ -130,7 +130,7 @@ public class MembershipCardController {
      * @param attributes 重定向属性
      * @return 重定向到会员卡列表页面
      */
-    @PostMapping("/admin/membership-cards/status/{id}")
+    @PostMapping("/admin/cards/status/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String updateCardStatus(@PathVariable("id") Long id, @RequestParam("status") String status, RedirectAttributes attributes) {
         try {
@@ -143,6 +143,6 @@ public class MembershipCardController {
         } catch (Exception e) {
             attributes.addFlashAttribute("error", "会员卡状态更新失败：" + e.getMessage());
         }
-        return "redirect:/admin/membership-cards";
+        return "redirect:/admin/cards";
     }
 }

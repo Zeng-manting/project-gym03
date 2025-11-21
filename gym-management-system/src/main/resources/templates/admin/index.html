@@ -1,82 +1,187 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理员首页 - 健身房管理系统</title>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <title>健身房管理系统 - 管理后台</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        .container {
-            margin-top: 50px;
-        }
-        .welcome-card {
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #f8f9fa;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
+        }
+        .sidebar h4 {
+            border-bottom: 1px solid #34495e;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .sidebar a {
+            color: #ecf0f1;
+            display: block;
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.25rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #34495e;
+            color: #3498db;
+        }
+        .content {
+            padding: 2rem;
+        }
+        .card {
             border-radius: 8px;
-            padding: 30px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin: 20px 0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
         }
-        .btn-primary:hover {
-            background-color: #0069d9;
-            border-color: #0062cc;
+        .card-icon {
+            font-size: 2.5rem;
+            color: #3498db;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .card-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stat-card {
+            margin-bottom: 1rem;
+        }
+        .welcome-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">健身房管理系统</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <span class="nav-link">欢迎，管理员</span>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/logout">退出登录</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 侧边栏 -->
+            <div class="col-md-3 sidebar">
+                <h4>管理系统</h4>
+                <a href="/admin/index" class="active">首页</a>
+                <a href="/admin/members">会员管理</a>
+                <a href="/admin/coaches">教练管理</a>
+                <a href="/admin/courses">课程管理</a>
+                <a href="/admin/cards">会员卡设置</a>
+                <a href="/logout">退出登录</a>
+            </div>
 
-    <div class="container">
-        <div class="welcome-card text-center">
-            <h2>欢迎访问管理员管理中心</h2>
-            <p class="mt-4">您可以通过左侧菜单管理系统的各项功能</p>
-        </div>
-        
-        <div class="row mt-5">
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">管理功能</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><a href="#">用户管理</a></li>
-                            <li class="list-group-item"><a href="#">课程管理</a></li>
-                            <li class="list-group-item"><a href="#">会员卡管理</a></li>
-                            <li class="list-group-item"><a href="#">数据统计</a></li>
-                            <li class="list-group-item"><a href="#">系统设置</a></li>
-                        </ul>
+            <!-- 主内容区 -->
+            <div class="col-md-9 content">
+                <!-- 欢迎区域 -->
+                <div class="welcome-section">
+                    <h2>欢迎使用健身房管理系统</h2>
+                    <p>这是管理员后台，您可以管理会员、教练、课程和会员卡类型等信息。</p>
+                </div>
+
+                <!-- 统计卡片 -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card stat-card">
+                            <div class="card-body text-center">
+                                <div class="card-icon">👥</div>
+                                <div class="card-title">总会员数</div>
+                                <div class="card-value" id="memberCount">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card">
+                            <div class="card-body text-center">
+                                <div class="card-icon">👨‍🏫</div>
+                                <div class="card-title">教练数量</div>
+                                <div class="card-value" id="coachCount">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card">
+                            <div class="card-body text-center">
+                                <div class="card-icon">📚</div>
+                                <div class="card-title">课程数量</div>
+                                <div class="card-value" id="courseCount">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card">
+                            <div class="card-body text-center">
+                                <div class="card-icon">💳</div>
+                                <div class="card-title">卡类型数量</div>
+                                <div class="card-value" id="cardTypeCount">0</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="col-md-9">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>系统概览</h3>
+
+                <!-- 最近活动 -->
+                <div class="card mt-4">
+                    <div class="card-header bg-white border-0">
+                        <h5 class="card-title mb-0">最近活动</h5>
                     </div>
                     <div class="card-body">
-                        <p>这是管理员控制台的主页面，提供系统各项功能的快速入口。</p>
-                        <p>您可以在此查看系统的基本信息和关键指标，并通过左侧菜单访问具体的管理功能。</p>
+                        <div class="list-group">
+                            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">新增会员</div>
+                                    <small>张三注册了月卡会员</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">2小时前</span>
+                            </div>
+                            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">课程安排</div>
+                                    <small>新增了瑜伽课程，安排在周一至周五晚上</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">昨天</span>
+                            </div>
+                            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">会员续费</div>
+                                    <small>李四的年卡成功续费</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">2天前</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 模拟数据加载
+        document.addEventListener('DOMContentLoaded', function() {
+            // 这里可以通过AJAX请求获取真实数据
+            // 为了演示，我们使用模拟数据
+            setTimeout(() => {
+                document.getElementById('memberCount').textContent = '236';
+                document.getElementById('coachCount').textContent = '18';
+                document.getElementById('courseCount').textContent = '42';
+                document.getElementById('cardTypeCount').textContent = '8';
+            }, 500);
+        });
+    </script>
 </body>
 </html>
