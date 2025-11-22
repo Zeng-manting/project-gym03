@@ -1,6 +1,8 @@
 com\gym\config\SecurityConfig$1.class
 com\gym\mapper\MembershipCardMapper.class
+com\gym\entity\MemberInfo.class
 com\gym\controller\AuthController.class
+com\gym\service\impl\MemberInfoServiceImpl.class
 com\gym\config\DataInitializer.class
 com\gym\exception\BusinessException.class
 com\gym\entity\User.class
@@ -27,6 +29,9 @@ com\gym\GymManagementApplication.class
 com\gym\dto\BookingDTO.class
 com\gym\mapper\UserMapper.class
 com\gym\service\CourseService.class
+com\gym\service\MemberInfoService.class
+com\gym\mapper\MemberInfoMapper.class
 com\gym\service\impl\UserServiceImpl.class
 com\gym\exception\GlobalExceptionHandler.class
 com\gym\controller\CourseController.class
+com\gym\controller\MemberInfoController.class

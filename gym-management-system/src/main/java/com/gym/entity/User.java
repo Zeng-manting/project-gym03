@@ -31,4 +31,17 @@ public class User {
      * 'admin': 管理员
      */
     private String role;
+    
+    /**
+     * 用户状态
+     * 'active': 活跃
+     * 'disabled': 禁用
+     */
+    private String status = "active";
+    
+    /**
+     * 会员详细信息（一对一关联）
+     * 仅对会员角色有效
+     */
+    private MemberInfo memberInfo;
 }

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人信息 - FitZone Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255,255,255,0.1) 0%, transparent 20%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            width: 100%;
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            transform: rotate(30deg);
+            animation: shimmer 3s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(30deg) translate(-100%, -100%); }
+            100% { transform: rotate(30deg) translate(100%, 100%); }
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .message {
+            margin: 0 0 20px 0;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .message::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .alert-success::before {
+            background-color: #28a745;
+        }
+
+        .alert-danger::before {
+            background-color: #dc3545;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            transition: width 0.5s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary::before {
+            background-color: #45a049;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(76, 175, 80, 0.4);
+            color: white;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid #7f8c8d;
+            color: #7f8c8d;
+        }
+
+        .btn-outline::before {
+            background-color: #7f8c8d;
+        }
+
+        .btn-outline:hover {
+            color: white;
+        }
+
+        .profile-section {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            cursor: pointer;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .avatar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .avatar-container:hover .avatar-overlay {
+            opacity: 1;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .profile-id {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border-left: 3px solid #ff6b6b;
+        }
+
+        .info-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-label i {
+            margin-right: 8px;
+            color: #ff6b6b;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .edit-form {
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            position: relative;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .actions .btn {
+            margin: 0 10px;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            z-index: 10;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .card-body {
+                padding: 20px;
+            }
+            
+            .card-title {
+                font-size: 1.5rem;
+            }
+            
+            .info-grid,
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .toggle-btn {
+                position: static;
+                display: block;
+                margin-bottom: 20px;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .card-header {
+                padding: 20px;
+            }
+            
+            .card-body {
+                padding: 15px;
+            }
+            
+            .card-title {
+                font-size: 1.3rem;
+            }
+            
+            .avatar-container {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .avatar {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="profile-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-user-circle me-2"></i>个人信息管理
+                </h2>
+                <p class="card-subtitle">查看和更新您的个人详细信息</p>
+                <button id="toggle-edit" class="btn btn-outline toggle-btn">
+                    <i class="fas fa-edit mr-1"></i>编辑信息
+                </button>
+            </div>
+            
+            <div class="card-body">
+                <!-- 显示成功消息 -->
+                <div th:if="${success}" class="message alert alert-success">
+                    <strong><i class="fas fa-check-circle me-2"></i>成功：</strong>
+                    <span th:text="${success}"></span>
+                </div>
+                
+                <!-- 显示错误消息 -->
+                <div th:if="${error}" class="message alert alert-danger">
+                    <strong><i class="fas fa-exclamation-circle me-2"></i>错误：</strong>
+                    <span th:text="${error}"></span>
+                </div>
+                
+                <div class="profile-section">
+                    <div class="profile-header">
+                        <div class="avatar-container">
+                            <div class="avatar">
+                                <span th:text="${memberInfo?.name?.charAt(0) ?: '会'}"><i class="fas fa-user"></i></span>
+                            </div>
+                            <div class="avatar-overlay">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+                        <h3 class="profile-name" th:text="${memberInfo?.name ?: '未设置姓名'}">会员姓名</h3>
+                        <p class="profile-id">会员ID: <span th:text="${memberInfo?.userId ?: '000000'}">000000</span></p>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-mobile-alt"></i>手机号码</div>
+                            <div class="info-value" th:text="${memberInfo?.phone ?: '未设置'}">138****8000</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-venus-mars"></i>性别</div>
+                            <div class="info-value" th:text="${memberInfo?.gender ?: '未设置'}">男/女</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-birthday-cake"></i>出生日期</div>
+                            <div class="info-value" th:text="${memberInfo?.birthDate ?: '未设置'}">1990-01-01</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-calendar-check"></i>办卡日期</div>
+                            <div class="info-value" th:text="${memberInfo?.cardIssueDate ?: '未设置'}">2023-01-01</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-ruler-vertical"></i>身高</div>
+                            <div class="info-value" th:text="${memberInfo?.height != null ? (memberInfo.height + ' cm') : '未设置'}">175 cm</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-weight"></i>体重</div>
+                            <div class="info-value" th:text="${memberInfo?.weight != null ? (memberInfo.weight + ' kg') : '未设置'}">70 kg</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-envelope"></i>电子邮箱</div>
+                            <div class="info-value" th:text="${memberInfo?.email ?: '未设置'}">user@example.com</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-map-marker-alt"></i>联系地址</div>
+                            <div class="info-value" th:text="${memberInfo?.address ?: '未设置'}">北京市朝阳区</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 编辑表单，默认隐藏 -->
+                <div id="edit-form" class="edit-form" style="display: none;">
+                    <h4 class="mb-4"><i class="fas fa-edit mr-2"></i>编辑个人信息</h4>
+                    <form th:action="@{/member/profile/save}" method="post" id="profile-form">
+                        <input type="hidden" th:value="${memberInfo?.userId}" name="userId">
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="name">姓名</label>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       th:value="${memberInfo?.name}" placeholder="请输入姓名">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="gender">性别</label>
+                                <select class="form-control" id="gender" name="gender">
+                                    <option value="">请选择性别</option>
+                                    <option value="男" th:selected="${memberInfo?.gender == '男'}">男</option>
+                                    <option value="女" th:selected="${memberInfo?.gender == '女'}">女</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="birthDate">出生日期</label>
+                                <input type="date" class="form-control" id="birthDate" name="birthDate" 
+                                       th:value="${memberInfo?.birthDate}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="phone">手机号码</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                       th:value="${memberInfo?.phone}" placeholder="请输入手机号码">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="height">身高 (cm)</label>
+                                <input type="number" step="0.1" class="form-control" id="height" name="height" 
+                                       th:value="${memberInfo?.height}" placeholder="请输入身高">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="weight">体重 (kg)</label>
+                                <input type="number" step="0.1" class="form-control" id="weight" name="weight" 
+                                       th:value="${memberInfo?.weight}" placeholder="请输入体重">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="email">电子邮箱</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   th:value="${memberInfo?.email}" placeholder="请输入电子邮箱">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="address">联系地址</label>
+                            <input type="text" class="form-control" id="address" name="address" 
+                                   th:value="${memberInfo?.address}" placeholder="请输入联系地址">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="emergencyContact">紧急联系人</label>
+                                <input type="text" class="form-control" id="emergencyContact" name="emergencyContact" 
+                                       th:value="${memberInfo?.emergencyContact}" placeholder="请输入紧急联系人">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="emergencyPhone">紧急联系电话</label>
+                                <input type="tel" class="form-control" id="emergencyPhone" name="emergencyPhone" 
+                                       th:value="${memberInfo?.emergencyPhone}" placeholder="请输入紧急联系电话">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="healthCondition">健康状况</label>
+                            <textarea class="form-control" id="healthCondition" name="healthCondition" rows="3" 
+                                      placeholder="请描述您的健康状况，如有特殊情况请注明" th:text="${memberInfo?.healthCondition}"></textarea>
+                        </div>
+                        
+                        <div class="actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save mr-2"></i>保存修改
+                            </button>
+                            <button type="button" id="cancel-edit" class="btn btn-outline">
+                                <i class="fas fa-times mr-2"></i>取消
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <a href="/member" class="btn btn-outline">
+                <i class="fas fa-arrow-left mr-2"></i>返回会员中心
+            </a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 添加页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为信息项添加延迟加载效果
+            const infoItems = document.querySelectorAll('.info-item');
+            infoItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                item.style.transition = 'all 0.4s ease';
+                
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 100 * (index + 1));
+            });
+            
+            // 编辑按钮切换功能
+            const toggleEditBtn = document.getElementById('toggle-edit');
+            const editForm = document.getElementById('edit-form');
+            const cancelEditBtn = document.getElementById('cancel-edit');
+            
+            toggleEditBtn.addEventListener('click', function() {
+                if (editForm.style.display === 'none' || editForm.style.display === '') {
+                    editForm.style.display = 'block';
+                    toggleEditBtn.innerHTML = '<i class="fas fa-times mr-1"></i>取消编辑';
+                    
+                    // 平滑滚动到表单
+                    editForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    editForm.style.display = 'none';
+                    toggleEditBtn.innerHTML = '<i class="fas fa-edit mr-1"></i>编辑信息';
+                }
+            });
+            
+            cancelEditBtn.addEventListener('click', function() {
+                editForm.style.display = 'none';
+                toggleEditBtn.innerHTML = '<i class="fas fa-edit mr-1"></i>编辑信息';
+            });
+            
+            // 头像点击上传功能（占位）
+            const avatarContainer = document.querySelector('.avatar-container');
+            avatarContainer.addEventListener('click', function() {
+                alert('头像上传功能即将推出');
+            });
+            
+            // 表单提交增强效果
+            const profileForm = document.getElementById('profile-form');
+            profileForm.addEventListener('submit', function(e) {
+                // 这里可以添加表单验证逻辑
+                const name = document.getElementById('name').value;
+                const phone = document.getElementById('phone').value;
+                
+                if (!name.trim()) {
+                    alert('请输入姓名');
+                    e.preventDefault();
+                    return;
+                }
+                
+                if (!phone.trim() || !/^1[3-9]\d{9}$/.test(phone)) {
+                    alert('请输入正确的手机号码');
+                    e.preventDefault();
+                    return;
+                }
+            });
+            
+            // 按钮悬停增强效果
+            const buttons = document.querySelectorAll('.btn:not(.btn-secondary)');
+            buttons.forEach(button => {
+                button.addEventListener('mousemove', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    this.style.setProperty('--x', `${x}px`);
+                    this.style.setProperty('--y', `${y}px`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -2,10 +2,12 @@ package com.gym.controller;
 
 import com.gym.dto.BookingDTO;
 import com.gym.entity.Course;
+import com.gym.entity.MemberInfo;
 import com.gym.entity.User;
 import com.gym.mapper.UserMapper;
 import com.gym.service.BookingService;
 import com.gym.service.CourseService;
+import com.gym.service.MemberInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -35,6 +37,9 @@ public class MemberController {
     
     @Autowired
     private UserMapper userMapper;
+    
+    @Autowired
+    private MemberInfoService memberInfoService;
 
     /**
      * 会员首页直接显示index页面
@@ -126,6 +131,27 @@ public class MemberController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/member/bookings";
+    }
+    
+    /**
+     * 查看个人信息页面
+     * @param model 模型对象，用于传递数据到视图
+     * @return 个人信息页面
+     */
+    @GetMapping("profile")
+    @PreAuthorize("hasRole('MEMBER')")
+    public String viewProfile(Model model) {
+        try {
+            // 获取当前登录用户信息
+            User currentUser = getCurrentUser();
+            
+            // 查询会员详细信息
+            MemberInfo memberInfo = memberInfoService.getMemberInfoByUserId(currentUser.getId());
+            model.addAttribute("memberInfo", memberInfo);
+        } catch (Exception e) {
+            model.addAttribute("error", "获取个人信息失败: " + e.getMessage());
+        }
+        return "member/profile";
     }
     
     /**

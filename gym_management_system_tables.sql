@@ -81,6 +81,30 @@ CREATE TABLE `membership_card` (
   CONSTRAINT `fk_membership_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会员卡表';
 
+-- 创建会员信息表
+CREATE TABLE `member_info` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '会员信息ID',
+  `user_id` BIGINT NOT NULL COMMENT '用户ID（关联user表）',
+  `name` VARCHAR(50) NOT NULL COMMENT '姓名',
+  `gender` VARCHAR(10) COMMENT '性别：男、女',
+  `birth_date` DATE COMMENT '出生日期',
+  `phone` VARCHAR(20) NOT NULL COMMENT '手机号（与user表同步）',
+  `card_issue_date` DATE COMMENT '办卡日期',
+  `height` DECIMAL(5,2) COMMENT '身高（cm）',
+  `weight` DECIMAL(5,2) COMMENT '体重（kg）',
+  `email` VARCHAR(100) COMMENT '电子邮箱',
+  `address` VARCHAR(255) COMMENT '地址',
+  `emergency_contact` VARCHAR(50) COMMENT '紧急联系人',
+  `emergency_phone` VARCHAR(20) COMMENT '紧急联系电话',
+  `health_condition` TEXT COMMENT '健康状况',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `idx_user_id` (`user_id`),
+  UNIQUE INDEX `idx_phone` (`phone`),
+  CONSTRAINT `fk_member_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会员信息表';
+
 -- 插入一些初始数据
 -- 1. 插入默认管理员用户（密码使用BCrypt加密：123456）
 INSERT INTO `user` (`phone`, `password`, `role`, `status`) VALUES 

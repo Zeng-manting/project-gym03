@@ -1,4 +1,6 @@
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\util\PasswordUtil.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\mapper\MemberInfoMapper.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\impl\MemberInfoServiceImpl.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\mapper\UserMapper.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\AdminController.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\dto\BookingDTO.java
@@ -11,7 +13,9 @@ D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\impl\Booki
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\entity\MembershipCard.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\MembershipCardController.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\impl\MembershipCardServiceImpl.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\MemberInfoController.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\impl\CourseServiceImpl.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\MemberInfoService.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\config\WebConfig.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\entity\User.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\BookingService.java
@@ -20,6 +24,7 @@ D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\exception\Business
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\AuthController.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\CourseService.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\MemberController.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\MemberProfileController.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\mapper\CourseMapper.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\impl\UserServiceImpl.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\config\DataInitializer.java
@@ -28,4 +33,5 @@ D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\Membership
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\config\SecurityConfig.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\mapper\BookingMapper.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\CoachController.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\entity\MemberInfo.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\mapper\MembershipCardMapper.java
