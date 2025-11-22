@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的会员卡 - FitZone Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255,255,255,0.1) 0%, transparent 20%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            transform: rotate(30deg);
+            animation: shimmer 3s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(30deg) translate(-100%, -100%); }
+            100% { transform: rotate(30deg) translate(100%, 100%); }
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .message {
+            margin: 0 0 20px 0;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .message::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .alert-success::before {
+            background-color: #28a745;
+        }
+
+        .alert-danger::before {
+            background-color: #dc3545;
+        }
+
+        .membership-card {
+            background: linear-gradient(135deg, #f5f5f5, #ffffff);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .membership-card:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .card-content {
+            padding: 25px;
+        }
+
+        .card-banner {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            padding: 20px 25px;
+            color: white;
+        }
+
+        .card-banner h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .card-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            flex: 1 1 200px;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .card-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-expired {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-archived {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .no-cards {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .no-cards-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .no-cards-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            transition: width 0.5s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: #ff6b6b;
+            color: white;
+        }
+
+        .btn-primary::before {
+            background-color: #ee5253;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(255, 107, 107, 0.4);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #7f8c8d;
+            color: white;
+        }
+
+        .btn-secondary::before {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(127, 140, 141, 0.4);
+            color: white;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .card-body {
+                padding: 20px;
+            }
+            
+            .card-content {
+                padding: 20px;
+            }
+            
+            .card-banner {
+                padding: 15px 20px;
+            }
+            
+            .card-banner h3 {
+                font-size: 1.3rem;
+            }
+            
+            .info-item {
+                flex: 1 1 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .card-header {
+                padding: 20px;
+            }
+            
+            .card-body {
+                padding: 15px;
+            }
+            
+            .card-content {
+                padding: 15px;
+            }
+            
+            .card-title {
+                font-size: 1.3rem;
+            }
+            
+            .card-banner h3 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-id-card me-2"></i>我的会员卡
+                </h2>
+                <p class="card-subtitle">查看和管理您的会员卡信息</p>
+            </div>
+            
+            <div class="card-body">
+                <!-- 显示成功消息 -->
+                <div th:if="${success}" class="message alert alert-success">
+                    <strong><i class="fas fa-check-circle me-2"></i>成功：</strong>
+                    <span th:text="${success}"></span>
+                </div>
+                
+                <!-- 显示错误消息 -->
+                <div th:if="${error}" class="message alert alert-danger">
+                    <strong><i class="fas fa-exclamation-circle me-2"></i>错误：</strong>
+                    <span th:text="${error}"></span>
+                </div>
+                
+                <!-- 会员卡列表 -->
+                <div th:each="card : ${cards}" class="membership-card animate-on-load">
+                    <div class="card-banner">
+                        <h3>
+                            <i class="fas fa-credit-card me-2"></i>
+                            <span th:text="${card.cardType}"></span>
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-info">
+                            <div class="info-item">
+                                <span class="info-label">卡号</span>
+                                <span class="info-value" th:text="${card.cardNumber}"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">金额</span>
+                                <span class="info-value">¥<span th:text="${card.amount}"></span></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">余额</span>
+                                <span class="info-value">¥<span th:text="${card.balance}"></span></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">剩余次数</span>
+                                <span class="info-value" th:text="${card.remainingTimes}"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">有效期</span>
+                                <span class="info-value">
+                                    <span th:text="${card.startDate}"></span> - 
+                                    <span th:text="${card.endDate}"></span>
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">状态</span>
+                                <span class="card-status" th:classappend="${card.status == 'ACTIVE' ? 'status-active' : (card.status == 'EXPIRED' ? 'status-expired' : 'status-archived')}">
+                                    <span th:text="${card.status}"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 无卡提示 -->
+                <div th:if="${cards.isEmpty()}" class="no-cards">
+                    <div class="no-cards-icon">
+                        <i class="far fa-id-card"></i>
+                    </div>
+                    <p class="no-cards-text">暂无会员卡信息</p>
+                    <p class="mt-2 text-sm">您可以前往前台办理会员卡</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <a href="/member" class="btn btn-secondary">
+                <i class="fas fa-arrow-left mr-2"></i>返回会员中心
+            </a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 添加页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.animate-on-load');
+            
+            // 为每个会员卡添加延迟加载效果
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 200 * (index + 1));
+            });
+        });
+        
+        // 按钮悬停增强效果
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                this.style.setProperty('--x', `${x}px`);
+                this.style.setProperty('--y', `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>
