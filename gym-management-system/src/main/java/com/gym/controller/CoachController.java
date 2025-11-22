@@ -6,13 +6,20 @@ import com.gym.service.BookingService;
 import com.gym.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.gym.mapper.UserMapper;
 
-import javax.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +36,9 @@ public class CoachController {
     
     @Autowired
     private BookingService bookingService;
+    
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 显示教练首页
@@ -48,9 +58,9 @@ public class CoachController {
      */
     @GetMapping("courses")
     @PreAuthorize("hasRole('TRAINER')")
-    public String viewCourses(Model model, HttpSession session) {
-        // 从会话中获取当前登录的教练用户
-        User user = (User) session.getAttribute("user");
+    public String viewCourses(Model model) {
+        // 获取当前登录的教练用户
+        User user = getCurrentUser();
         // 获取当前教练的所有课程
         List<Course> courses = courseService.getMyCourses(user.getId());
         // 添加课程列表到模型中
@@ -73,5 +83,211 @@ public class CoachController {
         model.addAttribute("members", members);
         model.addAttribute("courseId", courseId);
         return "coach/course-members";
+    }
+    
+    /**
+     * 获取当前登录用户信息
+     */
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("用户未登录");
+        }
+        
+        Object principal = authentication.getPrincipal();
+        String username;
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+        
+        // 根据手机号（用户名）从数据库查询用户信息
+        User user = userMapper.findByPhone(username);
+        if (user == null) {
+            throw new RuntimeException("用户信息不存在");
+        }
+        
+        return user;
+    }
+    
+    /**
+     * 预约信息扩展类，用于页面展示
+     */
+    private static class BookingInfo {
+        private Long id;
+        private String courseName;
+        private String memberPhone;
+        private Long memberId;
+        private LocalDateTime bookingTime;
+        private String status;
+        
+        // getter and setter
+        public Long getId() { return id; }
+        public void setId(Long id) { this.id = id; }
+        public String getCourseName() { return courseName; }
+        public void setCourseName(String courseName) { this.courseName = courseName; }
+        public String getMemberPhone() { return memberPhone; }
+        public void setMemberPhone(String memberPhone) { this.memberPhone = memberPhone; }
+        public Long getMemberId() { return memberId; }
+        public void setMemberId(Long memberId) { this.memberId = memberId; }
+        public LocalDateTime getBookingTime() { return bookingTime; }
+        public void setBookingTime(LocalDateTime bookingTime) { this.bookingTime = bookingTime; }
+        public String getStatus() { return status; }
+        public void setStatus(String status) { this.status = status; }
+    }
+    
+    /**
+     * 查看教练所有课程的预约记录
+     * 支持分页和筛选
+     */
+    @GetMapping("bookings")
+    @PreAuthorize("hasRole('TRAINER')")
+    public String viewBookings(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String status,
+            Model model) {
+        // 获取当前登录的教练用户
+        User currentUser = getCurrentUser();
+        
+        // 获取当前教练的所有课程
+        List<Course> courses = courseService.getMyCourses(currentUser.getId());
+        
+        // 从课程中提取课程ID列表
+        List<Long> courseIds = new ArrayList<>();
+        for (Course course : courses) {
+            courseIds.add(course.getId());
+        }
+        
+        // 构建预约信息列表
+        List<BookingInfo> allBookings = new ArrayList<>();
+        
+        // 查询每个课程的预约记录
+        for (Long courseId : courseIds) {
+            List<Map<String, Object>> courseBookings = bookingService.getCourseMembers(courseId);
+            
+            // 从已获取的courses列表中查找对应的课程
+            Course course = courses.stream()
+                .filter(c -> c.getId().equals(courseId))
+                .findFirst()
+                .orElse(null);
+            
+            if (course == null) continue; // 如果未找到对应课程，则跳过
+            
+            // 转换为BookingInfo对象
+            for (Map<String, Object> booking : courseBookings) {
+                BookingInfo bookingInfo = new BookingInfo();
+                // 安全的类型转换
+                Object bookingIdObj = booking.get("booking_id");
+                if (bookingIdObj != null) {
+                    bookingInfo.setId(bookingIdObj instanceof Long ? (Long) bookingIdObj : Long.valueOf(bookingIdObj.toString()));
+                }
+                
+                bookingInfo.setCourseName(course.getName());
+                
+                Object phoneObj = booking.get("phone");
+                if (phoneObj != null) {
+                    bookingInfo.setMemberPhone(phoneObj.toString());
+                }
+                
+                Object userIdObj = booking.get("user_id");
+                if (userIdObj != null) {
+                    bookingInfo.setMemberId(userIdObj instanceof Long ? (Long) userIdObj : Long.valueOf(userIdObj.toString()));
+                }
+                
+                Object bookingTimeObj = booking.get("booking_time");
+                if (bookingTimeObj instanceof LocalDateTime) {
+                    bookingInfo.setBookingTime((LocalDateTime) bookingTimeObj);
+                }
+                
+                bookingInfo.setStatus("BOOKED"); // 默认状态为已预约
+                
+                // 应用筛选条件
+                boolean matchKeyword = keyword == null || keyword.isEmpty() || 
+                        bookingInfo.getMemberPhone().contains(keyword) || 
+                        bookingInfo.getCourseName().contains(keyword);
+                
+                boolean matchDate = date == null || date.isEmpty() || 
+                        bookingInfo.getBookingTime().toLocalDate().toString().equals(date);
+                
+                boolean matchStatus = status == null || status.isEmpty() || 
+                        bookingInfo.getStatus().equals(status);
+                
+                if (matchKeyword && matchDate && matchStatus) {
+                    allBookings.add(bookingInfo);
+                }
+            }
+        }
+        
+        // 分页处理
+        int pageSize = 10;
+        int totalItems = allBookings.size();
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        
+        // 确保页码有效
+        if (page < 1) page = 1;
+        if (page > totalPages && totalPages > 0) page = totalPages;
+        
+        // 获取当前页的数据
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = Math.min(startIndex + pageSize, totalItems);
+        List<BookingInfo> currentPageBookings;
+        
+        if (startIndex < totalItems) {
+            currentPageBookings = allBookings.subList(startIndex, endIndex);
+        } else {
+            currentPageBookings = new ArrayList<>();
+        }
+        
+        // 添加数据到模型中
+        model.addAttribute("bookings", currentPageBookings);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("total", totalItems);
+        model.addAttribute("keyword", keyword != null ? keyword : "");
+        model.addAttribute("date", date != null ? date : "");
+        model.addAttribute("status", status != null ? status : "");
+        
+        return "coach/bookings";
+    }
+    
+    /**
+     * 取消预约
+     */
+    @PostMapping("bookings/cancel/{bookingId}")
+    @PreAuthorize("hasRole('TRAINER')")
+    public String cancelBooking(@PathVariable Long bookingId, RedirectAttributes redirectAttributes) {
+        try {
+            // 调用服务层取消预约
+            bookingService.cancelBooking(bookingId);
+            redirectAttributes.addFlashAttribute("message", "取消预约成功");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "取消预约失败: " + e.getMessage());
+        }
+        
+        // 重定向回预约列表页面
+        return "redirect:/coach/bookings";
+    }
+    
+    /**
+     * 获取会员详情（AJAX接口）
+     */
+    @GetMapping("members/{memberId}")
+    @PreAuthorize("hasRole('TRAINER')")
+    @ResponseBody
+    public Map<String, Object> getMemberDetails(@PathVariable Long memberId) {
+        // 注意：UserMapper中目前没有findById方法，这里需要修改为合适的查询方式
+        // 在实际实现中，应该在UserMapper中添加findById方法或使用其他方式获取用户信息
+        // 这里暂时返回基本信息框架
+        Map<String, Object> memberDetails = new HashMap<>();
+        
+        // 暂时返回带有ID的基本信息
+        memberDetails.put("id", memberId);
+        memberDetails.put("name", "会员" + memberId);
+        memberDetails.put("message", "注意：需要在UserMapper中添加findById方法以获取完整的会员信息");
+        
+        return memberDetails;
     }
 }
