@@ -214,18 +214,18 @@
     <div class="container-fluid">
         <div class="row">
             <!-- 侧边栏 -->
-            <div class="col-md-3 sidebar">
+            <div class="col-md-2 sidebar">
                 <h4>管理系统</h4>
-                <a href="/admin/index">首页</a>
-                <a href="/admin/members">会员管理</a>
-                <a href="/admin/coaches">教练管理</a>
-                <a href="/admin/courses">课程管理</a>
-                <a href="/admin/cards" class="active">会员卡设置</a>
-                <a href="/logout">退出登录</a>
+                <a th:href="@{/admin/index}">首页</a>
+                <a th:href="@{/admin/members}">会员管理</a>
+                <a th:href="@{/admin/coaches}">教练管理</a>
+                <a th:href="@{/admin/courses}">课程管理</a>
+                <a th:href="@{/admin/cards}" class="active">会员卡设置</a>
+                <a th:href="@{/logout}">退出登录</a>
             </div>
 
             <!-- 主内容区 -->
-            <div class="col-md-9 content">
+            <div class="col-md-10 content">
                 <h2 class="mb-4">会员卡类型设置</h2>
 
                 <!-- 会员卡类型表单 -->
@@ -384,7 +384,7 @@
                         <tbody id="cardTableBody">
                             <!-- 模拟数据 -->
                             <tr>
-                                <td><img src="https://picsum.photos/id/20/120/80" class="card-image" alt="铂金卡"></td>
+                                <td><img src="https://picsum.photos/id/20/120/80" class="card-image" alt="铂金卡" onerror="this.onerror=null;this.src='https://picsum.photos/120/80';"></td>
                                 <td>铂金会员卡</td>
                                 <td><span class="card-type-badge badge-platinum">铂金卡</span></td>
                                 <td>¥3999</td>
@@ -399,7 +399,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><img src="https://picsum.photos/id/21/120/80" class="card-image" alt="金卡"></td>
+                                <td><img src="https://picsum.photos/id/21/120/80" class="card-image" alt="金卡" onerror="this.onerror=null;this.src='https://picsum.photos/120/80';"></td>
                                 <td>黄金会员卡</td>
                                 <td><span class="card-type-badge badge-gold">金卡</span></td>
                                 <td>¥2999</td>
@@ -414,7 +414,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><img src="https://picsum.photos/id/22/120/80" class="card-image" alt="银卡"></td>
+                                <td><img src="https://picsum.photos/id/22/120/80" class="card-image" alt="银卡" onerror="this.onerror=null;this.src='https://picsum.photos/120/80';"></td>
                                 <td>白银会员卡</td>
                                 <td><span class="card-type-badge badge-silver">银卡</span></td>
                                 <td>¥1999</td>
@@ -429,7 +429,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><img src="https://picsum.photos/id/23/120/80" class="card-image" alt="铜卡"></td>
+                                <td><img src="https://picsum.photos/id/23/120/80" class="card-image" alt="铜卡" onerror="this.onerror=null;this.src='https://picsum.photos/120/80';"></td>
                                 <td>青铜会员卡</td>
                                 <td><span class="card-type-badge badge-bronze">铜卡</span></td>
                                 <td>¥999</td>
@@ -444,7 +444,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><img src="https://picsum.photos/id/24/120/80" class="card-image" alt="体验卡"></td>
+                                <td><img src="https://picsum.photos/id/24/120/80" class="card-image" alt="体验卡" onerror="this.onerror=null;this.src='https://picsum.photos/120/80';"></td>
                                 <td>新人体验卡</td>
                                 <td><span class="card-type-badge badge-trial">体验卡</span></td>
                                 <td>¥99</td>

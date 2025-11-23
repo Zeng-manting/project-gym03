@@ -35,7 +35,7 @@ public class AdminController {
      * 显示管理员首页
      * @return 管理员首页视图名称
      */
-    @GetMapping("/admin")
+    @GetMapping({"/admin", "/admin/index"})
     @PreAuthorize("hasRole('ADMIN')")
     public String index() {
         return "admin/index";

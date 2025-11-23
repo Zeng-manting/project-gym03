@@ -140,18 +140,18 @@
     <div class="container-fluid">
         <div class="row">
             <!-- 侧边栏 -->
-            <div class="col-md-3 sidebar">
+            <div class="col-md-2 sidebar">
                 <h4>管理系统</h4>
-                <a href="/admin/index">首页</a>
-                <a href="/admin/members">会员管理</a>
-                <a href="/admin/coaches">教练管理</a>
-                <a href="/admin/courses" class="active">课程管理</a>
-                <a href="/admin/cards">会员卡设置</a>
-                <a href="/logout">退出登录</a>
+                <a th:href="@{/admin/index}">首页</a>
+                <a th:href="@{/admin/members}">会员管理</a>
+                <a th:href="@{/admin/coaches}">教练管理</a>
+                <a th:href="@{/admin/courses}" class="active">课程管理</a>
+                <a th:href="@{/admin/cards}">会员卡设置</a>
+                <a th:href="@{/logout}">退出登录</a>
             </div>
 
             <!-- 主内容区 -->
-            <div class="col-md-9 content">
+            <div class="col-md-10 content">
                 <h2 class="mb-4">课程管理</h2>
 
                 <!-- 课程添加表单 -->
