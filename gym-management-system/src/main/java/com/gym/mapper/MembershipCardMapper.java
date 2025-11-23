@@ -57,4 +57,11 @@ public interface MembershipCardMapper {
      */
     @Select("SELECT * FROM membership_card WHERE status = 'active'")
     List<MembershipCard> findActiveCards();
+    
+    /**
+     * 获取会员卡类型数量
+     * @return 会员卡类型数量
+     */
+    @Select("SELECT COUNT(*) FROM membership_card")
+    int countCardTypes();
 }

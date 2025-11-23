@@ -49,4 +49,10 @@ public interface CourseService {
      * @return 会员列表
      */
     List<User> getMembersByCourseId(Long courseId);
+    
+    /**
+     * 获取课程总数
+     * @return 课程数量
+     */
+    int countCourses();
 }

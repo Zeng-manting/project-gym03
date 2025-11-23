@@ -52,4 +52,11 @@ public interface CourseMapper {
      */
     @Select("SELECT * FROM course WHERE trainer_id = #{trainerId}")
     List<Course> selectByTrainerId(Long trainerId);
+    
+    /**
+     * 获取课程总数
+     * @return 课程数量
+     */
+    @Select("SELECT COUNT(*) FROM course")
+    int countCourses();
 }

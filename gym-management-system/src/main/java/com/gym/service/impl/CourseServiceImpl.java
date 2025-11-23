@@ -99,4 +99,12 @@ public class CourseServiceImpl implements CourseService {
         
         return members;
     }
+    
+    /**
+     * 获取课程总数
+     */
+    @Override
+    public int countCourses() {
+        return courseMapper.countCourses();
+    }
 }

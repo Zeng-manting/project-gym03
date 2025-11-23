@@ -119,4 +119,20 @@ public class UserServiceImpl implements UserService, UserDetailsService { // ←
     public List<User> findTrainers() {
         return userMapper.findTrainers();
     }
+    
+    /**
+     * 获取会员总数
+     */
+    @Override
+    public int countMembers() {
+        return userMapper.countMembers();
+    }
+    
+    /**
+     * 获取教练总数
+     */
+    @Override
+    public int countTrainers() {
+        return userMapper.countTrainers();
+    }
 }

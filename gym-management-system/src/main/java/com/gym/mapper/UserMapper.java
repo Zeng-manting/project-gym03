@@ -50,4 +50,18 @@ public interface UserMapper {
      */
     @Select("SELECT * FROM user WHERE role = 'member' AND phone LIKE CONCAT('%', #{keyword}, '%')")
     List<User> searchMembersByKeyword(String keyword);
+    
+    /**
+     * 获取会员总数
+     * @return 会员数量
+     */
+    @Select("SELECT COUNT(*) FROM user WHERE role = 'member'")
+    int countMembers();
+    
+    /**
+     * 获取教练总数
+     * @return 教练数量
+     */
+    @Select("SELECT COUNT(*) FROM user WHERE role = 'trainer'")
+    int countTrainers();
 }

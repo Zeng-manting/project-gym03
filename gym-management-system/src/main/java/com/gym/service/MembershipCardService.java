@@ -46,4 +46,10 @@ public interface MembershipCardService {
      * @return 激活状态的会员卡列表
      */
     List<MembershipCard> findActiveCards();
+    
+    /**
+     * 获取会员卡类型数量
+     * @return 会员卡类型数量
+     */
+    int countCardTypes();
 }

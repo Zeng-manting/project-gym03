@@ -61,4 +61,16 @@ public interface UserService {
      * @return 教练用户列表
      */
     List<User> findTrainers();
+    
+    /**
+     * 获取会员总数
+     * @return 会员数量
+     */
+    int countMembers();
+    
+    /**
+     * 获取教练总数
+     * @return 教练数量
+     */
+    int countTrainers();
 }

@@ -82,4 +82,12 @@ public class MembershipCardServiceImpl implements MembershipCardService {
     public List<MembershipCard> findActiveCards() {
         return membershipCardMapper.findActiveCards();
     }
+    
+    /**
+     * 获取会员卡类型数量
+     */
+    @Override
+    public int countCardTypes() {
+        return membershipCardMapper.countCardTypes();
+    }
 }

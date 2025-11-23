@@ -33,11 +33,40 @@ public class AdminController {
 
     /**
      * 显示管理员首页
+     * @param model 模型对象，用于传递数据到视图
      * @return 管理员首页视图名称
      */
     @GetMapping({"/admin", "/admin/index"})
     @PreAuthorize("hasRole('ADMIN')")
-    public String index() {
+    public String index(Model model) {
+        // 确保模型中始终有必要的属性，防止从其他页面返回时属性丢失
+        if (!model.containsAttribute("memberCount")) {
+            try {
+                // 获取会员数量
+                int memberCount = userService.countMembers();
+                model.addAttribute("memberCount", memberCount);
+                
+                // 获取教练数量
+                int coachCount = userService.countTrainers();
+                model.addAttribute("coachCount", coachCount);
+                
+                // 获取课程数量
+                int courseCount = courseService.countCourses();
+                model.addAttribute("courseCount", courseCount);
+                
+                // 获取会员卡类型数量
+                int cardTypeCount = membershipCardService.countCardTypes();
+                model.addAttribute("cardTypeCount", cardTypeCount);
+            } catch (Exception e) {
+                // 如果发生异常，设置默认值
+                model.addAttribute("memberCount", 0);
+                model.addAttribute("coachCount", 0);
+                model.addAttribute("courseCount", 0);
+                model.addAttribute("cardTypeCount", 0);
+            }
+        }
+        
+        // 确保返回完整的视图路径
         return "admin/index";
     }
 
