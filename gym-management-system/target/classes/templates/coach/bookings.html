@@ -6,6 +6,8 @@
     <title>预约管理 - 健身教练系统</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 使用Bootstrap图标替代Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css">
     <!-- 自定义样式 -->
     <style>
         body {
@@ -14,23 +16,31 @@
         }
         .sidebar {
             min-height: 100vh;
-            background-color: #343a40;
+            background-color: #2c3e50;
             color: white;
+            padding: 1rem;
         }
-        .sidebar .nav-link {
-            color: #adb5bd;
+        .sidebar h4 {
+            border-bottom: 1px solid #34495e;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .sidebar a {
+            color: #ecf0f1;
+            display: block;
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.25rem;
+            border-radius: 4px;
+            text-decoration: none;
             transition: all 0.3s ease;
         }
-        .sidebar .nav-link:hover {
-            color: white;
-            background-color: #495057;
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #34495e;
+            color: #3498db;
         }
-        .sidebar .nav-link.active {
-            color: white;
-            background-color: #0d6efd;
-        }
-        .content-wrapper {
-            padding: 20px;
+        .content {
+            padding: 2rem;
         }
         .card {
             border-radius: 8px;
@@ -84,43 +94,18 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <!-- 侧边栏导航 -->
-            <nav class="col-md-2 sidebar">
-                <div class="sidebar-sticky">
-                    <div class="text-center p-4">
-                        <h4>健身教练系统</h4>
-                    </div>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/coach">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                                首页
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/coach/courses">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                                我的课程
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/coach/bookings">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                预约管理
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/logout">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                                退出登录
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <!-- 侧边栏 -->
+            <div class="col-md-2 sidebar">
+                <h4>教练中心</h4>
+                <a href="/coach/index">首页</a>
+                <a href="/coach/courses">我的课程</a>
+                <a href="/coach/bookings" class="active">预约管理</a>
+                <a href="/coach/profile">个人资料</a>
+                <a href="/logout">退出登录</a>
+            </div>
 
-            <!-- 主内容区域 -->
-            <main role="main" class="col-md-10 content-wrapper">
+            <!-- 主内容区 -->
+            <div class="col-md-10 content">
                 <div class="mb-4">
                     <h1 class="h3">预约管理</h1>
                     <p class="text-muted">查看和管理您课程的所有预约记录</p>
@@ -247,7 +232,7 @@
                             <div class="card gradient-bg text-center p-4">
                                 <div id="memberName" class="h3 mb-2">--</div>
                                 <div id="memberPhone" class="text-white-80 mb-4">--</div>
-                                <img src="https://picsum.photos/200/200" class="rounded-circle img-thumbnail mx-auto" style="width: 120px; height: 120px;" alt="会员头像">
+                                <div class="rounded-circle mx-auto d-flex justify-content-center align-items-center" style="width: 120px; height: 120px; background-color: #e9ecef; color: #6c757d; font-size: 3rem;">👤</div>
                             </div>
                         </div>
                         <div class="col-md-8">
@@ -310,7 +295,7 @@
     </div>
 
     <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" defer></script>
     <script>
         // 全局变量存储当前要取消的预约ID
         let currentCancelBookingId = null;

@@ -116,3 +116,31 @@ INSERT INTO `course` (`name`, `schedule_time`, `trainer_id`, `max_capacity`, `cu
 ('瑜伽基础', '2023-12-01 19:00:00', 2, 20, 15),
 ('力量训练', '2023-12-02 18:00:00', 2, 15, 10),
 ('有氧健身', '2023-12-03 20:00:00', 2, 25, 18);
+
+-- 创建教练信息表
+CREATE TABLE `coach_info` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '教练信息ID',
+  `user_id` BIGINT NOT NULL COMMENT '用户ID（关联user表）',
+  `name` VARCHAR(50) NOT NULL COMMENT '姓名',
+  `gender` VARCHAR(10) COMMENT '性别：男、女',
+  `birth_date` DATE COMMENT '出生日期',
+  `phone` VARCHAR(20) NOT NULL COMMENT '手机号（与user表同步）',
+  `specialty` VARCHAR(255) COMMENT '专长领域',
+  `certification` VARCHAR(255) COMMENT '专业证书',
+  `experience_years` INT DEFAULT 0 COMMENT '经验年限',
+  `introduction` TEXT COMMENT '自我介绍',
+  `education_background` VARCHAR(255) COMMENT '教育背景',
+  `contact_email` VARCHAR(100) COMMENT '联系邮箱',
+  `avatar` VARCHAR(255) COMMENT '头像URL',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `idx_user_id` (`user_id`),
+  UNIQUE INDEX `idx_phone` (`phone`),
+  INDEX `idx_specialty` (`specialty`),
+  CONSTRAINT `fk_coach_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='教练信息表';
+
+-- 3. 插入默认教练信息
+INSERT INTO `coach_info` (`user_id`, `name`, `gender`, `phone`, `specialty`, `experience_years`, `introduction`) VALUES 
+(2, '王教练', '男', '13900139000', '力量训练、有氧健身', 5, '拥有5年健身教练经验，擅长制定个性化训练计划。');

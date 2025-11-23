@@ -2,8 +2,10 @@ package com.gym.controller;
 
 import com.gym.entity.Course;
 import com.gym.entity.User;
+import com.gym.entity.CoachInfo;
 import com.gym.service.BookingService;
 import com.gym.service.CourseService;
+import com.gym.service.CoachInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -39,6 +41,9 @@ public class CoachController {
     
     @Autowired
     private UserMapper userMapper;
+    
+    @Autowired
+    private CoachInfoService coachInfoService;
 
     /**
      * 显示教练首页
@@ -47,6 +52,16 @@ public class CoachController {
     @GetMapping("")
     @PreAuthorize("hasRole('TRAINER')")
     public String index() {
+        return "coach/index";
+    }
+    
+    /**
+     * 显示教练首页（支持/coach/index路径）
+     * @return 教练首页视图名称
+     */
+    @GetMapping("index")
+    @PreAuthorize("hasRole('TRAINER')")
+    public String indexAlternative() {
         return "coach/index";
     }
 
@@ -109,6 +124,74 @@ public class CoachController {
         }
         
         return user;
+    }
+    
+    /**
+     * 展示教练个人资料页面
+     */
+    @GetMapping("/profile")
+    @PreAuthorize("hasRole('TRAINER')")
+    public String showProfile(Model model) {
+        User currentUser = getCurrentUser();
+        
+        // 获取教练详细信息
+        CoachInfo coachInfo = coachInfoService.getCoachInfoByUserId(currentUser.getId());
+        
+        // 如果不存在，创建一个新的教练信息对象
+        if (coachInfo == null) {
+            coachInfo = new CoachInfo();
+            coachInfo.setUserId(currentUser.getId());
+            coachInfo.setUser(currentUser);
+            coachInfo.setPhone(currentUser.getPhone());
+            // 使用手机号作为临时名称，因为User类没有name字段
+            coachInfo.setName(currentUser.getPhone());
+        } else {
+            // 确保设置用户对象，以便在更新时正确关联
+            coachInfo.setUser(currentUser);
+        }
+        
+        // 添加到模型中
+        model.addAttribute("coach", coachInfo);
+        
+        return "coach/profile";
+    }
+    
+    /**
+     * 保存教练个人资料
+     */
+    @PostMapping("/profile")
+    @PreAuthorize("hasRole('TRAINER')")
+    public String saveProfile(CoachInfo coachInfo, RedirectAttributes redirectAttributes) {
+        User currentUser = getCurrentUser();
+        coachInfo.setUserId(currentUser.getId());
+        coachInfo.setUser(currentUser);
+        
+        // 保存或更新教练信息
+        coachInfoService.saveOrUpdateCoachInfo(coachInfo);
+        
+        redirectAttributes.addFlashAttribute("successMessage", "个人资料保存成功");
+        return "redirect:/coach/profile";
+    }
+    
+    /**
+     * 修改密码
+     */
+    @PostMapping("/profile/change-password")
+    @PreAuthorize("hasRole('TRAINER')")
+    public String changePassword(@RequestParam String oldPassword, 
+                                @RequestParam String newPassword,
+                                RedirectAttributes redirectAttributes) {
+        User currentUser = getCurrentUser();
+        
+        try {
+            // 修改密码
+            coachInfoService.updatePassword(currentUser.getId(), oldPassword, newPassword);
+            redirectAttributes.addFlashAttribute("successMessage", "密码修改成功");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        
+        return "redirect:/coach/profile";
     }
     
     /**
