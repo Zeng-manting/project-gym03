@@ -1,66 +1,37 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitZone Pro - 登录</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>健身房管理系统 - 登录</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <!-- 使用Bootstrap图标替代Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" defer></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.1) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(255,255,255,0.1) 0%, transparent 20%);
-            z-index: -1;
+            padding: 20px;
         }
 
         .login-container {
             width: 100%;
             max-width: 420px;
             padding: 40px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transform: translateY(0);
-            transition: all 0.3s ease;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .login-container:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
         }
 
         .login-header {
@@ -70,27 +41,16 @@
 
         .login-header i {
             font-size: 3.5rem;
-            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            color: #3498db;
             margin-bottom: 15px;
             display: inline-block;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
         }
 
         .login-header h2 {
             color: #2c3e50;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 1.8rem;
             margin-bottom: 10px;
-            letter-spacing: 1px;
         }
 
         .login-header p {
@@ -109,84 +69,40 @@
         }
 
         .form-control {
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             padding: 12px 15px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background-color: #f8f9fa;
         }
 
         .form-control:focus {
-            border-color: #ff6b6b;
-            box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.25);
-            background-color: white;
-        }
-
-        .input-group-text {
-            background-color: transparent;
-            border: 2px solid #e0e0e0;
-            border-right: none;
-            border-radius: 12px 0 0 12px;
-            color: #ff6b6b;
-        }
-
-        .form-control:not(:last-child) {
-            border-left: none;
-            border-radius: 0 12px 12px 0;
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
         }
 
         .btn-login {
-            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            background-color: #2c3e50;
             border: none;
-            border-radius: 12px;
+            border-radius: 4px;
             padding: 12px;
             font-weight: 600;
             font-size: 1.1rem;
-            letter-spacing: 0.5px;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .btn-login::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 0;
-            height: 100%;
-            background: linear-gradient(45deg, #ff8e53, #ff6b6b);
-            transition: width 0.5s ease;
-            z-index: -1;
-        }
-
-        .btn-login:hover::before {
-            width: 100%;
         }
 
         .btn-login:hover {
+            background-color: #34495e;
             transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(255, 107, 107, 0.4);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
         }
 
         .alert {
-            border-radius: 12px;
+            border-radius: 4px;
             border: none;
             padding: 12px 15px;
             margin-bottom: 20px;
             font-size: 0.9rem;
-        }
-
-        .alert-danger {
-            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
-            color: #c0392b;
-        }
-
-        .alert-success {
-            background: linear-gradient(45deg, #a1c4fd, #c2e9fb);
-            color: #27ae60;
         }
 
         .register-link {
@@ -197,30 +113,14 @@
         }
 
         .register-link a {
-            color: #ff6b6b;
+            color: #3498db;
             text-decoration: none;
             font-weight: 600;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .register-link a::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #ff6b6b;
-            transition: width 0.3s ease;
+            transition: color 0.3s ease;
         }
 
         .register-link a:hover {
-            color: #ff8e53;
-        }
-
-        .register-link a:hover::after {
-            width: 100%;
+            color: #2980b9;
         }
 
         .checkbox-group {
@@ -231,7 +131,7 @@
 
         .checkbox-group input[type="checkbox"] {
             margin-right: 8px;
-            accent-color: #ff6b6b;
+            accent-color: #3498db;
         }
 
         .checkbox-group label {
@@ -243,7 +143,7 @@
         /* 响应式设计 */
         @media (max-width: 480px) {
             .login-container {
-                margin: 20px;
+                margin: 10px;
                 padding: 30px 20px;
             }
             
@@ -276,28 +176,28 @@
         }
 
         .toggle-password:hover {
-            color: #ff6b6b;
+            color: #3498db;
         }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="login-header">
-            <i class="fas fa-dumbbell"></i>
-            <h2>FitZone Pro</h2>
-            <p>专业健身房管理系统</p>
+            <i class="bi bi-dumbbell"></i>
+            <h2>健身房管理系统</h2>
+            <p>请登录您的账号</p>
         </div>
         
         <!-- 显示错误信息 -->
         <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i>
+            <i class="bi bi-exclamation-circle me-2"></i>
             <span th:text="${param.error == 'true' ? '手机号或密码错误，请重新输入' : param.error}">手机号或密码错误</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         
         <!-- 显示注册成功信息 -->
         <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>
+            <i class="bi bi-check-circle me-2"></i>
             <span th:text="${param.success}">注册成功，请登录</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -307,13 +207,13 @@
             <div class="form-floating mb-3">
                 <input type="tel" class="form-control" id="phone" name="username" placeholder="请输入手机号" required 
                        pattern="[0-9]{11}" title="请输入11位手机号">
-                <label for="phone"><i class="fas fa-mobile-alt me-2"></i>手机号</label>
+                <label for="phone"><i class="bi bi-telephone me-2"></i>手机号</label>
             </div>
             
             <div class="form-floating mb-3 position-relative">
                 <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" required>
-                <label for="password"><i class="fas fa-lock me-2"></i>密码</label>
-                <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+                <label for="password"><i class="bi bi-lock me-2"></i>密码</label>
+                <i class="bi bi-eye toggle-password" id="togglePassword"></i>
             </div>
             
             <div class="checkbox-group">
@@ -321,8 +221,8 @@
                 <label for="rememberMe">记住我</label>
             </div>
             
-            <button type="submit" class="btn btn-primary w-100 btn-login" id="submitBtn">
-                <span id="btnText"><i class="fas fa-sign-in-alt me-2"></i>立即登录</span>
+            <button type="submit" class="btn w-100 btn-login text-white" id="submitBtn">
+                <span id="btnText"><i class="bi bi-box-arrow-in-right me-2"></i>立即登录</span>
                 <span id="btnLoading" class="d-none">
                     <span class="spinner-border spinner-border-sm me-2" role="status"></span>
                     登录中...

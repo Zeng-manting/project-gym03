@@ -51,7 +51,7 @@ public interface BookingMapper {
      * @return 预约记录列表
      */
     @Select("SELECT b.id, b.course_id, c.name as course_name, c.schedule_time, c.trainer_id, b.booking_time " +
-            "FROM booking b JOIN course c ON b.course_id = c.id WHERE b.user_id = #{userId}")
+            "FROM booking b JOIN course c ON b.course_id = c.id WHERE b.user_id = #{userId} ORDER BY c.schedule_time ASC")
     List<Map<String, Object>> selectUserBookingsWithCourseInfo(Long userId);
     
     /**
