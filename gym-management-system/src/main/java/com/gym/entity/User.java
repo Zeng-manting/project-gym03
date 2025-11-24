@@ -1,6 +1,7 @@
 package com.gym.entity;
 
 import lombok.Data;
+import java.util.Date;
 
 /**
  * 用户实体类
@@ -33,6 +34,53 @@ public class User {
     private String role;
     
     /**
+     * 用户名称
+     */
+    private String name;
+    
+    /**
+     * 性别
+     * '1': 男
+     * '0': 女
+     */
+    private String gender;
+    
+    /**
+     * 出生日期
+     */
+    private Date birthDate;
+    
+    /**
+     * 注册日期
+     */
+    private Date registrationDate;
+    
+    /**
+     * 邮箱
+     */
+    private String email;
+    
+    /**
+     * 地址
+     */
+    private String address;
+    
+    /**
+     * 头像
+     */
+    private String avatar;
+    
+    /**
+     * 紧急联系人
+     */
+    private String emergencyContact;
+    
+    /**
+     * 紧急联系电话
+     */
+    private String emergencyPhone;
+    
+    /**
      * 用户状态
      * 'active': 活跃
      * 'disabled': 禁用
@@ -40,8 +88,12 @@ public class User {
     private String status = "active";
     
     /**
-     * 会员详细信息（一对一关联）
-     * 仅对会员角色有效
+     * 创建时间
      */
-    private MemberInfo memberInfo;
+    private Date createdAt;
+    
+    /**
+     * 更新时间
+     */
+    private Date updatedAt;
 }

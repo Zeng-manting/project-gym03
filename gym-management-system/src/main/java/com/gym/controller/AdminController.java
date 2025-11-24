@@ -11,7 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 管理员控制器
@@ -97,6 +99,78 @@ public class AdminController {
         userService.disableUser(id);
         attributes.addFlashAttribute("message", "会员账号已成功禁用");
         return "redirect:/admin/members";
+    }
+    
+    /**
+     * 获取会员详情
+     */
+    @GetMapping("/admin/members/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseBody
+    public User getMember(@PathVariable Long id) {
+        return userService.getMemberById(id);
+    }
+
+    /**
+     * 添加会员
+     */
+    @PostMapping("/admin/members")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseBody
+    public Map<String, Object> addMember(@RequestBody User user) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // 设置默认密码为手机号后6位
+            if (user.getPassword() == null || user.getPassword().isEmpty()) {
+                user.setPassword(user.getPhone().substring(user.getPhone().length() - 6));
+            }
+            userService.addMember(user);
+            result.put("success", true);
+            result.put("message", "会员添加成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "会员添加失败: " + e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 更新会员信息
+     */
+    @PutMapping("/admin/members/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseBody
+    public Map<String, Object> updateMember(@PathVariable Long id, @RequestBody User user) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            user.setId(id);
+            userService.updateMember(user);
+            result.put("success", true);
+            result.put("message", "会员更新成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "会员更新失败: " + e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 删除会员
+     */
+    @DeleteMapping("/admin/members/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseBody
+    public Map<String, Object> deleteMember(@PathVariable Long id) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            userService.deleteMember(id);
+            result.put("success", true);
+            result.put("message", "会员删除成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "会员删除失败: " + e.getMessage());
+        }
+        return result;
     }
 
     /**

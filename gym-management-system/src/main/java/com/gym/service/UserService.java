@@ -73,4 +73,29 @@ public interface UserService {
      * @return 教练数量
      */
     int countTrainers();
+    
+    /**
+     * 根据ID获取会员
+     * @param id 会员ID
+     * @return 会员对象，如果不存在则返回null
+     */
+    User getMemberById(Long id);
+    
+    /**
+     * 添加会员
+     * @param user 会员对象
+     */
+    void addMember(User user);
+    
+    /**
+     * 更新会员信息
+     * @param user 会员对象
+     */
+    void updateMember(User user);
+    
+    /**
+     * 删除会员
+     * @param id 会员ID
+     */
+    void deleteMember(Long id);
 }

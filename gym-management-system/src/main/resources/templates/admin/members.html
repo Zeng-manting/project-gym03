@@ -169,81 +169,37 @@
                             </tr>
                         </thead>
                         <tbody id="memberTableBody">
-                            <!-- 表格数据将通过JavaScript动态生成 -->
-                            <!-- 模拟数据 -->
-                            <tr>
-                                <td>1</td>
-                                <td>张三</td>
-                                <td>13800138001</td>
-                                <td>男</td>
-                                <td>28</td>
-                                <td>年卡</td>
-                                <td>2024-12-31</td>
-                                <td><span class="status-badge status-active">活跃</span></td>
-                                <td>
-                                    <button class="btn btn-info" onclick="viewMember(1)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editMember(1)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteMember(1)"><i class="fa fa-trash"></i></button>
-                                </td>
+                            <!-- 表格数据通过Thymeleaf动态生成 -->
+                            <!-- 正确的字段访问方式，直接访问User对象的字段 -->
+                            <tr th:if="${members == null or members.empty}">
+                                <td colspan="9" class="text-center">暂无会员数据</td>
                             </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>李四</td>
-                                <td>13800138002</td>
-                                <td>女</td>
-                                <td>25</td>
-                                <td>月卡</td>
-                                <td>2023-12-01</td>
-                                <td><span class="status-badge status-expired">已过期</span></td>
+                            <tr th:each="member : ${members}">
+                                <td th:text="${member.id}"></td>
+                                <td th:text="${member.name != null ? member.name : '未设置'}"></td>
+                                <td th:text="${member.phone}"></td>
                                 <td>
-                                    <button class="btn btn-info" onclick="viewMember(2)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editMember(2)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteMember(2)"><i class="fa fa-trash"></i></button>
+                                    <span th:text="${member.gender == '1' ? '男' : (member.gender == '0' ? '女' : '未知')}"></span>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>王五</td>
-                                <td>13800138003</td>
-                                <td>男</td>
-                                <td>35</td>
-                                <td>季卡</td>
-                                <td>2024-03-15</td>
-                                <td><span class="status-badge status-active">活跃</span></td>
+                                <td>-</td>
                                 <td>
-                                    <button class="btn btn-info" onclick="viewMember(3)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editMember(3)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteMember(3)"><i class="fa fa-trash"></i></button>
+                                    <span>未设置</span>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>赵六</td>
-                                <td>13800138004</td>
-                                <td>女</td>
-                                <td>22</td>
-                                <td>无限卡</td>
-                                <td>永久有效</td>
-                                <td><span class="status-badge status-active">活跃</span></td>
                                 <td>
-                                    <button class="btn btn-info" onclick="viewMember(4)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editMember(4)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteMember(4)"><i class="fa fa-trash"></i></button>
+                                    <span>未设置</span>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>钱七</td>
-                                <td>13800138005</td>
-                                <td>男</td>
-                                <td>30</td>
-                                <td>月卡</td>
-                                <td>2024-02-28</td>
-                                <td><span class="status-badge status-inactive">未激活</span></td>
                                 <td>
-                                    <button class="btn btn-info" onclick="viewMember(5)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editMember(5)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteMember(5)"><i class="fa fa-trash"></i></button>
+                                    <span th:switch="${member.status}">
+                                        <span th:case="'active'" class="status-badge status-active">活跃</span>
+                                        <span th:case="'disabled'" class="status-badge status-inactive">禁用</span>
+                                        <span th:case="*" class="status-badge status-active">活跃</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <!-- 使用数据属性替代复杂的onclick表达式 -->
+                                    <button class="btn btn-info member-action" data-action="view" th:data-id="${member.id}"><i class="fa fa-eye"></i></button>
+                                    <button class="btn btn-warning member-action" data-action="edit" th:data-id="${member.id}"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger member-action" data-action="delete" th:data-id="${member.id}"><i class="fa fa-trash"></i></button>
                                 </td>
                             </tr>
                         </tbody>
@@ -326,24 +282,258 @@
             </div>
         </div>
     </div>
+    
+    <!-- 删除确认模态框 -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger" id="deleteConfirmModalLabel">确认删除</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="deleteConfirmMessage">确定要删除这个会员吗？此操作不可撤销。</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">确认删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- 引入jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
         // 初始化模态框
         const memberModal = new bootstrap.Modal(document.getElementById('memberModal'));
+        const deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        let currentDeleteMemberId = null;
+        
+        // 为所有会员操作按钮添加事件监听器
+        document.addEventListener('DOMContentLoaded', function() {
+            const actionButtons = document.querySelectorAll('.member-action');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const action = this.getAttribute('data-action');
+                    
+                    if (action === 'view') {
+                        viewMember(id);
+                    } else if (action === 'edit') {
+                        editMember(id);
+                    } else if (action === 'delete') {
+                        deleteMember(id);
+                    }
+                });
+            });
+            
+            // 为确认删除按钮添加事件监听器
+            document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+                confirmDeleteMember();
+            });
+        });
 
-        // 搜索会员
-        function searchMembers() {
-            // 获取搜索条件
+        // 分页相关变量
+        var currentPage = 1;
+        var pageSize = 5;
+        var totalItems = 0;
+        var totalPages = 0;
+        var allMembers = [];
+        
+        // 初始化会员列表和分页
+        function initMemberList() {
+            // 获取URL参数中的搜索条件
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('name')) document.getElementById('searchName').value = urlParams.get('name');
+            if (urlParams.get('phone')) document.getElementById('searchPhone').value = urlParams.get('phone');
+            if (urlParams.get('status')) document.getElementById('searchStatus').value = urlParams.get('status');
+            if (urlParams.get('cardType')) document.getElementById('searchCardType').value = urlParams.get('cardType');
+            
+            // 获取所有会员数据
+            $.ajax({
+                url: '/admin/members' + buildQueryParams(),
+                type: 'GET',
+                dataType: 'html',
+                success: function(html) {
+                    // 从返回的HTML中提取会员表格数据
+                    var memberTableBody = $(html).find('#memberTableBody').html();
+                    $('#memberTableBody').html(memberTableBody);
+                    
+                    // 重新绑定事件
+                    bindMemberActions();
+                    
+                    // 从table中提取会员数据用于分页
+                    extractMembersFromTable();
+                    
+                    // 初始化分页
+                    setupPagination();
+                }
+            });
+        }
+        
+        // 构建查询参数
+        function buildQueryParams() {
             const name = document.getElementById('searchName').value;
             const phone = document.getElementById('searchPhone').value;
             const status = document.getElementById('searchStatus').value;
             const cardType = document.getElementById('searchCardType').value;
-
-            // 这里可以通过AJAX请求搜索数据
-            console.log('搜索条件:', { name, phone, status, cardType });
             
-            // 模拟搜索效果
-            alert('搜索功能已触发，在实际应用中将根据条件过滤数据');
+            let queryParams = '';
+            if (name) queryParams += `&name=${encodeURIComponent(name)}`;
+            if (phone) queryParams += `&phone=${encodeURIComponent(phone)}`;
+            if (status) queryParams += `&status=${encodeURIComponent(status)}`;
+            if (cardType) queryParams += `&cardType=${encodeURIComponent(cardType)}`;
+            
+            return queryParams ? `?${queryParams.substring(1)}` : '';
+        }
+        
+        // 从表格中提取会员数据
+        function extractMembersFromTable() {
+            allMembers = [];
+            $('#memberTableBody tr').each(function() {
+                var id = $(this).find('td:first').text(); // 获取ID
+                if (id && id !== '暂无会员数据') {
+                    allMembers.push({ id: id, row: $(this).clone() });
+                }
+            });
+            totalItems = allMembers.length;
+            totalPages = Math.ceil(totalItems / pageSize);
+        }
+        
+        // 设置分页控件
+        function setupPagination() {
+            var paginationContainer = document.querySelector('.pagination');
+            if (!paginationContainer) return;
+            
+            // 更新分页信息
+            var pageInfo = document.querySelector('.text-muted');
+            if (pageInfo) {
+                var startItem = totalItems > 0 ? (currentPage - 1) * pageSize + 1 : 0;
+                var endItem = Math.min(currentPage * pageSize, totalItems);
+                pageInfo.textContent = '显示 ' + startItem + '-' + endItem + ' 条，共 ' + totalItems + ' 条';
+            }
+            
+            // 清空现有分页按钮
+            paginationContainer.innerHTML = '';
+            
+            // 添加上一页按钮
+            var prevButton = document.createElement('li');
+            prevButton.className = 'page-item' + (currentPage === 1 ? ' disabled' : '');
+            prevButton.innerHTML = '<a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>';
+            prevButton.onclick = function() {
+                if (currentPage > 1) {
+                    goToPage(currentPage - 1);
+                }
+                return false;
+            };
+            paginationContainer.appendChild(prevButton);
+            
+            // 添加页码按钮（最多显示10个页码）
+            var startPage = Math.max(1, currentPage - 4);
+            var endPage = Math.min(totalPages, startPage + 9);
+            
+            if (endPage - startPage < 9) {
+                startPage = Math.max(1, endPage - 9);
+            }
+            
+            for (var i = startPage; i <= endPage; i++) {
+                var pageButton = document.createElement('li');
+                pageButton.className = 'page-item' + (i === currentPage ? ' active' : '');
+                pageButton.innerHTML = '<a class="page-link" href="#">' + i + '</a>';
+                pageButton.onclick = (function(pageNum) {
+                    return function() {
+                        goToPage(pageNum);
+                        return false;
+                    };
+                })(i);
+                paginationContainer.appendChild(pageButton);
+            }
+            
+            // 添加下一页按钮
+            var nextButton = document.createElement('li');
+            nextButton.className = 'page-item' + (currentPage === totalPages ? ' disabled' : '');
+            nextButton.innerHTML = '<a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>';
+            nextButton.onclick = function() {
+                if (currentPage < totalPages) {
+                    goToPage(currentPage + 1);
+                }
+                return false;
+            };
+            paginationContainer.appendChild(nextButton);
+            
+            // 更新表格显示
+            updateTableDisplay();
+        }
+        
+        // 跳转到指定页
+        function goToPage(pageNum) {
+            currentPage = pageNum;
+            setupPagination();
+        }
+        
+        // 更新表格显示内容
+        function updateTableDisplay() {
+            var tbody = $('#memberTableBody');
+            tbody.empty();
+            
+            var startIndex = (currentPage - 1) * pageSize;
+            var endIndex = Math.min(startIndex + pageSize, totalItems);
+            
+            for (var i = startIndex; i < endIndex; i++) {
+                tbody.append(allMembers[i].row);
+            }
+            
+            // 如果没有数据，显示空行
+            if (totalItems === 0) {
+                tbody.append('<tr><td colspan="9" class="text-center">暂无会员数据</td></tr>');
+            }
+            
+            // 重新绑定事件
+            bindMemberActions();
+        }
+        
+        // 绑定会员操作按钮事件
+        function bindMemberActions() {
+            // 为所有会员操作按钮添加事件监听器
+            const actionButtons = document.querySelectorAll('.member-action');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const action = this.getAttribute('data-action');
+                    
+                    if (action === 'view') {
+                        viewMember(id);
+                    } else if (action === 'edit') {
+                        editMember(id);
+                    } else if (action === 'delete') {
+                        deleteMember(id);
+                    }
+                });
+            });
+        }
+        
+        // 搜索会员
+        function searchMembers() {
+            currentPage = 1; // 重置为第一页
+            
+            // 使用AJAX获取会员数据
+            $.ajax({
+                url: '/admin/members' + buildQueryParams(),
+                type: 'GET',
+                dataType: 'html',
+                success: function(html) {
+                    // 从返回的HTML中提取会员表格数据
+                    var memberTableBody = $(html).find('#memberTableBody').html();
+                    $('#memberTableBody').html(memberTableBody);
+                    
+                    // 从table中提取会员数据用于分页
+                    extractMembersFromTable();
+                    
+                    // 设置分页
+                    setupPagination();
+                }
+            });
         }
 
         // 重置搜索
@@ -352,6 +542,7 @@
             document.getElementById('searchPhone').value = '';
             document.getElementById('searchStatus').value = '';
             document.getElementById('searchCardType').value = '';
+            searchMembers();
         }
 
         // 添加会员
@@ -364,38 +555,90 @@
             memberModal.show();
         }
 
-        // 查看会员
+        // 查看会员详情 - 使用AJAX获取会员详情
         function viewMember(id) {
-            console.log('查看会员:', id);
-            alert(`查看会员ID: ${id}`);
+            $.ajax({
+                url: '/admin/members/' + id,
+                type: 'GET',
+                dataType: 'json',
+                success: function(member) {
+                    // 填充模态框数据
+                    // 注意：此处需要确保HTML中有对应的查看详情模态框和元素ID
+                    alert(`查看会员：${member.name}\n手机号：${member.phone}\n状态：${member.status === 1 ? '活跃' : '禁用'}`);
+                },
+                error: function() {
+                    alert('获取会员详情失败');
+                }
+            });
         }
 
-        // 编辑会员
+        // 编辑会员 - 使用AJAX获取会员详情
         function editMember(id) {
             document.getElementById('memberModalLabel').textContent = '编辑会员';
             
-            // 这里可以通过AJAX请求获取会员信息并填充表单
-            console.log('编辑会员:', id);
-            
-            // 模拟填充数据
-            document.getElementById('memberName').value = `会员${id}`;
-            document.getElementById('memberPhone').value = `13800138${String(id).padStart(3, '0')}`;
-            document.getElementById('memberAge').value = 25 + id;
-            
-            // 显示模态框
-            memberModal.show();
+            $.ajax({
+                url: '/admin/members/' + id,
+                type: 'GET',
+                dataType: 'json',
+                success: function(member) {
+                    // 填充表单数据
+                    document.getElementById('memberName').value = member.name || '';
+                    document.getElementById('memberPhone').value = member.phone || '';
+                    document.getElementById('memberGender').value = member.gender === '1' ? '男' : '女';
+                    if (document.getElementById('memberAge')) {
+                        document.getElementById('memberAge').value = member.age || '';
+                    }
+                    document.getElementById('memberCardType').value = member.cardType || '';
+                    document.getElementById('memberExpireDate').value = member.expireDate || '';
+                    
+                    // 如果表单中有会员ID隐藏字段，设置它
+                    if (document.getElementById('memberId')) {
+                        document.getElementById('memberId').value = member.id;
+                    }
+                    
+                    // 显示模态框
+                    memberModal.show();
+                },
+                error: function() {
+                    alert('获取会员详情失败');
+                }
+            });
         }
 
-        // 删除会员
+        // 删除会员 - 显示确认模态框
         function deleteMember(id) {
-            if (confirm(`确定要删除ID为${id}的会员吗？`)) {
-                console.log('删除会员:', id);
-                alert(`会员ID: ${id} 已删除`);
-                // 这里可以通过AJAX请求删除会员
-            }
+            // 保存当前要删除的会员ID
+            currentDeleteMemberId = id;
+            // 更新确认消息，显示具体的会员ID
+            document.getElementById('deleteConfirmMessage').textContent = `确定要删除ID为${id}的会员吗？此操作不可撤销。`;
+            // 显示确认模态框
+            deleteConfirmModal.show();
         }
+        
+        // 确认删除会员 - 使用AJAX删除
+    function confirmDeleteMember() {
+        if (currentDeleteMemberId) {
+            $.ajax({
+                url: '/admin/members/' + currentDeleteMemberId,
+                type: 'DELETE',
+                success: function() {
+                    // 关闭模态框
+                    deleteConfirmModal.hide();
+                    // 重新初始化会员列表，保持在当前页码
+                    initMemberList();
+                },
+                error: function() {
+                    // 关闭模态框
+                    deleteConfirmModal.hide();
+                    alert('会员删除失败');
+                }
+            });
+            // 重置当前删除ID
+            currentDeleteMemberId = null;
+        }
+    }
 
-        // 保存会员
+        // 保存会员 - 使用AJAX保存到后端
         function saveMember() {
             // 验证表单
             if (!document.getElementById('memberForm').checkValidity()) {
@@ -404,23 +647,54 @@
             }
 
             // 获取表单数据
+            const id = document.getElementById('memberId') ? document.getElementById('memberId').value : null;
             const name = document.getElementById('memberName').value;
             const phone = document.getElementById('memberPhone').value;
-            const gender = document.getElementById('memberGender').value;
-            const age = document.getElementById('memberAge').value;
+            const gender = document.getElementById('memberGender').value === '男' ? '1' : '0';
+            const age = document.getElementById('memberAge') ? document.getElementById('memberAge').value : null;
             const cardType = document.getElementById('memberCardType').value;
             const expireDate = document.getElementById('memberExpireDate').value;
-            const note = document.getElementById('memberNote').value;
+            const note = document.getElementById('memberNote') ? document.getElementById('memberNote').value : '';
 
-            // 这里可以通过AJAX请求保存数据
-            console.log('保存会员:', { name, phone, gender, age, cardType, expireDate, note });
+            // 构建请求数据
+            const memberData = {
+                name: name,
+                phone: phone,
+                gender: gender,
+                cardType: cardType,
+                expireDate: expireDate,
+                note: note
+            };
             
-            // 显示保存成功消息
-            alert('会员信息保存成功！');
-            
-            // 关闭模态框
-            memberModal.hide();
+            if (age) memberData.age = age;
+
+            // AJAX请求保存数据
+            $.ajax({
+                url: id ? '/admin/members/' + id : '/admin/members',
+                type: id ? 'PUT' : 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(memberData),
+                success: function() {
+                    // 隐藏模态框
+                    memberModal.hide();
+                    // 清空表单
+                    document.getElementById('memberForm').reset();
+                    // 重新初始化会员列表，保持在当前页码
+                    initMemberList();
+                },
+                error: function() {
+                    alert(id ? '会员信息更新失败' : '会员添加失败');
+                }
+            });
         }
+    </script>
+    
+    <!-- 初始化脚本 -->
+    <script>
+        // 页面加载完成后初始化会员列表
+        $(document).ready(function() {
+            initMemberList();
+        });
     </script>
 </body>
 </html>

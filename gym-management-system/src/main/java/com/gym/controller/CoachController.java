@@ -51,8 +51,8 @@ public class CoachController {
      */
     @GetMapping("")
     @PreAuthorize("hasRole('TRAINER')")
-    public String index() {
-        return "coach/index";
+    public String index(Model model) {
+        return loadCoachDashboardData(model);
     }
     
     /**
@@ -61,7 +61,38 @@ public class CoachController {
      */
     @GetMapping("index")
     @PreAuthorize("hasRole('TRAINER')")
-    public String indexAlternative() {
+    public String indexAlternative(Model model) {
+        return loadCoachDashboardData(model);
+    }
+    
+    /**
+     * 加载教练仪表板数据
+     * @param model 模型对象，用于传递数据到视图
+     * @return 教练首页视图名称
+     */
+    private String loadCoachDashboardData(Model model) {
+        // 获取当前登录的教练用户
+        User user = getCurrentUser();
+        
+        // 获取当前教练的所有课程
+        List<Course> courses = courseService.getMyCourses(user.getId());
+        
+        // 计算统计数据
+        int courseCount = courses.size();
+        
+        // 计算今日预约数量：获取教练今天的所有预约数
+        LocalDate today = LocalDate.now();
+        int todayBookingCount = bookingService.countTodayBookingsByTrainerId(user.getId(), today);
+        
+        // 计算学员数量：获取预约过该教练课程的唯一学员数量
+        int studentCount = bookingService.countUniqueStudentsByTrainerId(user.getId());
+        
+        // 添加数据到模型中
+        model.addAttribute("courses", courses);
+        model.addAttribute("courseCount", courseCount);
+        model.addAttribute("todayBookingCount", todayBookingCount);
+        model.addAttribute("studentCount", studentCount);
+        
         return "coach/index";
     }
 

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -129,5 +130,23 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<Map<String, Object>> getCourseMembers(Long courseId) {
         return bookingMapper.selectCourseMembers(courseId);
+    }
+    
+    /**
+     * 计算教练今日的预约数量实现
+     * 调用Mapper层方法统计指定日期的预约数量
+     */
+    @Override
+    public int countTodayBookingsByTrainerId(Long trainerId, LocalDate date) {
+        return bookingMapper.countBookingsByTrainerAndDate(trainerId, date);
+    }
+    
+    /**
+     * 计算预约过该教练课程的唯一学员数量实现
+     * 调用Mapper层方法统计唯一学员数量
+     */
+    @Override
+    public int countUniqueStudentsByTrainerId(Long trainerId) {
+        return bookingMapper.countUniqueStudentsByTrainer(trainerId);
     }
 }

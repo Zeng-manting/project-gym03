@@ -1,6 +1,7 @@
 package com.gym.service;
 
 import com.gym.dto.BookingDTO;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -36,4 +37,19 @@ public interface BookingService {
      * @return 预约会员信息列表
      */
     List<Map<String, Object>> getCourseMembers(Long courseId);
+    
+    /**
+     * 计算教练今日的预约数量
+     * @param trainerId 教练ID
+     * @param date 指定日期
+     * @return 今日预约数量
+     */
+    int countTodayBookingsByTrainerId(Long trainerId, LocalDate date);
+    
+    /**
+     * 计算预约过该教练课程的唯一学员数量
+     * @param trainerId 教练ID
+     * @return 学员数量
+     */
+    int countUniqueStudentsByTrainerId(Long trainerId);
 }

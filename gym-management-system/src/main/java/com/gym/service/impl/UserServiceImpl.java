@@ -135,4 +135,47 @@ public class UserServiceImpl implements UserService, UserDetailsService { // ←
     public int countTrainers() {
         return userMapper.countTrainers();
     }
+    
+    /**
+     * 根据ID获取会员信息
+     */
+    @Override
+    public User getMemberById(Long id) {
+        return userMapper.selectById(id);
+    }
+    
+    /**
+     * 添加会员
+     */
+    @Override
+    public void addMember(User user) {
+        User existingUser = userMapper.findByPhone(user.getPhone());
+        if (existingUser != null) {
+            throw new RuntimeException("手机号已存在");
+        }
+        user.setRole("member");
+        user.setStatus("active");
+        userMapper.insert(user);
+    }
+    
+    /**
+     * 更新会员信息
+     */
+    @Override
+    public void updateMember(User user) {
+        // 检查手机号是否被其他用户使用
+        User existingUser = userMapper.findByPhone(user.getPhone());
+        if (existingUser != null && !existingUser.getId().equals(user.getId())) {
+            throw new RuntimeException("手机号已存在");
+        }
+        userMapper.updateById(user);
+    }
+    
+    /**
+     * 删除会员
+     */
+    @Override
+    public void deleteMember(Long id) {
+        userMapper.deleteById(id);
+    }
 }
