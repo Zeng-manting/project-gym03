@@ -3,6 +3,8 @@ package com.gym.service.impl;
 import com.gym.entity.MemberInfo;
 import com.gym.entity.User;
 import com.gym.mapper.UserMapper;
+import com.gym.mapper.CoachInfoMapper;
+import com.gym.entity.CoachInfo;
 import com.gym.service.MemberInfoService;
 import com.gym.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +31,13 @@ import java.time.ZoneId;
 public class UserServiceImpl implements UserService, UserDetailsService { // ← 实现 UserDetailsService
 
     private final UserMapper userMapper;
+    private final CoachInfoMapper coachInfoMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    @Autowired
+    public UserServiceImpl(UserMapper userMapper, CoachInfoMapper coachInfoMapper, PasswordEncoder passwordEncoder) {
         this.userMapper = userMapper;
+        this.coachInfoMapper = coachInfoMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -157,56 +162,23 @@ public class UserServiceImpl implements UserService, UserDetailsService { // ←
     @Override
     public List<User> findTrainers() {
         List<User> trainers = userMapper.findTrainers();
-        // 为每个教练设置默认值
-        for (User trainer : trainers) {
-            if (trainer.getName() == null) {
-                trainer.setName("未设置");
-            }
-            if (trainer.getGender() == null) {
-                trainer.setGender("未知");
-            }
-            if (trainer.getAvatar() == null) {
-                trainer.setAvatar("default-avatar.png");
-            }
-            if (trainer.getStatus() == null) {
-                trainer.setStatus("active");
+        
+        // 为每个教练用户添加额外信息
+        for (User user : trainers) {
+            // 从coach_info表中获取教练的真实信息
+            CoachInfo coachInfo = coachInfoMapper.findByUserId(user.getId());
+            if (coachInfo != null) {
+                // 设置教练的真实名称和性别
+                if (coachInfo.getName() != null) {
+                    user.setName(coachInfo.getName());
+                }
+                if (coachInfo.getGender() != null) {
+                    user.setGender(coachInfo.getGender());
+                }
             }
         }
         
-        // 创建一个包含额外字段的代理对象列表
-        List<Object> resultList = new ArrayList<>();
-        for (User trainer : trainers) {
-            // 使用Map作为代理对象，包含User的所有属性和额外的title、specialty字段
-            Map<String, Object> trainerMap = new HashMap<>();
-            
-            // 添加User的所有属性
-            trainerMap.put("id", trainer.getId());
-            trainerMap.put("phone", trainer.getPhone());
-            trainerMap.put("name", trainer.getName());
-            trainerMap.put("gender", trainer.getGender());
-            trainerMap.put("avatar", trainer.getAvatar());
-            trainerMap.put("status", trainer.getStatus());
-            trainerMap.put("birthDate", trainer.getBirthDate());
-            trainerMap.put("registrationDate", trainer.getRegistrationDate());
-            trainerMap.put("email", trainer.getEmail());
-            trainerMap.put("address", trainer.getAddress());
-            trainerMap.put("emergencyContact", trainer.getEmergencyContact());
-            trainerMap.put("emergencyPhone", trainer.getEmergencyPhone());
-            trainerMap.put("createdAt", trainer.getCreatedAt());
-            trainerMap.put("updatedAt", trainer.getUpdatedAt());
-            trainerMap.put("age", trainer.getAge());
-            trainerMap.put("cardType", trainer.getCardType());
-            trainerMap.put("expireDate", trainer.getExpireDate());
-            
-            // 添加模板需要的额外字段
-            trainerMap.put("title", "健身教练");
-            trainerMap.put("specialty", "综合训练");
-            
-            resultList.add(trainerMap);
-        }
-        
-        // 使用类型转换返回列表
-        return (List<User>) (List<?>) resultList;
+        return trainers;
     }
     
     /**

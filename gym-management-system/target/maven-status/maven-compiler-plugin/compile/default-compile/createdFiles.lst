@@ -15,6 +15,7 @@ com\gym\util\PasswordUtil.class
 com\gym\mapper\CourseMapper.class
 com\gym\entity\Booking.class
 com\gym\service\impl\CourseServiceImpl.class
+com\gym\controller\AdminController.class
 com\gym\controller\CoachController$BookingInfo.class
 com\gym\service\CoachInfoService.class
 com\gym\service\MembershipCardService.class

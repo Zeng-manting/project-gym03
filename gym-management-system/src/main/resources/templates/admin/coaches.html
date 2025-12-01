@@ -342,58 +342,69 @@
         function viewCoach(id) {
             console.log('查看教练详情:', id);
             
-            // 模拟教练详情数据
-            const coachDetails = {
-                id: id,
-                name: `教练${id}`,
-                phone: `13800138${String(id).padStart(3, '0')}`,
-                gender: id % 2 === 0 ? '女' : '男',
-                age: 25 + id,
-                title: ['初级教练', '中级教练', '高级教练', '资深教练'][id % 4],
-                specialty: ['力量训练', '瑜伽', '有氧训练', '功能性训练'][id % 4],
-                salary: 8000 + id * 1000,
-                status: ['active', 'inactive', 'vacation'][id % 3],
-                description: `这是教练${id}的个人简介，拥有丰富的教学经验和专业技能。`,
-                avatar: `https://picsum.photos/id/${id}/200/200`
-            };
+            // 从后端API获取真实的教练详情数据
+            fetch(`/admin/coaches/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        const coachDetails = data.data;
+                        
+                        // 构建详情HTML
+                        const statusMap = {
+                            active: { text: '在职', class: 'bg-success' },
+                            inactive: { text: '离职', class: 'bg-danger' },
+                            vacation: { text: '休假', class: 'bg-warning' }
+                        };
 
-            // 构建详情HTML
-            const statusMap = {
-                active: { text: '在职', class: 'bg-success' },
-                inactive: { text: '离职', class: 'bg-danger' },
-                vacation: { text: '休假', class: 'bg-warning' }
-            };
+                        // 使用真实头像或默认头像
+                        const avatar = coachDetails.avatar ? coachDetails.avatar : 
+                            `https://picsum.photos/id/${coachDetails.id % 100}/200/200`;
 
-            const detailHTML = `
-                <div class="row">
-                    <div class="col-md-4 text-center">
-                        <img src="${coachDetails.avatar}" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover;" alt="教练头像">
-                    </div>
-                    <div class="col-md-8">
-                        <h4>${coachDetails.name}</h4>
-                        <p><strong>手机号：</strong>${coachDetails.phone}</p>
-                        <p><strong>性别：</strong>${coachDetails.gender}</p>
-                        <p><strong>年龄：</strong>${coachDetails.age}岁</p>
-                        <p><strong>职称：</strong>${coachDetails.title}</p>
-                        <p><strong>专长：</strong><span class="coach-specialty">${coachDetails.specialty}</span></p>
-                        <p><strong>薪资标准：</strong>¥${coachDetails.salary}</p>
-                        <p><strong>状态：</strong><span class="badge ${statusMap[coachDetails.status].class}">${statusMap[coachDetails.status].text}</span></p>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-md-12">
-                        <h5>个人简介</h5>
-                        <p>${coachDetails.description}</p>
-                    </div>
-                </div>
-            `;
+                        const detailHTML = `
+                            <div class="row">
+                                <div class="col-md-4 text-center">
+                                    <img src="${avatar}" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover;" alt="教练头像">
+                                </div>
+                                <div class="col-md-8">
+                                    <h4>${coachDetails.name}</h4>
+                                    <p><strong>手机号：</strong>${coachDetails.phone}</p>
+                                    <p><strong>性别：</strong>${coachDetails.gender}</p>
+                                    <p><strong>职称：</strong>${coachDetails.title}</p>
+                                    <p><strong>专长：</strong><span class="coach-specialty">${coachDetails.specialty}</span></p>
+                                    <p><strong>状态：</strong><span class="badge ${statusMap[coachDetails.status]?.class || 'bg-secondary'}">${statusMap[coachDetails.status]?.text || coachDetails.status}</span></p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h5>个人简介</h5>
+                                    <p>${coachDetails.description}</p>
+                                </div>
+                            </div>
+                        `;
 
-            // 填充详情内容
-            document.getElementById('coachDetailContent').innerHTML = detailHTML;
-            
-            // 显示模态框
-            coachDetailModal.show();
+                        // 填充详情内容
+                            document.getElementById('coachDetailContent').innerHTML = detailHTML;
+                            
+                            // 显示模态框
+                            coachDetailModal.show();
+                        } else {
+                            // 显示错误信息
+                            document.getElementById('coachDetailContent').innerHTML = 
+                                `<div class="alert alert-danger">${data.message || '获取教练详情失败'}</div>`;
+                            
+                            // 显示模态框
+                            coachDetailModal.show();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('获取教练详情出错:', error);
+                        document.getElementById('coachDetailContent').innerHTML = 
+                            '<div class="alert alert-danger">获取教练详情时发生错误</div>';
+                        
+                        // 显示模态框
+                        coachDetailModal.show();
+                    });
         }
 
         // 编辑教练
@@ -412,10 +423,31 @@
 
         // 删除教练
         function deleteCoach(id) {
-            if (confirm(`确定要删除ID为${id}的教练吗？`)) {
-                console.log('删除教练:', id);
-                alert(`教练ID: ${id} 已删除`);
-                // 这里可以通过AJAX请求删除教练
+            // 使用更详细的确认信息，提醒用户删除操作的重要性
+            const userConfirmed = confirm(`确认要删除此教练信息吗？\n此操作无法撤销，删除后相关数据将无法恢复。\n教练ID: ${id}`);
+            
+            if (userConfirmed) {
+                console.log('用户确认删除教练:', id);
+                // 通过AJAX请求后端执行删除操作
+                fetch(`/admin/coaches/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert(`教练信息已成功删除`);
+                        // 刷新页面或更新教练列表
+                        location.reload();
+                    } else {
+                        alert('删除失败，请稍后重试');
+                    }
+                })
+                .catch(error => {
+                    console.error('删除教练时发生错误:', error);
+                    alert('删除过程中发生错误，请稍后重试');
+                });
+            } else {
+                console.log('用户取消删除教练:', id);
+                // 明确不执行任何操作，包括不显示任何提示
             }
         }
     </script>

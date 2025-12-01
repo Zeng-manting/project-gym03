@@ -106,10 +106,12 @@ CREATE TABLE `member_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会员信息表';
 
 -- 插入一些初始数据
--- 1. 插入默认管理员用户（密码使用BCrypt加密：123456）
+-- 1. 插入默认管理员用户和教练用户（密码使用BCrypt加密：123456）
 INSERT INTO `user` (`phone`, `password`, `role`, `status`) VALUES 
 ('13800138000', '$2a$10$dXpG4pZkZJmZmZmZmZmZmefYkZx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3', 'admin', 'active'),
-('13900139000', '$2a$10$dXpG4pZkZJmZmZmZmZmZmefYkZx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3', 'trainer', 'active');
+('13900139000', '$2a$10$dXpG4pZkZJmZmZmZmZmZmefYkZx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3', 'trainer', 'active'),
+('13900139001', '$2a$10$dXpG4pZkZJmZmZmZmZmZmefYkZx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3', 'trainer', 'active'),
+('13900139002', '$2a$10$dXpG4pZkZJmZmZmZmZmZmefYkZx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3Zx3', 'trainer', 'active');
 
 -- 2. 插入一些默认课程
 INSERT INTO `course` (`name`, `schedule_time`, `trainer_id`, `max_capacity`, `current_count`) VALUES 
@@ -141,6 +143,8 @@ CREATE TABLE `coach_info` (
   CONSTRAINT `fk_coach_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='教练信息表';
 
--- 3. 插入默认教练信息
+-- 3. 插入教练信息
 INSERT INTO `coach_info` (`user_id`, `name`, `gender`, `phone`, `specialty`, `experience_years`, `introduction`) VALUES 
-(2, '王教练', '男', '13900139000', '力量训练、有氧健身', 5, '拥有5年健身教练经验，擅长制定个性化训练计划。');
+(2, '王教练', '男', '13900139000', '力量训练、有氧健身', 5, '拥有5年健身教练经验，擅长制定个性化训练计划。'),
+(3, '张教练', '女', '13900139001', '瑜伽、普拉提', 3, '专注于女性健身，擅长瑜伽和普拉提训练，帮助塑造完美身材。'),
+(4, '李教练', '男', '13900139002', '功能性训练、HIIT', 4, '专注于高效燃脂训练，擅长功能性训练和高强度间歇训练。');

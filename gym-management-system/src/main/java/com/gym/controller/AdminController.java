@@ -1,6 +1,8 @@
 package com.gym.controller;
 
+import com.gym.entity.CoachInfo;
 import com.gym.entity.User;
+import com.gym.mapper.CoachInfoMapper;
 import com.gym.service.UserService;
 import com.gym.service.CourseService;
 import com.gym.service.MembershipCardService;
@@ -11,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +28,14 @@ public class AdminController {
     private final UserService userService;
     private final CourseService courseService;
     private final MembershipCardService membershipCardService;
+    private final CoachInfoMapper coachInfoMapper;
 
     @Autowired
-    public AdminController(UserService userService, CourseService courseService, MembershipCardService membershipCardService) {
+    public AdminController(UserService userService, CourseService courseService, MembershipCardService membershipCardService, CoachInfoMapper coachInfoMapper) {
         this.userService = userService;
         this.courseService = courseService;
         this.membershipCardService = membershipCardService;
+        this.coachInfoMapper = coachInfoMapper;
     }
 
     /**
@@ -174,15 +179,41 @@ public class AdminController {
     }
 
     /**
-     * 显示教练列表页面
-     * @param model 模型对象
-     * @return 教练列表视图
+     * 显示所有教练列表
+     * @param model 模型对象，用于传递数据到视图
+     * @return 教练列表页面
      */
     @GetMapping("/admin/coaches")
     @PreAuthorize("hasRole('ADMIN')")
     public String listCoaches(Model model) {
         List<User> coaches = userService.findTrainers();
-        model.addAttribute("coaches", coaches);
+        
+        // 创建一个包含所有必要字段的列表
+        List<Map<String, Object>> coachList = new ArrayList<>();
+        for (User user : coaches) {
+            Map<String, Object> coachInfo = new HashMap<>();
+            coachInfo.put("id", user.getId());
+            coachInfo.put("phone", user.getPhone());
+            coachInfo.put("name", user.getName() != null ? user.getName() : "未设置");
+            coachInfo.put("gender", user.getGender() != null ? user.getGender() : "未知");
+            coachInfo.put("avatar", user.getAvatar());
+            coachInfo.put("status", user.getStatus() != null ? user.getStatus() : "active");
+            
+            // 添加模板需要的额外字段
+            coachInfo.put("title", "健身教练"); // 默认职称
+            
+            // 使用注入的coachInfoMapper从coach_info表获取专长信息
+            CoachInfo details = coachInfoMapper.findByUserId(user.getId());
+            if (details != null && details.getSpecialty() != null) {
+                coachInfo.put("specialty", details.getSpecialty());
+            } else {
+                coachInfo.put("specialty", "未设置");
+            }
+            
+            coachList.add(coachInfo);
+        }
+        
+        model.addAttribute("coaches", coachList);
         return "admin/coaches";
     }
     
@@ -223,6 +254,60 @@ public class AdminController {
         userService.disableUser(id);
         attributes.addFlashAttribute("message", "教练账号已成功禁用");
         return "redirect:/admin/coaches";
+    }
+    
+    /**
+     * 获取教练详情
+     * @param id 教练ID
+     * @return 教练详细信息
+     */
+    @GetMapping("/admin/coaches/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseBody
+    public Map<String, Object> getCoachDetail(@PathVariable Long id) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // 获取教练用户信息
+            User coach = userService.getMemberById(id);
+            if (coach == null || !"trainer".equals(coach.getRole())) {
+                result.put("success", false);
+                result.put("message", "未找到该教练信息");
+                return result;
+            }
+            
+            // 获取教练详情信息
+            CoachInfo coachInfo = coachInfoMapper.findByUserId(id);
+            
+            // 构建返回数据
+            result.put("success", true);
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put("id", coach.getId());
+            
+            // 优先从coach_info表获取name信息，如果不存在则使用user表或默认值
+            String coachName = (coachInfo != null && coachInfo.getName() != null && !coachInfo.getName().trim().isEmpty()) ? 
+                coachInfo.getName() : 
+                (coach.getName() != null && !coach.getName().trim().isEmpty() ? coach.getName() : "未设置姓名");
+            dataMap.put("name", coachName);
+            
+            dataMap.put("phone", coach.getPhone());
+            
+            // 优先从coach_info表获取gender信息，如果不存在则使用user表或默认值
+            String coachGender = (coachInfo != null && coachInfo.getGender() != null && !coachInfo.getGender().trim().isEmpty()) ? 
+                coachInfo.getGender() : 
+                (coach.getGender() != null && !coach.getGender().trim().isEmpty() ? coach.getGender() : "未设置性别");
+            dataMap.put("gender", coachGender);
+            
+            dataMap.put("avatar", coachInfo != null && coachInfo.getAvatar() != null ? "/uploads/" + coachInfo.getAvatar() : "/static/images/default-avatar.png");
+            dataMap.put("status", coach.getStatus() != null ? coach.getStatus() : "active");
+            dataMap.put("title", coachInfo != null && coachInfo.getSpecialty() != null ? coachInfo.getSpecialty() : "健身教练");
+            dataMap.put("specialty", coachInfo != null && coachInfo.getSpecialty() != null ? coachInfo.getSpecialty() : "未设置");
+            dataMap.put("description", coachInfo != null && coachInfo.getIntroduction() != null ? coachInfo.getIntroduction() : "暂无简介");
+            result.put("data", dataMap);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "获取教练详情失败: " + e.getMessage());
+        }
+        return result;
     }
     
     /**
