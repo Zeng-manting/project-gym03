@@ -40,8 +40,6 @@ public class User {
     
     /**
      * 性别
-     * '1': 男
-     * '0': 女
      */
     private String gender;
     
@@ -96,4 +94,19 @@ public class User {
      * 更新时间
      */
     private Date updatedAt;
+    
+    /**
+     * 年龄（非数据库字段，用于显示）
+     */
+    private Integer age;
+    
+    /**
+     * 会员卡类型（非数据库字段，用于显示）
+     */
+    private String cardType;
+    
+    /**
+     * 有效期至（非数据库字段，用于显示）
+     */
+    private Date expireDate;
 }

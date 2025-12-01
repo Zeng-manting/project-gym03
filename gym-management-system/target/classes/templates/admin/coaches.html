@@ -226,61 +226,23 @@
                             </tr>
                         </thead>
                         <tbody id="coachTableBody">
-                            <!-- 模拟数据 -->
-                            <tr>
-                                <td><img src="https://picsum.photos/id/1/50/50" class="coach-avatar" alt="头像"></td>
-                                <td>陈教练</td>
-                                <td>13800138001</td>
-                                <td>男</td>
-                                <td>高级教练</td>
-                                <td><span class="coach-specialty">力量训练</span><span class="coach-specialty">拳击</span></td>
-                                <td><span class="badge bg-success">在职</span></td>
+                            <tr th:each="coach : ${coaches}">
+                                <td><img th:src="${coach.avatar != null ? coach.avatar : 'https://picsum.photos/id/' + (coach.id % 100) + '/50/50'}" class="coach-avatar" alt="头像" th:alt="${coach.name}"></td>
+                                <td th:text="${coach.name ?: '未设置'}"></td>
+                                <td th:text="${coach.phone}"></td>
+                                <td th:text="${coach.gender ?: '未知'}"></td>
+                                <td th:text="${coach.title ?: '健身教练'}"></td>
                                 <td>
-                                    <button class="btn btn-info" onclick="viewCoach(1)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editCoach(1)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteCoach(1)"><i class="fa fa-trash"></i></button>
+                                    <span class="coach-specialty" th:text="${coach.specialty ?: '未设置'}"></span>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td><img src="https://picsum.photos/id/2/50/50" class="coach-avatar" alt="头像"></td>
-                                <td>林教练</td>
-                                <td>13800138002</td>
-                                <td>女</td>
-                                <td>资深教练</td>
-                                <td><span class="coach-specialty">瑜伽</span><span class="coach-specialty">普拉提</span></td>
-                                <td><span class="badge bg-success">在职</span></td>
                                 <td>
-                                    <button class="btn btn-info" onclick="viewCoach(2)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editCoach(2)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteCoach(2)"><i class="fa fa-trash"></i></button>
+                                    <span class="badge" th:classappend="${coach.status == 'active' ? 'bg-success' : (coach.status == 'vacation' ? 'bg-warning' : 'bg-danger')}"
+                                          th:text="${coach.status == 'active' ? '在职' : (coach.status == 'vacation' ? '休假' : '离职')}"></span>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td><img src="https://picsum.photos/id/3/50/50" class="coach-avatar" alt="头像"></td>
-                                <td>王教练</td>
-                                <td>13800138003</td>
-                                <td>男</td>
-                                <td>中级教练</td>
-                                <td><span class="coach-specialty">功能性训练</span></td>
-                                <td><span class="badge bg-warning">休假</span></td>
                                 <td>
-                                    <button class="btn btn-info" onclick="viewCoach(3)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editCoach(3)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteCoach(3)"><i class="fa fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><img src="https://picsum.photos/id/4/50/50" class="coach-avatar" alt="头像"></td>
-                                <td>张教练</td>
-                                <td>13800138004</td>
-                                <td>女</td>
-                                <td>初级教练</td>
-                                <td><span class="coach-specialty">有氧训练</span><span class="coach-specialty">康复训练</span></td>
-                                <td><span class="badge bg-danger">离职</span></td>
-                                <td>
-                                    <button class="btn btn-info" onclick="viewCoach(4)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editCoach(4)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteCoach(4)"><i class="fa fa-trash"></i></button>
+                                    <button class="btn btn-info" th:onclick="'viewCoach(' + ${coach.id} + ')'" title="查看详情"><i class="fa fa-eye"></i></button>
+                                    <button class="btn btn-warning" th:onclick="'editCoach(' + ${coach.id} + ')'" title="编辑"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger" th:onclick="'deleteCoach(' + ${coach.id} + ')'" title="删除"><i class="fa fa-trash"></i></button>
                                 </td>
                             </tr>
                         </tbody>

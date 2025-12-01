@@ -175,26 +175,24 @@
                                 <td colspan="9" class="text-center">暂无会员数据</td>
                             </tr>
                             <tr th:each="member : ${members}">
-                                <td th:text="${member.id}"></td>
-                                <td th:text="${member.name != null ? member.name : '未设置'}"></td>
-                                <td th:text="${member.phone}"></td>
-                                <td>
-                                    <span th:text="${member.gender == '1' ? '男' : (member.gender == '0' ? '女' : '未知')}"></span>
-                                </td>
-                                <td>-</td>
-                                <td>
-                                    <span>未设置</span>
-                                </td>
-                                <td>
-                                    <span>未设置</span>
-                                </td>
-                                <td>
-                                    <span th:switch="${member.status}">
-                                        <span th:case="'active'" class="status-badge status-active">活跃</span>
-                                        <span th:case="'disabled'" class="status-badge status-inactive">禁用</span>
-                                        <span th:case="*" class="status-badge status-active">活跃</span>
-                                    </span>
-                                </td>
+                                    <td th:text="${member.id}"></td>
+                                    <td th:text="${member.name != null ? member.name : '未设置'}"></td>
+                                    <td th:text="${member.phone}"></td>
+                                    <td>
+                                        <span th:if="${member.gender != null and (member.gender == '男' or member.gender == '1')}">男</span>
+                                        <span th:elseif="${member.gender != null and (member.gender == '女' or member.gender == '0')}">女</span>
+                                        <!-- <span th:else>未知</span> -->
+                                    </td>
+                                    <td th:text="${member.age != null ? member.age : '-'}"></td>
+                                    <td th:text="${member.cardType != null ? member.cardType : '未设置'}"></td>
+                                    <td th:text="${member.expireDate != null ? #dates.format(member.expireDate, 'yyyy-MM-dd') : '未设置'}"></td>
+                                    <td>
+                                        <span th:switch="${member.status}">
+                                            <span th:case="'active'" class="status-badge status-active">活跃</span>
+                                            <span th:case="'disabled'" class="status-badge status-inactive">禁用</span>
+                                            <span th:case="*" class="status-badge status-active">活跃</span>
+                                        </span>
+                                    </td>
                                 <td>
                                     <!-- 使用数据属性替代复杂的onclick表达式 -->
                                     <button class="btn btn-info member-action" data-action="view" th:data-id="${member.id}"><i class="fa fa-eye"></i></button>
