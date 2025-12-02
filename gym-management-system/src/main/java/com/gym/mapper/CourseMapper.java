@@ -17,7 +17,7 @@ public interface CourseMapper {
      * 可用课程指：当前报名人数小于最大容量且上课时间未过期
      * @return 可用课程列表
      */
-    @Select("SELECT * FROM course WHERE current_count < max_capacity AND schedule_time > NOW()")
+    @Select("SELECT c.*, u.name as coachName FROM course c LEFT JOIN user u ON c.trainer_id = u.id WHERE c.current_count < c.max_capacity AND c.schedule_time > NOW()")
     List<Course> selectAvailableCourses();
 
     /**
@@ -25,7 +25,7 @@ public interface CourseMapper {
      * @param id 课程ID
      * @return 课程对象
      */
-    @Select("SELECT * FROM course WHERE id = #{id}")
+    @Select("SELECT c.*, u.name as coachName FROM course c LEFT JOIN user u ON c.trainer_id = u.id WHERE c.id = #{id}")
     Course selectById(Long id);
 
     /**

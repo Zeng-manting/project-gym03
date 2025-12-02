@@ -39,4 +39,9 @@ public class Course {
      * 当前报名人数
      */
     private Integer currentCount;
+    
+    /**
+     * 教练姓名（非数据库字段，用于显示）
+     */
+    private String coachName;
 }

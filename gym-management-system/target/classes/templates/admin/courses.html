@@ -81,38 +81,7 @@
         .input-group-text {
             background-color: #f8f9fa;
         }
-        .course-type {
-            display: inline-block;
-            background-color: #e3f2fd;
-            color: #1565c0;
-            padding: 0.25rem 0.75rem;
-            border-radius: 1rem;
-            font-size: 0.75rem;
-            margin: 0.25rem;
-        }
-        .course-status {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 1rem;
-        }
-        .status-active {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-        .status-inactive {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-        .status-upcoming {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-        .course-image {
-            width: 80px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
+        /* 移除了不需要的样式类 */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -157,7 +126,7 @@
                 <!-- 课程添加表单 -->
                 <div class="course-form mb-4">
                     <h4 class="mb-3">添加课程</h4>
-                    <form id="courseForm" enctype="multipart/form-data">
+                    <form id="courseForm">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="courseName" class="form-label">课程名称</label>
@@ -170,44 +139,18 @@
                                 <label for="courseCoach" class="form-label">授课教练</label>
                                 <select class="form-select" id="courseCoach" required>
                                     <option value="">请选择教练</option>
-                                    <option value="1">陈教练 - 高级教练</option>
-                                    <option value="2">林教练 - 资深教练</option>
-                                    <option value="3">王教练 - 中级教练</option>
-                                    <option value="4">张教练 - 初级教练</option>
+                                    <option th:each="trainer : ${trainers}" 
+                                            th:value="${trainer.id}" 
+                                            th:text="${trainer.name != null ? trainer.name : '未设置姓名'} + ' - ' + (trainer.gender != null ? trainer.gender : '未知性别')">
+                                        教练姓名
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="courseType" class="form-label">课程类型</label>
-                                <select class="form-select" id="courseType" required>
-                                    <option value="">请选择课程类型</option>
-                                    <option value="力量训练">力量训练</option>
-                                    <option value="瑜伽">瑜伽</option>
-                                    <option value="有氧训练">有氧训练</option>
-                                    <option value="普拉提">普拉提</option>
-                                    <option value="拳击">拳击</option>
-                                    <option value="功能性训练">功能性训练</option>
-                                    <option value="康复训练">康复训练</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="courseDuration" class="form-label">课程时长 (分钟)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-clock-o"></i></span>
-                                    <input type="number" class="form-control" id="courseDuration" min="15" max="180" placeholder="请输入课程时长" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="courseCapacity" class="form-label">课程容量</label>
+                                <label for="courseCapacity" class="form-label">最大容量</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fa fa-users"></i></span>
-                                    <input type="number" class="form-control" id="courseCapacity" min="1" max="50" placeholder="请输入课程容量" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="coursePrice" class="form-label">课程价格 (¥)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">¥</span>
-                                    <input type="number" class="form-control" id="coursePrice" min="0" step="0.01" placeholder="请输入课程价格" required>
+                                    <input type="number" class="form-control" id="courseCapacity" min="1" max="50" placeholder="请输入最大容量" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -223,30 +166,6 @@
                                     <span class="input-group-text"><i class="fa fa-clock-o"></i></span>
                                     <input type="time" class="form-control" id="courseTime" required>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="courseRoom" class="form-label">上课教室</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-map-marker"></i></span>
-                                    <input type="text" class="form-control" id="courseRoom" placeholder="请输入上课教室" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="courseStatus" class="form-label">课程状态</label>
-                                <select class="form-select" id="courseStatus" required>
-                                    <option value="active">已发布</option>
-                                    <option value="upcoming">即将发布</option>
-                                    <option value="inactive">已取消</option>
-                                </select>
-                            </div>
-                            <div class="col-md-12">
-                                <label for="courseImage" class="form-label">课程图片</label>
-                                <input type="file" class="form-control" id="courseImage" accept="image/*">
-                                <small class="form-text text-muted">支持JPG、PNG格式，建议尺寸800x600</small>
-                            </div>
-                            <div class="col-md-12">
-                                <label for="courseDescription" class="form-label">课程描述</label>
-                                <textarea class="form-control" id="courseDescription" rows="4" placeholder="请输入课程详细描述"></textarea>
                             </div>
                             <div class="col-md-12">
                                 <button type="button" class="btn btn-primary" onclick="saveCourse()">
@@ -274,92 +193,54 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>图片</th>
                                 <th>课程名称</th>
-                                <th>类型</th>
                                 <th>授课教练</th>
-                                <th>时间</th>
-                                <th>时长</th>
-                                <th>容量</th>
-                                <th>状态</th>
+                                <th>上课时间</th>
+                                <th>当前人数/最大容量</th>
                                 <th>操作</th>
                             </tr>
                         </thead>
                         <tbody id="courseTableBody">
-                            <!-- 模拟数据 -->
-                            <tr>
-                                <td><img src="https://picsum.photos/id/10/80/60" class="course-image" alt="课程图片"></td>
-                                <td>力量训练基础</td>
-                                <td><span class="course-type">力量训练</span></td>
-                                <td>陈教练</td>
-                                <td>2024-01-15 19:00</td>
-                                <td>60分钟</td>
-                                <td>12/15</td>
-                                <td><span class="course-status status-active">已发布</span></td>
+                            <!-- 使用Thymeleaf循环展示动态课程数据 -->
+                            <tr th:each="course : ${courses}">
+                                <td th:text="${course.name}">课程名称</td>
                                 <td>
-                                    <button class="btn btn-info" onclick="viewCourse(1)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editCourse(1)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteCourse(1)"><i class="fa fa-trash"></i></button>
+                                    <!-- 查找对应的教练信息 -->
+                                    <span th:each="trainer : ${trainers}" 
+                                          th:if="${trainer.id == course.trainerId}" 
+                                          th:text="${trainer.name != null ? trainer.name : '未知教练'}">
+                                        教练姓名
+                                    </span>
+                                </td>
+                                <td th:text="${course.scheduleTime != null ? course.scheduleTime : 'Not Scheduled'}">上课时间</td>
+                                <td th:text="${course.currentCount} + '/' + ${course.maxCapacity}">0/20</td>
+                                <td>
+                                    <button class="btn btn-info" th:attr="onclick='viewCourse(' + ${course.id} + ')'">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-warning" th:attr="onclick='editCourse(' + ${course.id} + ')'">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger" th:attr="onclick='deleteCourse(' + ${course.id} + ')'">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
-                            <tr>
-                                <td><img src="https://picsum.photos/id/11/80/60" class="course-image" alt="课程图片"></td>
-                                <td>瑜伽放松课</td>
-                                <td><span class="course-type">瑜伽</span></td>
-                                <td>林教练</td>
-                                <td>2024-01-16 18:30</td>
-                                <td>45分钟</td>
-                                <td>8/10</td>
-                                <td><span class="course-status status-upcoming">即将发布</span></td>
-                                <td>
-                                    <button class="btn btn-info" onclick="viewCourse(2)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editCourse(2)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteCourse(2)"><i class="fa fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><img src="https://picsum.photos/id/12/80/60" class="course-image" alt="课程图片"></td>
-                                <td>高强度间歇训练</td>
-                                <td><span class="course-type">有氧训练</span></td>
-                                <td>王教练</td>
-                                <td>2024-01-17 20:00</td>
-                                <td>50分钟</td>
-                                <td>10/12</td>
-                                <td><span class="course-status status-active">已发布</span></td>
-                                <td>
-                                    <button class="btn btn-info" onclick="viewCourse(3)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editCourse(3)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteCourse(3)"><i class="fa fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><img src="https://picsum.photos/id/13/80/60" class="course-image" alt="课程图片"></td>
-                                <td>普拉提核心训练</td>
-                                <td><span class="course-type">普拉提</span></td>
-                                <td>林教练</td>
-                                <td>2024-01-18 17:30</td>
-                                <td>45分钟</td>
-                                <td>0/8</td>
-                                <td><span class="course-status status-inactive">已取消</span></td>
-                                <td>
-                                    <button class="btn btn-info" onclick="viewCourse(4)"><i class="fa fa-eye"></i></button>
-                                    <button class="btn btn-warning" onclick="editCourse(4)"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-danger" onclick="deleteCourse(4)"><i class="fa fa-trash"></i></button>
-                                </td>
+                            <!-- 当没有课程时显示空状态 -->
+                            <tr th:if="${courses.empty}">
+                                <td colspan="5" class="text-center">暂无课程数据</td>
                             </tr>
                         </tbody>
                     </table>
 
                     <!-- 分页控件 -->
                     <div class="d-flex justify-content-between align-items-center mt-3">
-                        <div class="text-muted">显示 1-4 条，共 12 条</div>
+                        <div class="text-muted">显示 1-6 条，共 6 条</div>
                         <nav aria-label="Page navigation">
                             <ul class="pagination">
                                 <li class="page-item disabled"><a class="page-link" href="#">上一页</a></li>
                                 <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                                <li class="page-item disabled"><a class="page-link" href="#">下一页</a></li>
                             </ul>
                         </nav>
                     </div>
@@ -434,27 +315,15 @@
             }
 
             // 获取表单数据
-            const formData = new FormData();
-            formData.append('name', document.getElementById('courseName').value);
-            formData.append('coachId', document.getElementById('courseCoach').value);
-            formData.append('type', document.getElementById('courseType').value);
-            formData.append('duration', document.getElementById('courseDuration').value);
-            formData.append('capacity', document.getElementById('courseCapacity').value);
-            formData.append('price', document.getElementById('coursePrice').value);
-            formData.append('date', document.getElementById('courseDate').value);
-            formData.append('time', document.getElementById('courseTime').value);
-            formData.append('room', document.getElementById('courseRoom').value);
-            formData.append('status', document.getElementById('courseStatus').value);
-            formData.append('description', document.getElementById('courseDescription').value);
-            
-            // 添加课程图片
-            const imageFile = document.getElementById('courseImage').files[0];
-            if (imageFile) {
-                formData.append('image', imageFile);
-            }
+            const courseData = {
+                name: document.getElementById('courseName').value,
+                trainerId: document.getElementById('courseCoach').value,
+                maxCapacity: document.getElementById('courseCapacity').value,
+                scheduleTime: document.getElementById('courseDate').value + ' ' + document.getElementById('courseTime').value
+            };
 
             // 这里可以通过AJAX请求保存数据
-            console.log('保存课程信息:', formData);
+            console.log('保存课程信息:', courseData);
             
             // 模拟保存成功
             alert('课程信息保存成功！');
@@ -470,16 +339,12 @@
         function validateForm() {
             const name = document.getElementById('courseName').value;
             const coach = document.getElementById('courseCoach').value;
-            const type = document.getElementById('courseType').value;
-            const duration = document.getElementById('courseDuration').value;
             const capacity = document.getElementById('courseCapacity').value;
-            const price = document.getElementById('coursePrice').value;
             const date = document.getElementById('courseDate').value;
             const time = document.getElementById('courseTime').value;
-            const room = document.getElementById('courseRoom').value;
 
             // 简单验证
-            if (!name || !coach || !type || !duration || !capacity || !price || !date || !time || !room) {
+            if (!name || !coach || !capacity || !date || !time) {
                 return false;
             }
 
@@ -497,53 +362,18 @@
         function viewCourse(id) {
             console.log('查看课程详情:', id);
             
-            // 模拟课程详情数据
-            const courseDetails = {
-                id: id,
-                name: `课程${id}`,
-                type: ['力量训练', '瑜伽', '有氧训练', '普拉提'][id % 4],
-                coach: [`陈教练`, `林教练`, `王教练`, `张教练`][id % 4],
-                duration: 45 + (id % 3) * 15,
-                capacity: 10 + id,
-                enrolled: Math.floor(Math.random() * (10 + id)),
-                price: 100 + id * 20,
-                date: '2024-01-' + (15 + id),
-                time: '19:' + (String(id % 6) + '0').padStart(2, '0'),
-                room: `教室${id}`,
-                status: ['active', 'upcoming', 'inactive'][id % 3],
-                description: `这是课程${id}的详细描述，课程内容丰富，适合不同水平的学员参加。`,
-                image: `https://picsum.photos/id/${10 + id}/400/300`
-            };
-
+            // 根据ID获取实际课程数据
+            const courseDetails = getCourseById(id);
+            
             // 构建详情HTML
-            const statusMap = {
-                active: { text: '已发布', class: 'status-active' },
-                upcoming: { text: '即将发布', class: 'status-upcoming' },
-                inactive: { text: '已取消', class: 'status-inactive' }
-            };
-
             const detailHTML = `
                 <div class="row">
-                    <div class="col-md-4">
-                        <img src="${courseDetails.image}" class="img-fluid" style="border-radius: 8px;" alt="课程图片">
-                    </div>
-                    <div class="col-md-8">
-                        <h4>${courseDetails.name}</h4>
-                        <p><span class="course-type">${courseDetails.type}</span></p>
-                        <p><strong>授课教练：</strong>${courseDetails.coach}</p>
-                        <p><strong>上课时间：</strong>${courseDetails.date} ${courseDetails.time}</p>
-                        <p><strong>课程时长：</strong>${courseDetails.duration}分钟</p>
-                        <p><strong>上课教室：</strong>${courseDetails.room}</p>
-                        <p><strong>课程容量：</strong>${courseDetails.enrolled}/${courseDetails.capacity}</p>
-                        <p><strong>课程价格：</strong>¥${courseDetails.price}</p>
-                        <p><strong>课程状态：</strong><span class="course-status ${statusMap[courseDetails.status].class}">${statusMap[courseDetails.status].text}</span></p>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
                     <div class="col-md-12">
-                        <h5>课程描述</h5>
-                        <p>${courseDetails.description}</p>
+                        <h4>${courseDetails.name}</h4>
+                        <p><strong>授课教练：</strong>${courseDetails.coachName || courseDetails.coach || '-'}</p>
+                        <p><strong>上课时间：</strong>${courseDetails.scheduleTime}</p>
+                        <p><strong>报名情况：</strong>${courseDetails.currentCount}/${courseDetails.maxCapacity}</p>
+                        <p><strong>创建时间：</strong>${courseDetails.createdAt}</p>
                     </div>
                 </div>
             `;
@@ -554,21 +384,111 @@
             // 显示模态框
             courseDetailModal.show();
         }
+        
+        // 根据ID获取课程信息
+        function getCourseById(id) {
+            // 模拟从后端API获取课程数据
+            // 在实际应用中，这里应该是一个异步请求
+            // 这里保持基本结构，但移除硬编码的教练姓名
+            // 教练信息应该由后端提供
+            const courses = [
+                {
+                    id: 1,
+                    name: '拳击入门课',
+                    trainerId: 2, // 对应教练ID
+                    coachName: '王强', // 实际教练姓名
+                    scheduleTime: '2025-12-23 15:54:20',
+                    maxCapacity: 20,
+                    currentCount: 0,
+                    createdAt: '2025-11-11 08:56:43',
+                    updatedAt: '2025-11-25 23:20:01'
+                },
+                {
+                    id: 2,
+                    name: '游泳技能提升课',
+                    trainerId: 2,
+                    coachName: '王强',
+                    scheduleTime: '2025-12-24 15:54:20',
+                    maxCapacity: 15,
+                    currentCount: 0,
+                    createdAt: '2025-11-11 08:56:43',
+                    updatedAt: '2025-11-25 23:20:01'
+                },
+                {
+                    id: 3,
+                    name: '燃脂HIIT',
+                    trainerId: 3,
+                    coachName: '张敏', // 分配给另一位教练
+                    scheduleTime: '2025-12-25 15:54:20',
+                    maxCapacity: 25,
+                    currentCount: 0,
+                    createdAt: '2025-11-11 08:56:43',
+                    updatedAt: '2025-11-25 23:20:01'
+                },
+                {
+                    id: 7,
+                    name: '芭蕾课',
+                    trainerId: 3,
+                    coachName: '张敏', // 更适合女性教练
+                    scheduleTime: '2025-12-26 15:54:20',
+                    maxCapacity: 15,
+                    currentCount: 1,
+                    createdAt: '2025-11-22 15:54:20',
+                    updatedAt: '2025-11-25 23:20:02'
+                },
+                {
+                    id: 8,
+                    name: '核心力量训练',
+                    trainerId: 4,
+                    coachName: '李刚', // 分配给第三位教练
+                    scheduleTime: '2025-12-27 15:54:20',
+                    maxCapacity: 20,
+                    currentCount: 1,
+                    createdAt: '2025-11-22 15:54:20',
+                    updatedAt: '2025-11-25 23:20:02'
+                },
+                {
+                    id: 9,
+                    name: '体态矫正私教',
+                    trainerId: 4,
+                    coachName: '李刚',
+                    scheduleTime: '2025-12-29 15:54:20',
+                    maxCapacity: 12,
+                    currentCount: 0,
+                    createdAt: '2025-11-22 15:54:20',
+                    updatedAt: '2025-11-25 23:20:02'
+                }
+            ];
+            
+            return courses.find(course => course.id === id) || {
+                id: id,
+                name: '未找到课程',
+                trainerId: null,
+                coachName: '-',
+                scheduleTime: '-',
+                maxCapacity: 0,
+                currentCount: 0,
+                createdAt: '-',
+                updatedAt: '-'
+            };
+        }
 
         // 编辑课程
         function editCourse(id) {
             console.log('编辑课程:', id);
             
-            // 模拟获取课程信息并填充表单
-            document.getElementById('courseName').value = `课程${id}`;
-            document.getElementById('courseCoach').value = String(id);
-            document.getElementById('courseType').value = ['力量训练', '瑜伽', '有氧训练', '普拉提'][id % 4];
-            document.getElementById('courseDuration').value = 45 + (id % 3) * 15;
-            document.getElementById('courseCapacity').value = 10 + id;
-            document.getElementById('coursePrice').value = 100 + id * 20;
-            document.getElementById('courseDate').value = '2024-01-' + (15 + id).toString().padStart(2, '0');
-            document.getElementById('courseTime').value = '19:' + (String(id % 6) + '0').padStart(2, '0');
-            document.getElementById('courseRoom').value = `教室${id}`;
+            // 获取课程信息并填充表单
+            const course = getCourseById(id);
+            const [date, time] = course.scheduleTime.split(' ');
+            
+            document.getElementById('courseName').value = course.name;
+            // 使用trainerId而不是基于姓名的判断
+            document.getElementById('courseCoach').value = course.trainerId || 
+                                                          (course.coach === '王强' ? '2' : 
+                                                          (course.coach === '张敏' ? '3' : '4'));
+            document.getElementById('courseCapacity').value = course.maxCapacity;
+            document.getElementById('courseDate').value = date;
+            document.getElementById('courseTime').value = time;
             
             // 滚动到表单顶部
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -658,10 +578,11 @@
             const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const coursesList = document.querySelector('#selectedDateCourses .list-group');
             
-            // 模拟当天课程数据
+            // 模拟当天课程数据，使用系统中实际的教练信息
+            // 实际应用中，应该从后端获取真实数据
             const courses = [
-                { id: 1, name: '力量训练基础', time: '19:00', coach: '陈教练' },
-                { id: 2, name: '瑜伽放松课', time: '20:30', coach: '林教练' }
+                { id: 1, name: '力量训练基础', time: '19:00', trainerId: 2, coachName: '王强' },
+                { id: 2, name: '瑜伽放松课', time: '20:30', trainerId: 3, coachName: '张敏' }
             ];
             
             // 清空课程列表
@@ -680,7 +601,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 class="mb-0">${course.name}</h6>
-                                <small class="text-muted">${course.coach}</small>
+                                <small class="text-muted">${course.coachName || course.coach || '-'}</small>
                             </div>
                             <span class="badge bg-primary">${course.time}</span>
                         </div>
