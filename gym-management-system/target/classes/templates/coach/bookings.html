@@ -152,6 +152,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>课程名称</th>
+                                <th>会员姓名</th>
                                 <th>会员手机号</th>
                                 <th>预约时间</th>
                                 <th>状态</th>
@@ -163,8 +164,9 @@
                             <tr th:each="booking, iterStat : ${bookings}">
                                 <td th:text="${iterStat.index + 1}"></td>
                                 <td th:text="${booking.courseName}"></td>
-                                <td th:text="${booking.memberPhone}"></td>
-                                <td th:text="${#temporals.format(booking.bookingTime, 'yyyy-MM-dd HH:mm')}"></td>
+                                    <td th:text="${booking.memberName != null ? booking.memberName : ''}"></td>
+                                    <td th:text="${booking.memberPhone}"></td>
+                                    <td th:text="${#temporals.format(booking.bookingTime, 'yyyy-MM-dd HH:mm')}"></td>
                                 <td>
                                     <span th:class="${booking.status == 'BOOKED' ? 'status-badge status-active' : 'status-badge status-cancelled'}" 
                                           th:text="${booking.status == 'BOOKED' ? '已预约' : '已取消'}"></span>

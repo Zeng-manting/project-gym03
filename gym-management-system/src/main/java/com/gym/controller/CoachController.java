@@ -231,6 +231,7 @@ public class CoachController {
     private static class BookingInfo {
         private Long id;
         private String courseName;
+        private String memberName;
         private String memberPhone;
         private Long memberId;
         private LocalDateTime bookingTime;
@@ -241,6 +242,8 @@ public class CoachController {
         public void setId(Long id) { this.id = id; }
         public String getCourseName() { return courseName; }
         public void setCourseName(String courseName) { this.courseName = courseName; }
+        public String getMemberName() { return memberName; }
+        public void setMemberName(String memberName) { this.memberName = memberName; }
         public String getMemberPhone() { return memberPhone; }
         public void setMemberPhone(String memberPhone) { this.memberPhone = memberPhone; }
         public Long getMemberId() { return memberId; }
@@ -301,6 +304,9 @@ public class CoachController {
                 
                 bookingInfo.setCourseName(course.getName());
                 
+                Object nameObj = booking.get("name");
+                bookingInfo.setMemberName(nameObj != null ? nameObj.toString() : "");
+                
                 Object phoneObj = booking.get("phone");
                 if (phoneObj != null) {
                     bookingInfo.setMemberPhone(phoneObj.toString());
@@ -321,7 +327,8 @@ public class CoachController {
                 // 应用筛选条件
                 boolean matchKeyword = keyword == null || keyword.isEmpty() || 
                         bookingInfo.getMemberPhone().contains(keyword) || 
-                        bookingInfo.getCourseName().contains(keyword);
+                        bookingInfo.getCourseName().contains(keyword) ||
+                        bookingInfo.getMemberName().contains(keyword);
                 
                 boolean matchDate = date == null || date.isEmpty() || 
                         bookingInfo.getBookingTime().toLocalDate().toString().equals(date);

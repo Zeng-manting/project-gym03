@@ -205,61 +205,7 @@
             <div class="col-md-10 content">
                 <h2 class="mb-4">课程管理</h2>
 
-                <!-- 课程添加表单 -->
-                <div class="course-form mb-4">
-                    <h4 class="mb-3">添加课程</h4>
-                    <form id="courseForm">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="courseName" class="form-label">课程名称</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-book"></i></span>
-                                    <input type="text" class="form-control" id="courseName" placeholder="请输入课程名称" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="courseCoach" class="form-label">授课教练</label>
-                                <select class="form-select" id="courseCoach" required>
-                                    <option value="">请选择教练</option>
-                                    <option th:each="trainer : ${trainers}" 
-                                            th:value="${trainer.id}" 
-                                            th:text="${trainer.name != null ? trainer.name : '未设置姓名'} + ' - ' + (trainer.gender != null ? trainer.gender : '未知性别')">
-                                        教练姓名
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="courseCapacity" class="form-label">最大容量</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-users"></i></span>
-                                    <input type="number" class="form-control" id="courseCapacity" min="1" max="50" placeholder="请输入最大容量" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="courseDate" class="form-label">课程日期</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-                                    <input type="date" class="form-control" id="courseDate" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="courseTime" class="form-label">课程时间</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-clock-o"></i></span>
-                                    <input type="time" class="form-control" id="courseTime" required>
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <button type="button" class="btn btn-primary" onclick="saveCourse()">
-                                    <i class="fa fa-save"></i> 保存课程信息
-                                </button>
-                                <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
-                                    <i class="fa fa-refresh"></i> 重置
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+
 
                 <!-- 搜索区域 -->
                 <div class="search-container">
@@ -674,13 +620,17 @@
             const status = document.getElementById('searchStatus').value;
             console.log('搜索条件:', {courseName, coachId, date, status});
             
+            // 获取当前时间用于状态判断
+            const now = new Date();
+            
             // 在实际应用中，这里应该发送API请求到后端
             // 模拟搜索，过滤表格中的课程数据
             const rows = document.querySelectorAll('#courseTableBody tr');
             rows.forEach(row => {
-                // 获取行中的课程信息（实际应用中可能需要更复杂的选择器或数据属性）
+                // 获取行中的课程信息
                 const nameCell = row.querySelector('td:nth-child(3)');
                 const coachCell = row.querySelector('td:nth-child(4)');
+                const trainerIdElement = row.querySelector('.trainer-id');
                 const timeCell = row.querySelector('td:nth-child(5)');
                 
                 let match = true;
@@ -690,9 +640,46 @@
                     match = false;
                 }
                 
+                // 按教练ID筛选
+                if (coachId && trainerIdElement && trainerIdElement.textContent !== coachId) {
+                    match = false;
+                }
+                
                 // 按日期筛选
                 if (date && timeCell && timeCell.textContent && !timeCell.textContent.includes(date)) {
                     match = false;
+                }
+                
+                // 按状态筛选
+                if (status && timeCell && timeCell.textContent) {
+                    // 解析课程时间
+                    const courseTimeStr = timeCell.textContent;
+                    try {
+                        // 假设时间格式为 "2025-12-05 14:00:00"
+                        const courseTime = new Date(courseTimeStr);
+                        
+                        // 根据状态筛选
+                        switch(status) {
+                            case 'upcoming': // 即将开始（未来的课程）
+                                if (courseTime <= now) {
+                                    match = false;
+                                }
+                                break;
+                            case 'ongoing': // 进行中（假设课程持续1小时）
+                                const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+                                if (courseTime > oneHourLater || courseTime <= now) {
+                                    match = false;
+                                }
+                                break;
+                            case 'completed': // 已完成（过去的课程）
+                                if (courseTime > now) {
+                                    match = false;
+                                }
+                                break;
+                        }
+                    } catch (e) {
+                        console.error('解析课程时间失败:', e);
+                    }
                 }
                 
                 row.style.display = match ? '' : 'none';

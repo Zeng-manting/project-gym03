@@ -213,17 +213,27 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <form th:action="@{/member/book/{id}(id=${course.id})}" method="post" style="display:inline;">
-                                                <button type="submit" class="btn btn-primary" 
-                                                        th:disabled="${course.currentCount >= course.maxCapacity}"
-                                                        th:classappend="${course.currentCount >= course.maxCapacity} ? 'btn-secondary' : ''"
-                                                        th:title="${course.currentCount >= course.maxCapacity ? '课程已满' : '点击预约'}">
-                                                    <i th:if="${course.currentCount < course.maxCapacity}" class="bi bi-plus me-1"></i>
-                                                    <i th:else="${course.currentCount >= course.maxCapacity}" class="bi bi-x me-1"></i>
-                                                    <span th:if="${course.currentCount < course.maxCapacity}">立即预约</span>
-                                                    <span th:else="${course.currentCount >= course.maxCapacity}">课程已满</span>
+                                            <!-- 已预约状态 -->
+                                            <div th:if="${bookedCourseIds.contains(course.id)}">
+                                                <button type="button" class="btn btn-success" disabled title="已预约">
+                                                    <i class="bi bi-check-circle me-1"></i>已预约
                                                 </button>
-                                            </form>
+                                            </div>
+                                            <!-- 可预约状态 -->
+                                            <div th:unless="${bookedCourseIds.contains(course.id)}">
+                                                <div th:if="${course.currentCount < course.maxCapacity}">
+                                                    <form th:action="@{/member/book/{id}(id=${course.id})}" method="post" style="display:inline;">
+                                                        <button type="submit" class="btn btn-primary" title="点击预约">
+                                                            <i class="bi bi-plus me-1"></i>立即预约
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                                <div th:if="${course.currentCount >= course.maxCapacity}">
+                                                    <button type="button" class="btn btn-secondary" disabled title="课程已满">
+                                                        <i class="bi bi-x me-1"></i>课程已满
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -251,6 +261,8 @@
             rows.forEach((row, index) => {
                 row.style.opacity = '0';
                 row.style.transform = 'translateY(10px)';
+
+                // 课程预约按钮的显示由Thymeleaf条件渲染控制，不再需要JavaScript控制
                 row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
                 
                 setTimeout(() => {

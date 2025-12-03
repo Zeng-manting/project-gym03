@@ -34,10 +34,10 @@ public class CourseController {
      * @param attributes 重定向属性
      * @return 重定向到课程管理页面
      */
-    @PostMapping("/admin/courses")
+    @PostMapping("/admin/courses/add")
     @PreAuthorize("hasRole('ADMIN')")
     public String createCourse(@RequestParam("name") String name,
-                              @RequestParam("scheduleTime") String scheduleTime,
+                              @RequestParam("startTime") String scheduleTime,
                               @RequestParam("trainerId") Long trainerId,
                               @RequestParam("maxCapacity") Integer maxCapacity,
                               RedirectAttributes attributes) {

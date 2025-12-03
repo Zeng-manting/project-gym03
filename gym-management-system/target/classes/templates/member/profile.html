@@ -257,7 +257,7 @@
                         <h2 class="card-title mb-0">
                             <i class="bi bi-person-circle me-2"></i>个人信息管理
                         </h2>
-                        <button id="toggle-edit" class="btn btn-outline-secondary toggle-btn">
+                        <button id="toggle-edit" class="btn btn-primary toggle-btn" data-bs-toggle="modal" data-bs-target="#edit-modal">
                             <i class="bi bi-pencil me-1"></i>编辑信息
                         </button>
                     </div>
@@ -332,98 +332,109 @@
                             </div>
                         </div>
                         
-                        <!-- 编辑表单，默认隐藏 -->
-                        <div id="edit-form" class="edit-form" style="display: none;">
-                            <h4 class="mb-4"><i class="bi bi-pencil me-2"></i>编辑个人信息</h4>
-                            <form th:action="@{/member/profile/save}" method="post" id="profile-form">
-                                <input type="hidden" th:value="${memberInfo?.userId}" name="userId">
-                                
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label class="form-label" for="name">姓名</label>
-                                        <input type="text" class="form-control" id="name" name="name" 
-                                               th:value="${memberInfo?.name}" placeholder="请输入姓名">
+                        <!-- 编辑信息模态框 -->
+                        <div class="modal fade" id="edit-modal" tabindex="-1" aria-labelledby="edit-modal-label" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title" id="edit-modal-label">
+                                            <i class="bi bi-pencil me-2"></i>编辑个人信息
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="gender">性别</label>
-                                        <select class="form-control" id="gender" name="gender">
-                                            <option value="">请选择性别</option>
-                                            <option value="男" th:selected="${memberInfo?.gender == '男'}">男</option>
-                                            <option value="女" th:selected="${memberInfo?.gender == '女'}">女</option>
-                                        </select>
+                                    <div class="modal-body">
+                                        <form th:action="@{/member/profile/save}" method="post" id="profile-form">
+                                            <input type="hidden" th:value="${memberInfo?.userId}" name="userId">
+                                            
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="name">姓名</label>
+                                                    <input type="text" class="form-control" id="name" name="name" 
+                                                           th:value="${memberInfo?.name}" placeholder="请输入姓名">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label" for="gender">性别</label>
+                                                    <select class="form-control" id="gender" name="gender">
+                                                        <option value="">请选择性别</option>
+                                                        <option value="男" th:selected="${memberInfo?.gender == '男'}">男</option>
+                                                        <option value="女" th:selected="${memberInfo?.gender == '女'}">女</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="birthDate">出生日期</label>
+                                                    <input type="date" class="form-control" id="birthDate" name="birthDate" 
+                                                           th:value="${memberInfo?.birthDate}">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label" for="phone">手机号码</label>
+                                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                                           th:value="${memberInfo?.phone}" placeholder="请输入手机号码">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="height">身高 (cm)</label>
+                                                    <input type="number" step="0.1" class="form-control" id="height" name="height" 
+                                                           th:value="${memberInfo?.height}" placeholder="请输入身高">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label" for="weight">体重 (kg)</label>
+                                                    <input type="number" step="0.1" class="form-control" id="weight" name="weight" 
+                                                           th:value="${memberInfo?.weight}" placeholder="请输入体重">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label class="form-label" for="email">电子邮箱</label>
+                                                <input type="email" class="form-control" id="email" name="email" 
+                                                       th:value="${memberInfo?.email}" placeholder="请输入电子邮箱">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label class="form-label" for="address">联系地址</label>
+                                                <input type="text" class="form-control" id="address" name="address" 
+                                                       th:value="${memberInfo?.address}" placeholder="请输入联系地址">
+                                            </div>
+                                            
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="emergencyContact">紧急联系人</label>
+                                                    <input type="text" class="form-control" id="emergencyContact" name="emergencyContact" 
+                                                           th:value="${memberInfo?.emergencyContact}" placeholder="请输入紧急联系人">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label" for="emergencyPhone">紧急联系电话</label>
+                                                    <input type="tel" class="form-control" id="emergencyPhone" name="emergencyPhone" 
+                                                           th:value="${memberInfo?.emergencyPhone}" placeholder="请输入紧急联系电话">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label class="form-label" for="healthCondition">健康状况</label>
+                                                <textarea class="form-control" id="healthCondition" name="healthCondition" rows="3" 
+                                                          placeholder="请描述您的健康状况，如有特殊情况请注明" th:text="${memberInfo?.healthCondition}"></textarea>
+                                            </div>
+                                            
+                                            <div class="form-actions mt-4">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-save me-2"></i>保存修改
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                                    <i class="bi bi-x me-2"></i>取消
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
-                                
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label class="form-label" for="birthDate">出生日期</label>
-                                        <input type="date" class="form-control" id="birthDate" name="birthDate" 
-                                               th:value="${memberInfo?.birthDate}">
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="phone">手机号码</label>
-                                        <input type="tel" class="form-control" id="phone" name="phone" 
-                                               th:value="${memberInfo?.phone}" placeholder="请输入手机号码">
-                                    </div>
-                                </div>
-                                
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label class="form-label" for="height">身高 (cm)</label>
-                                        <input type="number" step="0.1" class="form-control" id="height" name="height" 
-                                               th:value="${memberInfo?.height}" placeholder="请输入身高">
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="weight">体重 (kg)</label>
-                                        <input type="number" step="0.1" class="form-control" id="weight" name="weight" 
-                                               th:value="${memberInfo?.weight}" placeholder="请输入体重">
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label" for="email">电子邮箱</label>
-                                    <input type="email" class="form-control" id="email" name="email" 
-                                           th:value="${memberInfo?.email}" placeholder="请输入电子邮箱">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label" for="address">联系地址</label>
-                                    <input type="text" class="form-control" id="address" name="address" 
-                                           th:value="${memberInfo?.address}" placeholder="请输入联系地址">
-                                </div>
-                                
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label class="form-label" for="emergencyContact">紧急联系人</label>
-                                        <input type="text" class="form-control" id="emergencyContact" name="emergencyContact" 
-                                               th:value="${memberInfo?.emergencyContact}" placeholder="请输入紧急联系人">
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="emergencyPhone">紧急联系电话</label>
-                                        <input type="tel" class="form-control" id="emergencyPhone" name="emergencyPhone" 
-                                               th:value="${memberInfo?.emergencyPhone}" placeholder="请输入紧急联系电话">
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label" for="healthCondition">健康状况</label>
-                                    <textarea class="form-control" id="healthCondition" name="healthCondition" rows="3" 
-                                              placeholder="请描述您的健康状况，如有特殊情况请注明" th:text="${memberInfo?.healthCondition}"></textarea>
-                                </div>
-                                
-                                <div class="form-actions">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-save me-2"></i>保存修改
-                                    </button>
-                                    <button type="button" id="cancel-edit" class="btn btn-outline-secondary">
-                                        <i class="bi bi-x me-2"></i>取消
-                                    </button>
-                                </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -447,38 +458,11 @@
                 }, 100 * (index + 1));
             });
             
-            // 编辑按钮切换功能
-            const toggleEditBtn = document.getElementById('toggle-edit');
-            const editForm = document.getElementById('edit-form');
-            const cancelEditBtn = document.getElementById('cancel-edit');
+            // 模态框相关功能已由 Bootstrap JS 处理
+            // 可以在此添加模态框的额外事件监听
+            const editModal = new bootstrap.Modal(document.getElementById('edit-modal'));
             
-            toggleEditBtn.addEventListener('click', function() {
-                if (editForm.style.display === 'none' || editForm.style.display === '') {
-                    editForm.style.display = 'block';
-                    toggleEditBtn.innerHTML = '<i class="bi bi-x me-1"></i>取消编辑';
-                    
-                    // 平滑滚动到表单
-                    setTimeout(() => {
-                        editForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 100);
-                } else {
-                    editForm.style.display = 'none';
-                    toggleEditBtn.innerHTML = '<i class="bi bi-pencil me-1"></i>编辑信息';
-                }
-            });
-            
-            cancelEditBtn.addEventListener('click', function() {
-                editForm.style.display = 'none';
-                toggleEditBtn.innerHTML = '<i class="bi bi-pencil me-1"></i>编辑信息';
-            });
-            
-            // 头像点击上传功能（占位）
-            const avatarContainer = document.querySelector('.avatar-container');
-            avatarContainer.addEventListener('click', function() {
-                alert('头像上传功能即将推出');
-            });
-            
-            // 表单提交增强效果
+            // 表单提交前的验证
             const profileForm = document.getElementById('profile-form');
             profileForm.addEventListener('submit', function(e) {
                 // 表单验证逻辑
@@ -496,6 +480,12 @@
                     e.preventDefault();
                     return;
                 }
+            });
+            
+            // 头像点击上传功能（占位）
+            const avatarContainer = document.querySelector('.avatar-container');
+            avatarContainer.addEventListener('click', function() {
+                alert('头像上传功能即将推出');
             });
         });
     </script>

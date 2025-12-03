@@ -94,12 +94,14 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
+                                        <th>会员姓名</th>
                                         <th>会员手机号</th>
                                         <th>预约时间</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="member : ${members}">
+                                        <td th:text="${member.name != null ? member.name : ''}"></td>
                                         <td th:text="${member.phone}"></td>
                                         <td th:text="${#temporals.format(member.booking_time, 'yyyy-MM-dd HH:mm')}"></td>
                                     </tr>

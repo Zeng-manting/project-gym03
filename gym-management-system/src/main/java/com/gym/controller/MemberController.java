@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -135,8 +136,28 @@ public class MemberController {
     @GetMapping("courses")
     @PreAuthorize("hasRole('MEMBER')")
     public String viewCourses(Model model) {
-        List<Course> courses = courseService.getAvailableCourses();
-        model.addAttribute("courses", courses);
+        try {
+            // 获取当前登录用户信息
+            User currentUser = getCurrentUser();
+            
+            // 获取所有可用课程
+            List<Course> courses = courseService.getAvailableCourses();
+            
+            // 获取用户已预约课程的ID列表
+            List<BookingDTO> userBookings = bookingService.getMyBookings(currentUser.getId());
+            List<Long> bookedCourseIds = userBookings.stream()
+                    .map(BookingDTO::getCourseId)
+                    .collect(Collectors.toList());
+            
+            // 将数据添加到模型中
+            model.addAttribute("courses", courses);
+            model.addAttribute("bookedCourseIds", bookedCourseIds);
+        } catch (Exception e) {
+            logger.error("获取课程列表失败", e);
+            model.addAttribute("error", "获取课程列表失败: " + e.getMessage());
+            model.addAttribute("courses", new ArrayList<>());
+            model.addAttribute("bookedCourseIds", new ArrayList<>());
+        }
         return "member/courses";
     }
 
@@ -144,7 +165,7 @@ public class MemberController {
      * 预约课程
      * @param courseId 课程ID
      * @param redirectAttributes 重定向属性，用于传递消息
-     * @return 重定向到会员首页
+     * @return 重定向到课程列表页面
      */
     @PostMapping("book/{courseId}")
     @PreAuthorize("hasRole('MEMBER')")
@@ -161,8 +182,8 @@ public class MemberController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             logger.error("预约课程失败: {}", e.getMessage());
         }
-        // 预约成功后重定向到会员首页根路径，确保数据正确加载
-        return "redirect:/member";
+        // 预约成功后重定向到课程列表页面，保持用户在当前页面
+        return "redirect:/member/courses";
     }
 
     /**

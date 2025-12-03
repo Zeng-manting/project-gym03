@@ -25,8 +25,8 @@ public interface UserMapper {
      * 插入用户信息
      * @param user 用户对象
      */
-    @Insert("INSERT INTO user (phone, password, role, name, gender, age, card_type, expire_date, status, note, create_time) " +
-            "VALUES (#{phone}, #{password}, #{role}, #{name}, #{gender}, #{age}, #{cardType}, #{expireDate}, #{status}, #{note}, NOW())")
+    @Insert("INSERT INTO user (phone, password, role, status) " +
+            "VALUES (#{phone}, #{password}, #{role}, #{status})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertUser(User user);
     
@@ -50,8 +50,7 @@ public interface UserMapper {
      * 根据ID更新用户信息
      * @param user 用户对象
      */
-    @Update({"UPDATE user SET phone = #{phone}, name = #{name}, gender = #{gender}, age = #{age}, " +
-            "card_type = #{cardType}, expire_date = #{expireDate}, note = #{note} WHERE id = #{id}"})
+    @Update({"UPDATE user SET phone = #{phone}, status = #{status} WHERE id = #{id}"})
     void updateById(User user);
     
     /**
