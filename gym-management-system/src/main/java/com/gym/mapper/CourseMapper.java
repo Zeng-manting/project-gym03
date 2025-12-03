@@ -59,4 +59,11 @@ public interface CourseMapper {
      */
     @Select("SELECT COUNT(*) FROM course")
     int countCourses();
+    
+    /**
+     * 更新课程信息
+     * @param course 课程对象，包含要更新的字段
+     */
+    @Update("UPDATE course SET name = #{name}, schedule_time = #{scheduleTime}, trainer_id = #{trainerId}, max_capacity = #{maxCapacity}, updated_at = #{updatedAt} WHERE id = #{id}")
+    int updateCourse(Course course);
 }

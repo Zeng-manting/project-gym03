@@ -34,6 +34,14 @@ public class CourseServiceImpl implements CourseService {
     public List<Course> getAvailableCourses() {
         return courseMapper.selectAvailableCourses();
     }
+    
+    /**
+     * 根据ID获取课程
+     */
+    @Override
+    public Course getCourseById(Long id) {
+        return courseMapper.selectById(id);
+    }
 
     /**
      * 创建新课程
@@ -106,5 +114,36 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public int countCourses() {
         return courseMapper.countCourses();
+    }
+    
+    /**
+     * 更新课程信息
+     * 实现CourseService接口的updateCourse方法
+     */
+    @Override
+    public void updateCourse(Long id, String name, LocalDateTime scheduleTime, Long trainerId, Integer maxCapacity) {
+        // 首先验证课程是否存在
+        Course existingCourse = courseMapper.selectById(id);
+        if (existingCourse == null) {
+            throw new RuntimeException("课程不存在，ID: " + id);
+        }
+        
+        // 创建课程对象，设置需要更新的字段
+        Course course = new Course();
+        course.setId(id);
+        course.setName(name);
+        course.setScheduleTime(scheduleTime);
+        course.setTrainerId(trainerId);
+        course.setMaxCapacity(maxCapacity);
+        // 保留原有的当前报名人数
+        course.setCurrentCount(existingCourse.getCurrentCount());
+        // 设置更新时间
+        course.setUpdatedAt(LocalDateTime.now());
+        
+        // 调用mapper更新课程并检查结果
+        int rowsAffected = courseMapper.updateCourse(course);
+        if (rowsAffected == 0) {
+            throw new RuntimeException("更新课程失败，未找到匹配的课程记录，ID: " + id);
+        }
     }
 }

@@ -41,6 +41,16 @@ public class Course {
     private Integer currentCount;
     
     /**
+     * 创建时间
+     */
+    private LocalDateTime createdAt;
+    
+    /**
+     * 更新时间
+     */
+    private LocalDateTime updatedAt;
+    
+    /**
      * 教练姓名（非数据库字段，用于显示）
      */
     private String coachName;

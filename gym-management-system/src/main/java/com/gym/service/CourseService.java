@@ -55,4 +55,21 @@ public interface CourseService {
      * @return 课程数量
      */
     int countCourses();
+    
+    /**
+     * 根据ID获取课程
+     * @param id 课程ID
+     * @return 课程对象
+     */
+    Course getCourseById(Long id);
+    
+    /**
+     * 更新课程信息
+     * @param id 课程ID
+     * @param name 课程名称
+     * @param scheduleTime 上课时间
+     * @param trainerId 教练ID
+     * @param maxCapacity 最大容量
+     */
+    void updateCourse(Long id, String name, LocalDateTime scheduleTime, Long trainerId, Integer maxCapacity);
 }
