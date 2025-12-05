@@ -23,6 +23,7 @@ D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\entity\User.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\BookingService.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\config\MyBatisConfig.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\exception\BusinessException.java
+D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\config\WebMvcConfig.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\AuthController.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\service\CourseService.java
 D:\ZSCzy\AI\gym03\gym-management-system\src\main\java\com\gym\controller\MemberController.java

@@ -242,7 +242,7 @@
             <div class="col-md-2 sidebar">
                 <h4>会员中心</h4>
                 <a href="/member/index">首页</a>
-                <a href="/member/cards">会员卡管理</a>
+                <a href="/member/cards">会员卡</a>
                 <a href="/member/courses">课程预约</a>
                 <a href="/member/bookings">我的预约</a>
                 <a href="/member/profile" class="active">个人信息</a>
@@ -277,14 +277,15 @@
                         
                         <div class="profile-section">
                             <div class="profile-header">
-                                <div class="avatar-container">
-                                    <div class="avatar">
-                                        <span th:text="${memberInfo?.name?.charAt(0) ?: '会'}"><i class="bi bi-person"></i></span>
-                                    </div>
+                                <div id="avatarUpload" class="avatar-container">
+                                    <img id="avatarImg" th:src="${memberInfo.avatar} ?: '/img/avatar.png'" alt="用户头像" class="avatar" style="object-fit: cover;">
                                     <div class="avatar-overlay">
                                         <i class="bi bi-camera"></i>
                                     </div>
                                 </div>
+                                <form id="avatarUploadForm" method="post" enctype="multipart/form-data" action="/member/profile/avatar/upload" style="display: none;">
+                                    <input type="file" id="avatarFile" name="avatar" accept="image/*">
+                                </form>
                                 <h3 class="profile-name" th:text="${memberInfo?.name ?: '未设置姓名'}">会员姓名</h3>
                                 <p class="profile-id">会员ID: <span th:text="${memberInfo?.userId ?: '000000'}">000000</span></p>
                             </div>
@@ -482,10 +483,15 @@
                 }
             });
             
-            // 头像点击上传功能（占位）
-            const avatarContainer = document.querySelector('.avatar-container');
-            avatarContainer.addEventListener('click', function() {
-                alert('头像上传功能即将推出');
+            // 头像上传功能
+            document.getElementById('avatarUpload').addEventListener('click', function() {
+                document.getElementById('avatarFile').click();
+            });
+            
+            document.getElementById('avatarFile').addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    document.getElementById('avatarUploadForm').submit();
+                }
             });
         });
     </script>

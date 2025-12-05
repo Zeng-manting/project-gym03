@@ -208,6 +208,13 @@
             margin-bottom: 0;
             cursor: pointer;
         }
+        .search-container {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 <body>
@@ -220,140 +227,195 @@
                 <a th:href="@{/admin/members}">会员管理</a>
                 <a th:href="@{/admin/coaches}">教练管理</a>
                 <a th:href="@{/admin/courses}">课程管理</a>
-                <a th:href="@{/admin/cards}" class="active">会员卡设置</a>
+                <a th:href="@{/admin/cards}" class="active">会员卡管理</a>
                 <a th:href="@{/logout}">退出登录</a>
             </div>
 
             <!-- 主内容区 -->
             <div class="col-md-10 content">
-                <h2 class="mb-4">会员卡类型设置</h2>
+                <h2 class="mb-4">会员卡类型管理</h2>
 
-                <!-- 会员卡类型表单 -->
-                <div class="card-form mb-4">
-                    <h4 class="mb-3">添加会员卡类型</h4>
-                    <form id="cardForm" enctype="multipart/form-data">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="cardName" class="form-label">会员卡名称</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-id-card"></i></span>
-                                    <input type="text" class="form-control" id="cardName" placeholder="请输入会员卡名称" required>
-                                </div>
+                <!-- 搜索区域 -->
+                <div class="search-container">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="searchCardName" class="form-label">会员卡名称</label>
+                            <input type="text" class="form-control" id="searchCardName" placeholder="请输入会员卡名称">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="searchCardType" class="form-label">卡片等级</label>
+                            <select class="form-select" id="searchCardType">
+                                <option value="">全部</option>
+                                <option value="platinum">铂金卡</option>
+                                <option value="gold">金卡</option>
+                                <option value="silver">银卡</option>
+                                <option value="bronze">铜卡</option>
+                                <option value="standard">标准卡</option>
+                                <option value="trial">体验卡</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="searchCardMinPrice" class="form-label">最低价格</label>
+                            <input type="number" class="form-control" id="searchCardMinPrice" min="0" step="0.01" placeholder="¥0">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="searchCardMaxPrice" class="form-label">最高价格</label>
+                            <input type="number" class="form-control" id="searchCardMaxPrice" min="0" step="0.01" placeholder="¥9999">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="searchCardStatus" class="form-label">状态</label>
+                            <select class="form-select" id="searchCardStatus">
+                                <option value="">全部</option>
+                                <option value="enabled">启用</option>
+                                <option value="disabled">禁用</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <button class="btn btn-primary" onclick="searchCardTypes()">
+                                <i class="fa fa-search"></i> 搜索
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="resetSearch()">
+                                <i class="fa fa-refresh"></i> 重置
+                            </button>
+                            <button class="btn btn-success" onclick="showAddCardModal()">
+                                <i class="fa fa-plus"></i> 新增会员卡类型
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 添加/编辑会员卡类型模态框 -->
+                <div class="modal fade" id="addCardModal" tabindex="-1" aria-labelledby="addCardModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addCardModalLabel">添加会员卡类型</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="col-md-6">
-                                <label for="cardType" class="form-label">卡片等级</label>
-                                <select class="form-select" id="cardType" required>
-                                    <option value="">请选择卡片等级</option>
-                                    <option value="platinum">铂金卡</option>
-                                    <option value="gold">金卡</option>
-                                    <option value="silver">银卡</option>
-                                    <option value="bronze">铜卡</option>
-                                    <option value="standard">标准卡</option>
-                                    <option value="trial">体验卡</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="cardPrice" class="form-label">价格 (¥)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">¥</span>
-                                    <input type="number" class="form-control" id="cardPrice" min="0" step="0.01" placeholder="请输入价格" required>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="cardDuration" class="form-label">有效期 (天)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-                                    <input type="number" class="form-control" id="cardDuration" min="1" placeholder="请输入有效期天数" required>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="cardColor" class="form-label">卡片颜色</label>
-                                <div class="input-group">
-                                    <div class="input-group-text" style="padding: 0.25rem;">
-                                        <div class="color-preview" id="colorPreview" style="background-color: #3498db;"></div>
+                            <div class="modal-body">
+                                <form id="cardForm" enctype="multipart/form-data">
+                                    <input type="hidden" id="cardId" name="id">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="cardName" class="form-label">会员卡名称</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fa fa-id-card"></i></span>
+                                                <input type="text" class="form-control" id="cardName" placeholder="请输入会员卡名称" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="cardType" class="form-label">卡片等级</label>
+                                            <select class="form-select" id="cardType" required>
+                                                <option value="">请选择卡片等级</option>
+                                                <option value="platinum">铂金卡</option>
+                                                <option value="gold">金卡</option>
+                                                <option value="silver">银卡</option>
+                                                <option value="bronze">铜卡</option>
+                                                <option value="standard">标准卡</option>
+                                                <option value="trial">体验卡</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="cardPrice" class="form-label">价格 (¥)</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">¥</span>
+                                                <input type="number" class="form-control" id="cardPrice" min="0" step="0.01" placeholder="请输入价格" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="cardDuration" class="form-label">有效期 (天)</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                                <input type="number" class="form-control" id="cardDuration" min="1" placeholder="请输入有效期天数" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="cardColor" class="form-label">卡片颜色</label>
+                                            <div class="input-group">
+                                                <div class="input-group-text" style="padding: 0.25rem;">
+                                                    <div class="color-preview" id="colorPreview" style="background-color: #3498db;"></div>
+                                                </div>
+                                                <input type="color" class="form-control form-control-color" id="cardColor" value="#3498db" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="cardMaxEntries" class="form-label">最大使用次数</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fa fa-ticket"></i></span>
+                                                <input type="number" class="form-control" id="cardMaxEntries" min="1" placeholder="请输入最大使用次数，0表示无限制">
+                                            </div>
+                                            <small class="form-text text-muted">0表示无使用次数限制</small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="cardMaxCourses" class="form-label">免费课程次数</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fa fa-graduation-cap"></i></span>
+                                                <input type="number" class="form-control" id="cardMaxCourses" min="0" placeholder="请输入免费课程次数，0表示无免费课程">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="cardImage" class="form-label">卡片图片</label>
+                                            <input type="file" class="form-control" id="cardImage" accept="image/*">
+                                            <small class="form-text text-muted">支持JPG、PNG格式，建议尺寸400x300</small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="cardPriority" class="form-label">优先级</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fa fa-sort"></i></span>
+                                                <input type="number" class="form-control" id="cardPriority" min="1" max="100" value="1" required>
+                                            </div>
+                                            <small class="form-text text-muted">数值越小优先级越高</small>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">会员特权</label>
+                                            <div class="feature-checkbox">
+                                                <input type="checkbox" id="featureUnlimitedAccess" checked>
+                                                <label for="featureUnlimitedAccess">无限制使用基础健身设备</label>
+                                            </div>
+                                            <div class="feature-checkbox">
+                                                <input type="checkbox" id="featureGroupClasses">
+                                                <label for="featureGroupClasses">免费参加团体课程</label>
+                                            </div>
+                                            <div class="feature-checkbox">
+                                                <input type="checkbox" id="featurePersonalTraining">
+                                                <label for="featurePersonalTraining">享受私教课程折扣</label>
+                                            </div>
+                                            <div class="feature-checkbox">
+                                                <input type="checkbox" id="featureLockerRoom">
+                                                <label for="featureLockerRoom">免费使用储物柜</label>
+                                            </div>
+                                            <div class="feature-checkbox">
+                                                <input type="checkbox" id="featureNutrition">
+                                                <label for="featureNutrition">营养咨询服务</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label for="cardDescription" class="form-label">会员卡描述</label>
+                                            <textarea class="form-control" id="cardDescription" rows="4" placeholder="请输入会员卡详细描述"></textarea>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label d-block">是否启用</label>
+                                            <label class="custom-toggle">
+                                                <input type="checkbox" id="cardEnabled" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label d-block">是否为推荐卡</label>
+                                            <label class="custom-toggle">
+                                                <input type="checkbox" id="cardRecommended">
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
                                     </div>
-                                    <input type="color" class="form-control form-control-color" id="cardColor" value="#3498db" required>
-                                </div>
+                                </form>
                             </div>
-                            <div class="col-md-6">
-                                <label for="cardMaxEntries" class="form-label">最大使用次数</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-ticket"></i></span>
-                                    <input type="number" class="form-control" id="cardMaxEntries" min="1" placeholder="请输入最大使用次数，0表示无限制">
-                                </div>
-                                <small class="form-text text-muted">0表示无使用次数限制</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="cardMaxCourses" class="form-label">免费课程次数</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-graduation-cap"></i></span>
-                                    <input type="number" class="form-control" id="cardMaxCourses" min="0" placeholder="请输入免费课程次数，0表示无免费课程">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="cardImage" class="form-label">卡片图片</label>
-                                <input type="file" class="form-control" id="cardImage" accept="image/*">
-                                <small class="form-text text-muted">支持JPG、PNG格式，建议尺寸400x300</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="cardPriority" class="form-label">优先级</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa fa-sort"></i></span>
-                                    <input type="number" class="form-control" id="cardPriority" min="1" max="100" value="1" required>
-                                </div>
-                                <small class="form-text text-muted">数值越小优先级越高</small>
-                            </div>
-                            <div class="col-md-12">
-                                <label class="form-label">会员特权</label>
-                                <div class="feature-checkbox">
-                                    <input type="checkbox" id="featureUnlimitedAccess" checked>
-                                    <label for="featureUnlimitedAccess">无限制使用基础健身设备</label>
-                                </div>
-                                <div class="feature-checkbox">
-                                    <input type="checkbox" id="featureGroupClasses">
-                                    <label for="featureGroupClasses">免费参加团体课程</label>
-                                </div>
-                                <div class="feature-checkbox">
-                                    <input type="checkbox" id="featurePersonalTraining">
-                                    <label for="featurePersonalTraining">享受私教课程折扣</label>
-                                </div>
-                                <div class="feature-checkbox">
-                                    <input type="checkbox" id="featureLockerRoom">
-                                    <label for="featureLockerRoom">免费使用储物柜</label>
-                                </div>
-                                <div class="feature-checkbox">
-                                    <input type="checkbox" id="featureNutrition">
-                                    <label for="featureNutrition">营养咨询服务</label>
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <label for="cardDescription" class="form-label">会员卡描述</label>
-                                <textarea class="form-control" id="cardDescription" rows="4" placeholder="请输入会员卡详细描述"></textarea>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label d-block">是否启用</label>
-                                <label class="custom-toggle">
-                                    <input type="checkbox" id="cardEnabled" checked>
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label d-block">是否为推荐卡</label>
-                                <label class="custom-toggle">
-                                    <input type="checkbox" id="cardRecommended">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div class="col-md-12">
-                                <button type="button" class="btn btn-primary" onclick="saveCardType()">
-                                    <i class="fa fa-save"></i> 保存会员卡类型
-                                </button>
-                                <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
-                                    <i class="fa fa-refresh"></i> 重置
-                                </button>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                                <button type="button" class="btn btn-primary" onclick="saveCardType()">保存会员卡类型</button>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
                 <!-- 会员卡类型列表 -->
@@ -361,8 +423,8 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4>会员卡类型列表</h4>
                         <div class="input-group" style="width: 300px;">
-                            <input type="text" class="form-control" id="searchCard" placeholder="搜索会员卡名称">
-                            <button class="btn btn-primary" onclick="searchCardTypes()">
+                            <input type="text" class="form-control" id="quickSearchCard" placeholder="快速搜索会员卡名称">
+                            <button class="btn btn-primary" onclick="quickSearchCardTypes()">
                                 <i class="fa fa-search"></i>
                             </button>
                         </div>
@@ -565,6 +627,13 @@
 
             // 获取表单数据
             const formData = new FormData();
+            
+            // 获取会员卡ID（如果是编辑操作）
+            const cardId = document.getElementById('cardId').value;
+            if (cardId) {
+                formData.append('id', cardId);
+            }
+            
             formData.append('name', document.getElementById('cardName').value);
             formData.append('type', document.getElementById('cardType').value);
             formData.append('price', document.getElementById('cardPrice').value);
@@ -594,8 +663,7 @@
             console.log('保存会员卡类型:', formData);
             
             // 模拟保存成功
-            alert('会员卡类型保存成功！');
-            resetForm();
+            alert(cardId ? '会员卡类型更新成功！' : '会员卡类型添加成功！');
         }
 
         // 重置表单
@@ -621,9 +689,23 @@
 
         // 搜索会员卡类型
         function searchCardTypes() {
-            const keyword = document.getElementById('searchCard').value;
-            console.log('搜索会员卡:', keyword);
-            alert(`搜索关键词: ${keyword}`);
+            // 获取搜索条件
+            const cardName = document.getElementById('searchCardName').value;
+            const cardType = document.getElementById('searchCardType').value;
+            const minPrice = document.getElementById('searchCardMinPrice').value;
+            const maxPrice = document.getElementById('searchCardMaxPrice').value;
+            const status = document.getElementById('searchCardStatus').value;
+
+            // 模拟搜索操作
+            console.log('搜索条件:', { cardName, cardType, minPrice, maxPrice, status });
+            alert('搜索功能已触发，实际应用中会根据条件过滤数据');
+        }
+
+        // 快速搜索会员卡类型
+        function quickSearchCardTypes() {
+            const keyword = document.getElementById('quickSearchCard').value;
+            console.log('快速搜索关键词:', keyword);
+            alert('快速搜索功能已触发，实际应用中会根据关键词过滤数据');
         }
 
         // 查看会员卡详情
@@ -754,6 +836,7 @@
             ];
 
             // 填充表单
+            document.getElementById('cardId').value = id; // 设置会员卡ID
             document.getElementById('cardName').value = cardNames[id - 1];
             document.getElementById('cardType').value = cardTypes[id - 1];
             document.getElementById('cardPrice').value = cardPrices[id - 1];
@@ -773,8 +856,12 @@
             document.getElementById('featureLockerRoom').checked = true;
             document.getElementById('featureNutrition').checked = id <= 2;
             
-            // 滚动到表单顶部
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // 修改模态框标题
+            document.getElementById('addCardModalLabel').textContent = '编辑会员卡类型';
+            
+            // 显示模态框
+            const addCardModal = new bootstrap.Modal(document.getElementById('addCardModal'));
+            addCardModal.show();
         }
 
         // 删除会员卡类型
@@ -942,6 +1029,63 @@
         // 显示会员卡对比模态框
         function showCardCompareModal() {
             cardCompareModal.show();
+        }
+
+        // 显示添加会员卡模态框
+        function showAddCardModal() {
+            // 重置表单
+            resetForm();
+            
+            // 重置模态框标题
+            document.getElementById('addCardModalLabel').textContent = '添加会员卡类型';
+            
+            // 清空ID字段
+            document.getElementById('cardId').value = '';
+            
+            // 显示模态框
+            const addCardModal = new bootstrap.Modal(document.getElementById('addCardModal'));
+            addCardModal.show();
+        }
+
+        // 更新保存函数，使其在保存后关闭模态框
+        const originalSaveFunction = saveCardType;
+        function saveCardType() {
+            originalSaveFunction();
+            // 关闭模态框
+            const addCardModal = bootstrap.Modal.getInstance(document.getElementById('addCardModal'));
+            if (addCardModal) {
+                addCardModal.hide();
+            }
+        }
+
+        // 搜索会员卡类型
+        function searchCardTypes() {
+            // 获取搜索条件
+            const cardName = document.getElementById('searchCardName').value;
+            const cardType = document.getElementById('searchCardType').value;
+            const minPrice = document.getElementById('searchCardMinPrice').value;
+            const maxPrice = document.getElementById('searchCardMaxPrice').value;
+            const status = document.getElementById('searchCardStatus').value;
+
+            // 模拟搜索操作
+            console.log('搜索条件:', { cardName, cardType, minPrice, maxPrice, status });
+            alert('搜索功能已触发，实际应用中会根据条件过滤数据');
+        }
+
+        // 快速搜索会员卡类型
+        function quickSearchCardTypes() {
+            const keyword = document.getElementById('quickSearchCard').value;
+            console.log('快速搜索关键词:', keyword);
+            alert('快速搜索功能已触发，实际应用中会根据关键词过滤数据');
+        }
+
+        // 重置搜索
+        function resetSearch() {
+            document.getElementById('searchCardName').value = '';
+            document.getElementById('searchCardType').value = '';
+            document.getElementById('searchCardMinPrice').value = '';
+            document.getElementById('searchCardMaxPrice').value = '';
+            document.getElementById('searchCardStatus').value = '';
         }
 
         // 页面加载完成后执行

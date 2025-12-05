@@ -3,6 +3,7 @@ package com.gym.controller;
 import com.gym.entity.Course;
 import com.gym.entity.User;
 import com.gym.entity.CoachInfo;
+import com.gym.entity.MemberInfo;
 import com.gym.service.BookingService;
 import com.gym.service.CourseService;
 import com.gym.service.CoachInfoService;
@@ -14,12 +15,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.gym.mapper.UserMapper;
+import com.gym.mapper.MemberInfoMapper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +50,9 @@ public class CoachController {
     
     @Autowired
     private CoachInfoService coachInfoService;
+    
+    @Autowired
+    private MemberInfoMapper memberInfoMapper;
 
     /**
      * 显示教练首页
@@ -226,6 +235,64 @@ public class CoachController {
     }
     
     /**
+     * 上传教练头像
+     */
+    @PostMapping("/profile/avatar/upload")
+    @PreAuthorize("hasRole('TRAINER')")
+    public String uploadAvatar(@RequestParam("avatar") MultipartFile avatar, RedirectAttributes redirectAttributes) {
+        User currentUser = getCurrentUser();
+        
+        try {
+            if (avatar.isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "请选择要上传的头像文件");
+                return "redirect:/coach/profile";
+            }
+            
+            // 获取当前教练信息
+            CoachInfo coachInfo = coachInfoService.getCoachInfoByUserId(currentUser.getId());
+            if (coachInfo == null) {
+                // 如果不存在，创建一个新的教练信息对象
+                coachInfo = new CoachInfo();
+                coachInfo.setUserId(currentUser.getId());
+                coachInfo.setUser(currentUser);
+                coachInfo.setPhone(currentUser.getPhone());
+                coachInfo.setName(currentUser.getPhone());
+            }
+            
+            // 生成唯一文件名
+            String originalFilename = avatar.getOriginalFilename();
+            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String uniqueFilename = UUID.randomUUID().toString() + extension;
+            
+            // 设置文件保存路径
+            String savePath = "d:/ZSCzy/AI/gym03/gym-management-system/avatar/trainer";
+            File saveDir = new File(savePath);
+            if (!saveDir.exists()) {
+                saveDir.mkdirs();
+            }
+            
+            // 保存文件
+            File targetFile = new File(saveDir, uniqueFilename);
+            avatar.transferTo(targetFile);
+            
+            // 更新教练信息中的头像URL
+            String avatarUrl = "/avatar/trainer/" + uniqueFilename;
+            coachInfo.setAvatar(avatarUrl);
+            coachInfoService.saveOrUpdateCoachInfo(coachInfo);
+            
+            redirectAttributes.addFlashAttribute("successMessage", "头像上传成功");
+        } catch (IOException e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "头像上传失败：" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "头像上传失败：" + e.getMessage());
+        }
+        
+        return "redirect:/coach/profile";
+    }
+    
+    /**
      * 预约信息扩展类，用于页面展示
      */
     private static class BookingInfo {
@@ -399,16 +466,51 @@ public class CoachController {
     @PreAuthorize("hasRole('TRAINER')")
     @ResponseBody
     public Map<String, Object> getMemberDetails(@PathVariable Long memberId) {
-        // 注意：UserMapper中目前没有findById方法，这里需要修改为合适的查询方式
-        // 在实际实现中，应该在UserMapper中添加findById方法或使用其他方式获取用户信息
-        // 这里暂时返回基本信息框架
-        Map<String, Object> memberDetails = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         
-        // 暂时返回带有ID的基本信息
-        memberDetails.put("id", memberId);
-        memberDetails.put("name", "会员" + memberId);
-        memberDetails.put("message", "注意：需要在UserMapper中添加findById方法以获取完整的会员信息");
+        try {
+            // 获取用户基本信息
+            User user = userMapper.selectById(memberId);
+            if (user == null) {
+                result.put("success", false);
+                result.put("message", "未找到该会员信息");
+                return result;
+            }
+            
+            // 获取会员详细信息
+            MemberInfo memberInfo = memberInfoMapper.selectByUserId(memberId);
+            
+            // 构建返回数据
+            Map<String, Object> memberDetails = new HashMap<>();
+            memberDetails.put("id", user.getId());
+            
+            // 优先使用member_info中的name，如果不存在则使用user表中的phone
+            String memberName = (memberInfo != null && memberInfo.getName() != null && !memberInfo.getName().trim().isEmpty()) 
+                    ? memberInfo.getName() 
+                    : user.getPhone();
+            memberDetails.put("name", memberName);
+            
+            memberDetails.put("phone", user.getPhone());
+            
+            // 从member_info中获取其他详细信息
+            if (memberInfo != null) {
+                memberDetails.put("gender", memberInfo.getGender());
+                memberDetails.put("birthDate", memberInfo.getBirthDate());
+                memberDetails.put("email", memberInfo.getEmail());
+                memberDetails.put("address", memberInfo.getAddress());
+                memberDetails.put("emergencyContact", memberInfo.getEmergencyContact());
+                memberDetails.put("emergencyPhone", memberInfo.getEmergencyPhone());
+                memberDetails.put("healthCondition", memberInfo.getHealthCondition());
+            }
+            
+            result.put("success", true);
+            result.put("data", memberDetails);
+            
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "获取会员详情失败：" + e.getMessage());
+        }
         
-        return memberDetails;
+        return result;
     }
 }

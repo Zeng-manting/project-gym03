@@ -31,7 +31,7 @@ public class CoachInfoServiceImpl implements CoachInfoService {
     @Transactional
     @Override
     public void saveOrUpdateCoachInfo(CoachInfo coachInfo) {
-        CoachInfo existing = getCoachInfoByUserId(coachInfo.getUser().getId());
+        CoachInfo existing = getCoachInfoByUserId(coachInfo.getUserId());
         if (existing != null) {
             // 更新现有记录
             coachInfo.setId(existing.getId());

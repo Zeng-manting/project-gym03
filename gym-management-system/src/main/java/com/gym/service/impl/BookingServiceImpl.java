@@ -88,6 +88,7 @@ public class BookingServiceImpl implements BookingService {
             dto.setCourseName(map.get("course_name").toString());
             dto.setScheduleTime((LocalDateTime) map.get("schedule_time"));
             dto.setTrainerId(Long.valueOf(map.get("trainer_id").toString()));
+            dto.setTrainerName(map.get("trainer_name") != null ? map.get("trainer_name").toString() : "");
             dto.setBookingTime((LocalDateTime) map.get("booking_time"));
             bookingDTOs.add(dto);
         }

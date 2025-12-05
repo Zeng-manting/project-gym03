@@ -47,12 +47,15 @@ public interface BookingMapper {
     boolean existsByUserIdAndCourseId(@Param("userId") Long userId, @Param("courseId") Long courseId);
     
     /**
-     * 查询用户的预约记录，关联课程信息
+     * 查询用户的预约记录，关联课程和教练信息
      * @param userId 用户ID
      * @return 预约记录列表
      */
-    @Select("SELECT b.id, b.course_id, c.name as course_name, c.schedule_time, c.trainer_id, b.booking_time " +
-            "FROM booking b JOIN course c ON b.course_id = c.id WHERE b.user_id = #{userId} ORDER BY c.schedule_time ASC")
+    @Select("SELECT b.id, b.course_id, c.name as course_name, c.schedule_time, c.trainer_id, u.name as trainer_name, b.booking_time " +
+            "FROM booking b " +
+            "JOIN course c ON b.course_id = c.id " +
+            "JOIN user u ON c.trainer_id = u.id " +
+            "WHERE b.user_id = #{userId} ORDER BY c.schedule_time ASC")
     List<Map<String, Object>> selectUserBookingsWithCourseInfo(Long userId);
     
     /**

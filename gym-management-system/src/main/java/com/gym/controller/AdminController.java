@@ -3,20 +3,25 @@ package com.gym.controller;
 import com.gym.entity.CoachInfo;
 import com.gym.entity.User;
 import com.gym.mapper.CoachInfoMapper;
+import com.gym.mapper.UserMapper;
 import com.gym.service.UserService;
 import com.gym.service.CourseService;
 import com.gym.service.MembershipCardService;
+import com.gym.service.CoachInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * 管理员控制器
@@ -29,13 +34,17 @@ public class AdminController {
     private final CourseService courseService;
     private final MembershipCardService membershipCardService;
     private final CoachInfoMapper coachInfoMapper;
+    private final CoachInfoService coachInfoService;
+    private final UserMapper userMapper;
 
     @Autowired
-    public AdminController(UserService userService, CourseService courseService, MembershipCardService membershipCardService, CoachInfoMapper coachInfoMapper) {
+    public AdminController(UserService userService, CourseService courseService, MembershipCardService membershipCardService, CoachInfoMapper coachInfoMapper, CoachInfoService coachInfoService, UserMapper userMapper) {
         this.userService = userService;
         this.courseService = courseService;
         this.membershipCardService = membershipCardService;
         this.coachInfoMapper = coachInfoMapper;
+        this.coachInfoService = coachInfoService;
+        this.userMapper = userMapper;
     }
 
     /**
@@ -79,16 +88,39 @@ public class AdminController {
 
     /**
      * 显示会员列表页面
-     * @param keyword 搜索关键字
+     * @param name 会员姓名
+     * @param phone 会员手机号
+     * @param status 会员状态
+     * @param cardType 会员卡类型
      * @param model 模型对象
      * @return 会员列表视图名称
      */
     @GetMapping("/admin/members")
     @PreAuthorize("hasRole('ADMIN')")
-    public String listMembers(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword, Model model) {
-        List<User> members = userService.searchMembers(keyword);
+    public String listMembers(Model model, 
+                             @RequestParam(required = false) String name,
+                             @RequestParam(required = false) String phone,
+                             @RequestParam(required = false) String status,
+                             @RequestParam(required = false) String cardType) {
+        // 创建查询参数Map
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("phone", phone);
+        params.put("status", status);
+        params.put("cardType", cardType);
+        
+        // 调用多条件搜索方法
+        List<User> members = userService.searchMembers(params);
+        
+        // 将搜索条件和结果添加到模型
         model.addAttribute("members", members);
-        model.addAttribute("keyword", keyword);
+        model.addAttribute("name", name);
+        model.addAttribute("phone", phone);
+        model.addAttribute("status", status);
+        model.addAttribute("cardType", cardType);
+        
+        // 获取会员总数
+        model.addAttribute("totalMembers", userService.countMembers());
         return "admin/members";
     }
 
@@ -219,41 +251,172 @@ public class AdminController {
     
     /**
      * 创建教练用户
+     * @param name 姓名
      * @param phone 手机号
-     * @param password 密码
-     * @param attributes 重定向属性
-     * @return 重定向到教练列表页面
+     * @param gender 性别
+     * @param specialty 专长
+     * @param status 状态
+     * @param description 描述
+     * @return JSON响应结果
      */
     @PostMapping("/admin/coaches")
     @PreAuthorize("hasRole('ADMIN')")
-    public String createCoach(@RequestParam("phone") String phone, 
-                             @RequestParam("password") String password, 
-                             RedirectAttributes attributes) {
-        // 检查手机号是否已存在
-        User existingUser = userService.findByPhone(phone);
-        if (existingUser != null) {
-            attributes.addFlashAttribute("error", "手机号已被注册");
-            return "redirect:/admin/coaches";
-        }
+    @ResponseBody
+    public Map<String, Object> createCoach(@RequestParam("name") String name,
+                                          @RequestParam("phone") String phone,
+                                          @RequestParam("gender") String gender,
+                                          @RequestParam("specialty") String specialty,
+                                          @RequestParam("status") String status,
+                                          @RequestParam("description") String description,
+                                          @RequestParam(value = "avatar", required = false) MultipartFile avatar,
+                                          @RequestParam(value = "age", required = false) Integer age,
+                                          @RequestParam(value = "title", required = false) String title,
+                                          @RequestParam(value = "salary", required = false) BigDecimal salary) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // 检查手机号是否已存在
+            User existingUser = userService.findByPhone(phone);
+            if (existingUser != null) {
+                result.put("success", false);
+                result.put("message", "手机号已被注册");
+                return result;
+            }
 
-        // 创建教练用户
-        userService.createTrainer(phone, password);
-        attributes.addFlashAttribute("message", "教练账号创建成功");
-        return "redirect:/admin/coaches";
+            // 检查手机号长度是否足够生成默认密码
+            if (phone.length() < 6) {
+                result.put("success", false);
+                result.put("message", "手机号长度不足，无法生成默认密码");
+                return result;
+            }
+
+            // 为新教练生成默认密码（手机号后6位）
+            String defaultPassword = phone.substring(phone.length() - 6);
+
+            // 创建教练用户
+            userService.createTrainer(phone, defaultPassword);
+
+            // 获取刚刚创建的用户对象
+            User user = userService.findByPhone(phone);
+            if (user != null) {
+                // 创建教练详细信息
+                CoachInfo coachInfo = new CoachInfo();
+                coachInfo.setUserId(user.getId());
+                coachInfo.setName(name);
+                coachInfo.setGender(gender);
+                coachInfo.setSpecialty(specialty);
+                coachInfo.setStatus(status);
+                coachInfo.setIntroduction(description);
+                coachInfo.setCreatedAt(LocalDateTime.now());
+                coachInfo.setUpdatedAt(LocalDateTime.now());
+
+                // 处理头像文件
+                if (avatar != null && !avatar.isEmpty()) {
+                    // 这里可以添加头像文件上传逻辑
+                    // 暂时不处理头像上传
+                }
+
+                // 保存教练详细信息
+                coachInfoService.saveOrUpdateCoachInfo(coachInfo);
+            }
+
+            result.put("success", true);
+            result.put("message", "教练创建成功，初始密码为手机号后6位");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "教练创建失败: " + e.getMessage());
+        }
+        return result;
     }
     
     /**
      * 逻辑删除教练（更新状态为禁用）
      * @param id 教练ID
-     * @param attributes 重定向属性
-     * @return 重定向到教练列表页面
+     * @return JSON响应结果
      */
     @DeleteMapping("/admin/coaches/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public String deleteCoach(@PathVariable("id") Long id, RedirectAttributes attributes) {
-        userService.disableUser(id);
-        attributes.addFlashAttribute("message", "教练账号已成功禁用");
-        return "redirect:/admin/coaches";
+    @ResponseBody
+    public Map<String, Object> deleteCoach(@PathVariable("id") Long id) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            userService.disableUser(id);
+            result.put("success", true);
+            result.put("message", "教练账号已成功禁用");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "教练账号禁用失败: " + e.getMessage());
+        }
+        return result;
+    }
+    
+    /**
+     * 更新教练信息
+     */
+    @PutMapping("/admin/coaches/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseBody
+    public Map<String, Object> updateCoach(@PathVariable Long id, @RequestBody Map<String, Object> coachData) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // 更新用户表中的基本信息
+            User user = userService.getMemberById(id);
+            if (user == null || !"trainer".equals(user.getRole())) {
+                throw new RuntimeException("教练不存在");
+            }
+            
+            // 更新基本信息
+            if (coachData.containsKey("name")) {
+                user.setName((String) coachData.get("name"));
+            }
+            if (coachData.containsKey("phone")) {
+                user.setPhone((String) coachData.get("phone"));
+            }
+            if (coachData.containsKey("gender")) {
+                user.setGender((String) coachData.get("gender"));
+            }
+            if (coachData.containsKey("status")) {
+                user.setStatus((String) coachData.get("status"));
+            }
+            userService.updateMember(user);
+            
+            // 更新教练详细信息
+            CoachInfo coachInfo = coachInfoMapper.findByUserId(id);
+            if (coachInfo == null) {
+                coachInfo = new CoachInfo();
+                coachInfo.setUserId(id);
+                coachInfo.setUser(user);
+            }
+            
+            // 更新教练详细信息字段
+            if (coachData.containsKey("name")) {
+                coachInfo.setName((String) coachData.get("name"));
+            }
+            if (coachData.containsKey("phone")) {
+                coachInfo.setPhone((String) coachData.get("phone"));
+            }
+            if (coachData.containsKey("gender")) {
+                coachInfo.setGender((String) coachData.get("gender"));
+            }
+            if (coachData.containsKey("specialty")) {
+                coachInfo.setSpecialty((String) coachData.get("specialty"));
+            }
+            if (coachData.containsKey("title")) {
+                // 可以根据需要扩展，目前title字段在前端是固定的
+            }
+            if (coachData.containsKey("description")) {
+                coachInfo.setIntroduction((String) coachData.get("description"));
+            }
+            
+            // 保存更新后的教练详细信息
+            coachInfoMapper.update(coachInfo);
+            
+            result.put("success", true);
+            result.put("message", "教练信息更新成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "教练信息更新失败: " + e.getMessage());
+        }
+        return result;
     }
     
     /**
@@ -268,7 +431,7 @@ public class AdminController {
         Map<String, Object> result = new HashMap<>();
         try {
             // 获取教练用户信息
-            User coach = userService.getMemberById(id);
+            User coach = userMapper.selectById(id);
             if (coach == null || !"trainer".equals(coach.getRole())) {
                 result.put("success", false);
                 result.put("message", "未找到该教练信息");

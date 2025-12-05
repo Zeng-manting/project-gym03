@@ -7,11 +7,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 会员个人资料控制器
@@ -134,5 +138,61 @@ public class MemberProfileController {
         
         // 通过手机号获取用户ID
         return memberInfoService.getUserIdByPhone(phone);
+    }
+    
+    /**
+     * 上传会员头像
+     * @param avatar 头像文件
+     * @param attributes 重定向属性，用于传递消息
+     * @return 重定向到个人信息页面
+     */
+    @PostMapping("/profile/avatar/upload")
+    public String uploadAvatar(@RequestParam("avatar") MultipartFile avatar, RedirectAttributes attributes) {
+        Long userId = getCurrentUserId();
+        
+        try {
+            if (avatar.isEmpty()) {
+                attributes.addFlashAttribute("error", "请选择要上传的头像文件");
+                return "redirect:/member/profile";
+            }
+            
+            // 获取当前会员信息
+            MemberInfo memberInfo = memberInfoService.getMemberInfoByUserId(userId);
+            if (memberInfo == null) {
+                attributes.addFlashAttribute("error", "会员信息不存在");
+                return "redirect:/member/profile";
+            }
+            
+            // 生成唯一文件名
+            String originalFilename = avatar.getOriginalFilename();
+            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String uniqueFilename = UUID.randomUUID().toString() + extension;
+            
+            // 设置文件保存路径（这里保存到项目根目录下的avatar目录）
+            String savePath = "d:/ZSCzy/AI/gym03/gym-management-system/avatar";
+            File saveDir = new File(savePath);
+            if (!saveDir.exists()) {
+                saveDir.mkdirs();
+            }
+            
+            // 保存文件
+            File targetFile = new File(saveDir, uniqueFilename);
+            avatar.transferTo(targetFile);
+            
+            // 更新会员信息中的头像URL
+            String avatarUrl = "/avatar/" + uniqueFilename;
+            memberInfo.setAvatar(avatarUrl);
+            memberInfoService.updateMemberInfo(memberInfo);
+            
+            attributes.addFlashAttribute("success", "头像上传成功");
+        } catch (IOException e) {
+            e.printStackTrace();
+            attributes.addFlashAttribute("error", "头像上传失败：" + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            attributes.addFlashAttribute("error", "头像上传失败：" + e.getMessage());
+        }
+        
+        return "redirect:/member/profile";
     }
 }

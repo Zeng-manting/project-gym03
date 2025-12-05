@@ -86,6 +86,11 @@ public class MemberInfo {
     private String healthCondition;
     
     /**
+     * 头像URL
+     */
+    private String avatar;
+    
+    /**
      * 创建时间
      */
     private LocalDateTime createdAt;

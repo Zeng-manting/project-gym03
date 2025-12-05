@@ -39,9 +39,9 @@ public interface MemberInfoMapper {
      * @param memberInfo 会员信息对象
      */
     @Insert("INSERT INTO member_info (user_id, name, gender, birth_date, phone, card_issue_date, " +
-            "height, weight, email, address, emergency_contact, emergency_phone, health_condition) " +
+            "height, weight, email, address, emergency_contact, emergency_phone, health_condition, avatar) " +
             "VALUES (#{userId}, #{name}, #{gender}, #{birthDate}, #{phone}, #{cardIssueDate}, " +
-            "#{height}, #{weight}, #{email}, #{address}, #{emergencyContact}, #{emergencyPhone}, #{healthCondition})")
+            "#{height}, #{weight}, #{email}, #{address}, #{emergencyContact}, #{emergencyPhone}, #{healthCondition}, #{avatar})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insert(MemberInfo memberInfo);
 
@@ -52,7 +52,7 @@ public interface MemberInfoMapper {
     @Update("UPDATE member_info SET name = #{name}, gender = #{gender}, birth_date = #{birthDate}, " +
             "phone = #{phone}, card_issue_date = #{cardIssueDate}, height = #{height}, weight = #{weight}, " +
             "email = #{email}, address = #{address}, emergency_contact = #{emergencyContact}, " +
-            "emergency_phone = #{emergencyPhone}, health_condition = #{healthCondition} " +
+            "emergency_phone = #{emergencyPhone}, health_condition = #{healthCondition}, avatar = #{avatar} " +
             "WHERE user_id = #{userId}")
     void updateByUserId(MemberInfo memberInfo);
 

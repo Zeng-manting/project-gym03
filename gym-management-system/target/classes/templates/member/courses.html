@@ -157,7 +157,7 @@
             <div class="col-md-2 sidebar">
                 <h4>会员中心</h4>
                 <a href="/member/index">首页</a>
-                <a href="/member/cards">会员卡管理</a>
+                <a href="/member/cards">会员卡</a>
                 <a href="/member/courses" class="active">课程预约</a>
                 <a href="/member/bookings">我的预约</a>
                 <a href="/member/profile">个人信息</a>
@@ -194,7 +194,7 @@
                                     <tr>
                                         <th><i class="bi bi-book me-2"></i>课程名称</th>
                                         <th><i class="bi bi-clock me-2"></i>上课时间</th>
-                                        <th><i class="bi bi-person-badge me-2"></i>教练ID</th>
+                                        <th><i class="bi bi-person-badge me-2"></i>教练姓名</th>
                                         <th><i class="bi bi-people me-2"></i>报名情况</th>
                                         <th><i class="bi bi-gear me-2"></i>操作</th>
                                     </tr>
@@ -203,7 +203,7 @@
                                     <tr th:each="course : ${courses}">
                                         <td th:text="${course.name}">课程名称</td>
                                         <td th:text="${course.scheduleTime}">上课时间</td>
-                                        <td th:text="${course.trainerId}">教练ID</td>
+                                        <td th:text="${course.coachName}">教练姓名</td>
                                         <td>
                                             <div th:text="${course.currentCount} + '/' + ${course.maxCapacity}" class="capacity-text"></div>
                                             <div class="capacity-bar">

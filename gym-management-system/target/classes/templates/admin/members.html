@@ -100,7 +100,7 @@
                 <a th:href="@{/admin/members}" class="active">会员管理</a>
                 <a th:href="@{/admin/coaches}">教练管理</a>
                 <a th:href="@{/admin/courses}">课程管理</a>
-                <a th:href="@{/admin/cards}">会员卡设置</a>
+                <a th:href="@{/admin/cards}">会员卡管理</a>
                 <a th:href="@{/logout}">退出登录</a>
             </div>
 
@@ -157,6 +157,7 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>头像</th>
                                 <th>ID</th>
                                 <th>姓名</th>
                                 <th>手机号</th>
@@ -172,16 +173,24 @@
                             <!-- 表格数据通过Thymeleaf动态生成 -->
                             <!-- 正确的字段访问方式，直接访问User对象的字段 -->
                             <tr th:if="${members == null or members.empty}">
-                                <td colspan="9" class="text-center">暂无会员数据</td>
+                                <td colspan="10" class="text-center">暂无会员数据</td>
                             </tr>
                             <tr th:each="member : ${members}">
+                                    <td>
+                                        <img th:if="${member.avatar != null}" th:src="@{${member.avatar}}" alt="会员头像" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                        <img th:unless="${member.avatar != null}" src="https://picsum.photos/id/1005/40/40" alt="默认头像" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                    </td>
                                     <td th:text="${member.id}"></td>
                                     <td th:text="${member.name != null ? member.name : '未设置'}"></td>
                                     <td th:text="${member.phone}"></td>
                                     <td>
-                                        <span th:if="${member.gender != null and (member.gender == '男' or member.gender == '1')}">男</span>
-                                        <span th:elseif="${member.gender != null and (member.gender == '女' or member.gender == '0')}">女</span>
-                                        <!-- <span th:else>未知</span> -->
+                                        <span th:switch="${member.gender}">
+                                            <span th:case="'男'">男</span>
+                                            <span th:case="'1'">男</span>
+                                            <span th:case="'女'">女</span>
+                                            <span th:case="'0'">女</span>
+                                            
+                                        </span>
                                     </td>
                                     <td th:text="${member.age != null ? member.age : '-'}"></td>
                                     <td th:text="${member.cardType != null ? member.cardType : '未设置'}"></td>
@@ -295,6 +304,24 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                     <button type="button" class="btn btn-danger" id="confirmDeleteBtn">确认删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 会员详情模态框 -->
+    <div class="modal fade" id="memberDetailModal" tabindex="-1" aria-labelledby="memberDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="memberDetailModalLabel">会员详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="memberDetailContent">
+                    <!-- 会员详情内容将通过JavaScript动态填充 -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
                 </div>
             </div>
         </div>
@@ -553,19 +580,98 @@
             memberModal.show();
         }
 
+        // 初始化会员详情模态框
+        const memberDetailModal = new bootstrap.Modal(document.getElementById('memberDetailModal'));
+        
         // 查看会员详情 - 使用AJAX获取会员详情
         function viewMember(id) {
+            console.log('查看会员详情:', id);
+            
+            // 从后端API获取真实的会员详情数据
             $.ajax({
                 url: '/admin/members/' + id,
                 type: 'GET',
                 dataType: 'json',
-                success: function(member) {
-                    // 填充模态框数据
-                    // 注意：此处需要确保HTML中有对应的查看详情模态框和元素ID
-                    alert(`查看会员：${member.name}\n手机号：${member.phone}\n状态：${member.status === 1 ? '活跃' : '禁用'}`);
+                success: function(response) {
+                    console.log('获取到的会员数据:', response);
+                    
+                    // 检查响应格式
+                    const member = response.member || response;
+                    
+                    if (member && member.id) {
+                        // 构建详情HTML
+                        const statusMap = {
+                            active: { text: '活跃', class: 'bg-success' },
+                            disabled: { text: '禁用', class: 'bg-danger' },
+                            expired: { text: '过期', class: 'bg-warning' }
+                        };
+
+                        // 使用真实头像或默认头像
+                        const avatar = member.avatar ? member.avatar : 
+                            `https://picsum.photos/id/${member.id % 100}/200/200`;
+
+                        // 处理性别显示
+                        let genderText = '未知';
+                        if (member.gender) {
+                            const gender = String(member.gender);
+                            if (gender === '男' || gender === '1') {
+                                genderText = '男';
+                            } else if (gender === '女' || gender === '0') {
+                                genderText = '女';
+                            }
+                        }
+
+                        // 处理状态显示
+                        const status = member.status || 'active';
+                        const statusInfo = statusMap[status] || { text: status, class: 'bg-secondary' };
+
+                        const detailHTML = `
+                            <div class="row">
+                                <div class="col-md-4 text-center">
+                                    <img src="${avatar}" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover;" alt="会员头像">
+                                </div>
+                                <div class="col-md-8">
+                                    <h4>${member.name || '未设置'}</h4>
+                                    <p><strong>会员ID：</strong>${member.id}</p>
+                                    <p><strong>手机号：</strong>${member.phone || '未设置'}</p>
+                                    <p><strong>性别：</strong>${genderText}</p>
+                                    <p><strong>年龄：</strong>${member.age ? member.age : '-'}</p>
+                                    <p><strong>会员卡类型：</strong>${member.cardType || '未设置'}</p>
+                                    <p><strong>有效期至：</strong>${member.expireDate ? new Date(member.expireDate).toLocaleDateString() : '未设置'}</p>
+                                    <p><strong>状态：</strong><span class="badge ${statusInfo.class}">${statusInfo.text}</span></p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h5>备注信息</h5>
+                                    <p>${member.note || '暂无备注'}</p>
+                                </div>
+                            </div>
+                        `;
+
+                        // 填充详情内容
+                        document.getElementById('memberDetailContent').innerHTML = detailHTML;
+                        
+                        // 显示模态框
+                        memberDetailModal.show();
+                    } else {
+                        // 显示错误信息
+                        document.getElementById('memberDetailContent').innerHTML = 
+                            `<div class="alert alert-danger">获取会员详情失败：未找到有效会员数据</div>`;
+                        
+                        // 显示模态框
+                        memberDetailModal.show();
+                    }
                 },
-                error: function() {
-                    alert('获取会员详情失败');
+                error: function(xhr, status, error) {
+                    console.error('获取会员详情出错:', status, error);
+                    console.error('XHR响应:', xhr.responseText);
+                    document.getElementById('memberDetailContent').innerHTML = 
+                        `<div class="alert alert-danger">获取会员详情时发生错误：${error}</div>`;
+                    
+                    // 显示模态框
+                    memberDetailModal.show();
                 }
             });
         }
@@ -582,7 +688,17 @@
                     // 填充表单数据
                     document.getElementById('memberName').value = member.name || '';
                     document.getElementById('memberPhone').value = member.phone || '';
-                    document.getElementById('memberGender').value = member.gender === '1' ? '男' : '女';
+                    
+                    // 更健壮的性别处理逻辑
+                    const genderValue = member.gender;
+                    if (genderValue === '男' || genderValue === '1') {
+                        document.getElementById('memberGender').value = '男';
+                    } else if (genderValue === '女' || genderValue === '0') {
+                        document.getElementById('memberGender').value = '女';
+                    } else {
+                        // 处理异常值，默认选择男
+                        document.getElementById('memberGender').value = '男';
+                    }
                     if (document.getElementById('memberAge')) {
                         document.getElementById('memberAge').value = member.age || '';
                     }

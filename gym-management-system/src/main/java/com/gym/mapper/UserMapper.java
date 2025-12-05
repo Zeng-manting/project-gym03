@@ -61,10 +61,10 @@ public interface UserMapper {
     void deleteById(Long id);
 
     /**
-     * 查询所有教练用户
+     * 查询所有活跃的教练用户
      * @return 教练用户列表
      */
-    @Select("SELECT * FROM user WHERE role = 'trainer'")
+    @Select("SELECT * FROM user WHERE role = 'trainer' AND status != 'disabled'")
     List<User> findTrainers();
     
     /**
@@ -100,20 +100,39 @@ public interface UserMapper {
     List<User> searchMembersByKeyword(String keyword);
     
     /**
-     * 搜索会员（多条件）
-     * @param params 查询参数
+     * 根据多条件搜索会员
+     * @param params 搜索参数
      * @return 符合条件的会员列表
      */
-    @Select({"<script>",
-            "SELECT * FROM user WHERE role = 'member'",
-            "<if test='name != null and name != \"\"'> AND name LIKE CONCAT('%', #{name}, '%')</if>",
-            "<if test='phone != null and phone != \"\"'> AND phone LIKE CONCAT('%', #{phone}, '%')</if>",
-            "<if test='status != null and status != \"\"'> AND status = #{status}</if>",
-            "<if test='cardType != null and cardType != \"\"'> AND card_type = #{cardType}</if>",
-            " ORDER BY create_time DESC",
-            "</script>"
-    })
+    @SelectProvider(type = UserSqlProvider.class, method = "searchMembersSql")
     List<User> searchMembers(Map<String, Object> params);
+    
+    /**
+     * SQL语句提供类
+     */
+    class UserSqlProvider {
+        public String searchMembersSql(Map<String, Object> params) {
+            StringBuilder sql = new StringBuilder("SELECT * FROM user WHERE role = 'member'");
+            
+            if (params.get("name") != null && !params.get("name").toString().isEmpty()) {
+                sql.append(" AND id IN (SELECT user_id FROM member_info WHERE name LIKE CONCAT('%', #{name}, '%'))");
+            }
+            
+            if (params.get("phone") != null && !params.get("phone").toString().isEmpty()) {
+                sql.append(" AND phone LIKE CONCAT('%', #{phone}, '%')");
+            }
+            
+            if (params.get("status") != null && !params.get("status").toString().isEmpty()) {
+                sql.append(" AND status = #{status}");
+            }
+            
+            if (params.get("cardType") != null && !params.get("cardType").toString().isEmpty()) {
+                sql.append(" AND id IN (SELECT user_id FROM membership_card WHERE card_type = #{cardType})");
+            }
+            
+            return sql.toString();
+        }
+    }
     
     /**
      * 获取会员总数
@@ -123,10 +142,10 @@ public interface UserMapper {
     int countMembers();
     
     /**
-     * 获取教练总数
+     * 获取活跃教练总数
      * @return 教练数量
      */
-    @Select("SELECT COUNT(*) FROM user WHERE role = 'trainer'")
+    @Select("SELECT COUNT(*) FROM user WHERE role = 'trainer' AND status != 'disabled'")
     int countTrainers();
     
     /**

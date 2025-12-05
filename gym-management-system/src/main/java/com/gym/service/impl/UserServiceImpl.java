@@ -96,8 +96,8 @@ public class UserServiceImpl implements UserService, UserDetailsService { // ←
     private MemberInfoService memberInfoService;
     
     @Override
-    public List<User> searchMembers(String keyword) {
-        List<User> members = userMapper.searchMembersByKeyword(keyword);
+    public List<User> searchMembers(Map<String, Object> params) {
+        List<User> members = userMapper.searchMembers(params);
         // 为每个会员加载对应的详细信息
         for (User user : members) {
             MemberInfo memberInfo = memberInfoService.getMemberInfoByUserId(user.getId());
@@ -105,6 +105,8 @@ public class UserServiceImpl implements UserService, UserDetailsService { // ←
                 // 将MemberInfo中的数据设置到User对象中，以便前端显示
                 user.setName(memberInfo.getName() != null ? memberInfo.getName() : "未设置");
                 user.setGender(memberInfo.getGender() != null ? memberInfo.getGender() : "未知");
+                // 设置头像
+                user.setAvatar(memberInfo.getAvatar());
                 // 计算年龄
                 if (memberInfo.getBirthDate() != null) {
                     LocalDate birthDate = memberInfo.getBirthDate();
@@ -171,10 +173,18 @@ public class UserServiceImpl implements UserService, UserDetailsService { // ←
                 // 设置教练的真实名称和性别
                 if (coachInfo.getName() != null) {
                     user.setName(coachInfo.getName());
+                } else if (user.getName() == null) {
+                    // 如果coach_info表中没有姓名且user表中也没有，则设置默认值
+                    user.setName("未设置姓名");
                 }
                 if (coachInfo.getGender() != null) {
                     user.setGender(coachInfo.getGender());
                 }
+                // 设置教练头像
+                user.setAvatar(coachInfo.getAvatar());
+            } else if (user.getName() == null) {
+                // 如果coach_info表中没有记录且user表中也没有姓名，则设置默认值
+                user.setName("未设置姓名");
             }
         }
         
@@ -202,7 +212,39 @@ public class UserServiceImpl implements UserService, UserDetailsService { // ←
      */
     @Override
     public User getMemberById(Long id) {
-        return userMapper.selectById(id);
+        User user = userMapper.selectById(id);
+        if (user != null) {
+            // 加载会员详细信息，如果不存在则初始化
+            MemberInfo memberInfo = memberInfoService.getMemberInfoByUserId(user.getId());
+            if (memberInfo == null) {
+                // 初始化会员信息
+                memberInfo = memberInfoService.initMemberInfo(user.getId(), user.getPhone());
+            }
+            // 将MemberInfo中的数据设置到User对象中，以便前端显示
+            user.setName(memberInfo.getName() != null ? memberInfo.getName() : "未设置");
+            user.setGender(memberInfo.getGender() != null ? memberInfo.getGender() : "未知");
+            // 设置头像
+            user.setAvatar(memberInfo.getAvatar());
+            // 计算年龄
+            if (memberInfo.getBirthDate() != null) {
+                LocalDate birthDate = memberInfo.getBirthDate();
+                LocalDate now = LocalDate.now();
+                int age = now.getYear() - birthDate.getYear();
+                if (birthDate.getMonthValue() > now.getMonthValue() || 
+                    (birthDate.getMonthValue() == now.getMonthValue() && birthDate.getDayOfMonth() > now.getDayOfMonth())) {
+                    age--;
+                }
+                user.setAge(age);
+            }
+            // 设置会员卡类型和有效期（这些信息可能需要从其他服务获取）
+            // 这里暂时设置为默认值，实际应用中可能需要从会员卡服务获取
+            user.setCardType("标准卡");
+            if (memberInfo.getCardIssueDate() != null) {
+                LocalDate issueDate = memberInfo.getCardIssueDate();
+                user.setExpireDate(Date.from(issueDate.plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            }
+        }
+        return user;
     }
     
     /**

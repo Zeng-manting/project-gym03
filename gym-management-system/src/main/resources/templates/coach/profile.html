@@ -42,46 +42,195 @@
         .card {
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1.5rem;
+            border: none;
         }
         .card-header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background-color: #3498db;
             color: white;
-            border-bottom: none;
-            padding: 1rem 1.25rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+            position: relative;
         }
-        .form-group {
-            margin-bottom: 1.5rem;
+        .card-body {
+            padding: 1.5rem;
         }
-        .form-label {
-            font-weight: 500;
-            color: #2c3e50;
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-primary:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .btn-outline-secondary {
+            background-color: transparent;
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            color: white;
+        }
+        .toggle-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
         }
         .avatar-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-        .avatar {
+            position: relative;
             width: 120px;
             height: 120px;
+            margin: 0 auto 1.5rem;
+            cursor: pointer;
+        }
+        .avatar {
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            background-color: #f1f3f5;
+            background-color: #3498db;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
             font-size: 3rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .avatar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            color: white;
+            font-size: 1.5rem;
+        }
+        .avatar-container:hover .avatar-overlay {
+            opacity: 1;
+        }
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        .profile-id {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .info-item {
+            padding: 1rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-left: 3px solid #3498db;
+        }
+        .info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }
+        .info-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .info-label i {
+            margin-right: 0.5rem;
+            color: #3498db;
+        }
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .edit-form {
+            margin-top: 1.5rem;
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        .message-success {
-            background-color: #d1e7dd;
-            color: #0f5132;
-            border-color: #badbcc;
+        .form-group {
+            margin-bottom: 1.25rem;
         }
-        .message-error {
-            background-color: #f8d7da;
-            color: #842029;
-            border-color: #f5c2c7;
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .content {
+                padding: 1rem;
+            }
+            .toggle-btn {
+                position: static;
+                display: block;
+                width: 100%;
+                margin-top: 1rem;
+            }
+            .info-grid,
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -100,166 +249,173 @@
 
             <!-- 主内容区 -->
             <div class="col-md-10 content">
-                <div class="mb-4">
-                    <h1 class="h3">个人资料</h1>
-                    <p class="text-muted">管理您的个人信息和专业资质</p>
-                </div>
-
-                <!-- 消息提示 -->
-                <div th:if="${successMessage}" class="alert message-success mb-4" role="alert">
-                    <span th:text="${successMessage}"></span>
-                </div>
-                <div th:if="${errorMessage}" class="alert message-error mb-4" role="alert">
-                    <span th:text="${errorMessage}"></span>
-                </div>
-
-                <!-- 个人资料卡片 -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">基本信息</h5>
-                    </div>
-                    <div class="card-body">
-                        <!-- 头像 -->
-                        <div class="avatar-container">
-                            <div class="avatar">👤</div>
-                        </div>
-
-                        <!-- 个人资料表单 -->
-                        <form th:action="@{/coach/profile}" method="post">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="phone" class="form-label">手机号码</label>
-                                        <input type="text" class="form-control" id="phone" name="phone" th:value="${coach.phone}" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="name" class="form-label">姓名</label>
-                                        <input type="text" class="form-control" id="name" name="name" th:value="${coach.name}" required>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="gender" class="form-label">性别</label>
-                                        <select class="form-control" id="gender" name="gender">
-                                            <option value="男" th:selected="${coach.gender eq '男'}">男</option>
-                                            <option value="女" th:selected="${coach.gender eq '女'}">女</option>
-                                            <option value="其他" th:selected="${coach.gender eq '其他'}">其他</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="birthDate" class="form-label">出生日期</label>
-                                        <input type="date" class="form-control" id="birthDate" name="birthDate" th:value="${coach.birthDate}">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 暂时移除电子邮箱字段，因为CoachInfo实体类中不包含email属性 -->
-                            <!-- <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="email" class="form-label">电子邮箱</label>
-                                        <input type="email" class="form-control" id="email" name="email" th:value="${coach.email}" placeholder="example@mail.com">
-                                    </div>
-                                </div>
-                            </div> -->
-
-                            <!-- 暂时移除联系地址字段，因为CoachInfo实体类中不包含address属性 -->
-                            <!-- <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="address" class="form-label">联系地址</label>
-                                        <input type="text" class="form-control" id="address" name="address" th:value="${coach.address}" placeholder="请输入详细地址">
-                                    </div>
-                                </div>
-                            </div> -->
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="educationBackground" class="form-label">最高学历</label>
-                                        <input type="text" class="form-control" id="educationBackground" name="educationBackground" th:value="${coach.educationBackground}" placeholder="如：本科">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="certification" class="form-label">专业证书</label>
-                                        <input type="text" class="form-control" id="certification" name="certification" th:value="${coach.certification}" placeholder="如：健身教练国家职业资格证书">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="specialty" class="form-label">专业特长</label>
-                                        <input type="text" class="form-control" id="specialty" name="specialty" th:value="${coach.specialty}" placeholder="如：力量训练,有氧训练,瑜伽">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="introduction" class="form-label">个人简介</label>
-                                        <textarea class="form-control" id="introduction" name="introduction" rows="4" placeholder="请简单介绍一下自己的专业背景和教学经验">[[${coach.introduction}]]</textarea>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row mt-4">
-                                <div class="col-md-12 d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary">保存信息</button>
-                                    <button type="reset" class="btn btn-secondary ms-3">重置</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- 修改密码卡片 -->
+                <!-- 卡片容器 -->
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">修改密码</h5>
+                        <h2 class="card-title mb-0">
+                            <i class="bi bi-person-circle me-2"></i>个人信息管理
+                        </h2>
+                        <button id="toggle-edit" class="btn btn-primary toggle-btn" data-bs-toggle="modal" data-bs-target="#edit-modal">
+                            <i class="bi bi-pencil me-1"></i>编辑信息
+                        </button>
                     </div>
+                    
                     <div class="card-body">
-                        <form id="passwordForm" th:action="@{/coach/profile/change-password}" method="post">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="currentPassword" class="form-label">当前密码</label>
-                                        <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                        <!-- 显示成功消息 -->
+                        <div th:if="${successMessage}" class="alert alert-success mb-4">
+                            <strong><i class="bi bi-check-circle me-2"></i>成功：</strong>
+                            <span th:text="${successMessage}"></span>
+                        </div>
+                        
+                        <!-- 显示错误消息 -->
+                        <div th:if="${errorMessage}" class="alert alert-danger mb-4">
+                            <strong><i class="bi bi-exclamation-circle me-2"></i>错误：</strong>
+                            <span th:text="${errorMessage}"></span>
+                        </div>
+                        
+                        <div class="profile-section">
+                            <div class="profile-header">
+                                <div class="avatar-container">
+                                    <div class="avatar">
+                                        <img th:if="${coach?.avatar}" th:src="${coach.avatar}" alt="头像" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                                        <span th:unless="${coach?.avatar}" th:text="${coach?.name?.charAt(0) ?: '教'}"><i class="bi bi-person"></i></span>
                                     </div>
+                                    <div class="avatar-overlay">
+                                        <i class="bi bi-camera"></i>
+                                    </div>
+                                    <form id="avatar-upload-form" th:action="@{/coach/profile/avatar/upload}" method="post" enctype="multipart/form-data">
+                                        <input type="file" id="avatar-input" name="avatar" accept="image/*" style="display: none;">
+                                    </form>
+                                </div>
+                                <h3 class="profile-name" th:text="${coach?.name ?: '未设置姓名'}">教练姓名</h3>
+                                <p class="profile-id">教练ID: <span th:text="${coach?.userId ?: '000000'}">000000</span></p>
+                            </div>
+                            
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label"><i class="bi bi-telephone"></i>手机号码</div>
+                                    <div class="info-value" th:text="${coach?.phone ?: '未设置'}">138****8000</div>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="info-label"><i class="bi bi-gender-ambiguous"></i>性别</div>
+                                    <div class="info-value" th:text="${coach?.gender ?: '未设置'}">男/女</div>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="info-label"><i class="bi bi-calendar"></i>出生日期</div>
+                                    <div class="info-value" th:text="${coach?.birthDate ?: '未设置'}">1990-01-01</div>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="info-label"><i class="bi bi-mortarboard"></i>最高学历</div>
+                                    <div class="info-value" th:text="${coach?.educationBackground ?: '未设置'}">本科</div>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="info-label"><i class="bi bi-award"></i>专业证书</div>
+                                    <div class="info-value" th:text="${coach?.certification ?: '未设置'}">健身教练国家职业资格证书</div>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <div class="info-label"><i class="bi bi-star"></i>专业特长</div>
+                                    <div class="info-value" th:text="${coach?.specialty ?: '未设置'}">力量训练,有氧训练,瑜伽</div>
                                 </div>
                             </div>
                             
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="newPassword" class="form-label">新密码</label>
-                                        <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                            <div class="info-item">
+                                <div class="info-label"><i class="bi bi-chat-left-text"></i>个人简介</div>
+                                <div class="info-value" style="white-space: pre-wrap;" th:text="${coach?.introduction ?: '未设置'}">请简单介绍一下自己的专业背景和教学经验</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 编辑信息模态框 -->
+                        <div class="modal fade" id="edit-modal" tabindex="-1" aria-labelledby="edit-modal-label" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title" id="edit-modal-label">
+                                            <i class="bi bi-pencil me-2"></i>编辑个人信息
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="confirmPassword" class="form-label">确认新密码</label>
-                                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                    <div class="modal-body">
+                                        <form th:action="@{/coach/profile}" method="post" id="profile-form">
+                                            <input type="hidden" th:value="${coach?.userId}" name="userId">
+                                            
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="name">姓名</label>
+                                                    <input type="text" class="form-control" id="name" name="name" 
+                                                           th:value="${coach?.name}" placeholder="请输入姓名">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label" for="gender">性别</label>
+                                                    <select class="form-control" id="gender" name="gender">
+                                                        <option value="">请选择性别</option>
+                                                        <option value="男" th:selected="${coach?.gender == '男'}">男</option>
+                                                        <option value="女" th:selected="${coach?.gender == '女'}">女</option>
+                                                        <option value="其他" th:selected="${coach?.gender == '其他'}">其他</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="birthDate">出生日期</label>
+                                                    <input type="date" class="form-control" id="birthDate" name="birthDate" 
+                                                           th:value="${coach?.birthDate}">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label" for="phone">手机号码</label>
+                                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                                           th:value="${coach?.phone}" placeholder="请输入手机号码" readonly>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="educationBackground">最高学历</label>
+                                                    <input type="text" class="form-control" id="educationBackground" name="educationBackground" 
+                                                           th:value="${coach?.educationBackground}" placeholder="如：本科">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label class="form-label" for="certification">专业证书</label>
+                                                    <input type="text" class="form-control" id="certification" name="certification" 
+                                                           th:value="${coach?.certification}" placeholder="如：健身教练国家职业资格证书">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="specialty">专业特长</label>
+                                                    <input type="text" class="form-control" id="specialty" name="specialty" 
+                                                           th:value="${coach?.specialty}" placeholder="如：力量训练,有氧训练,瑜伽">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label class="form-label" for="introduction">个人简介</label>
+                                                <textarea class="form-control" id="introduction" name="introduction" rows="4" 
+                                                          placeholder="请简单介绍一下自己的专业背景和教学经验">[[${coach?.introduction}]]</textarea>
+                                            </div>
+                                            
+                                            <div class="form-actions mt-4">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-save me-2"></i>保存修改
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                                    <i class="bi bi-x me-2"></i>取消
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="row mt-4">
-                                <div class="col-md-12 d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary">修改密码</button>
-                                </div>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -268,25 +424,75 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" defer></script>
     <script>
-        // 表单验证
-        document.querySelector('form').addEventListener('submit', function(event) {
-            // 可以在这里添加前端验证逻辑
-        });
-        
-        // 为修改密码表单添加验证
-        const passwordForm = document.getElementById('passwordForm');
-        if (passwordForm) {
-            passwordForm.addEventListener('submit', function(event) {
-                const newPassword = document.getElementById('newPassword').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
+        // 添加页面加载动画和交互功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为信息项添加延迟加载效果
+            const infoItems = document.querySelectorAll('.info-item');
+            infoItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(10px)';
+                item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
                 
-                if (newPassword !== confirmPassword) {
-                    alert('两次输入的新密码不一致');
-                    event.preventDefault();
-                } else if (newPassword.length < 6) {
-                    alert('新密码长度不能少于6位');
-                    event.preventDefault();
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 100 * (index + 1));
+            });
+            
+            // 模态框相关功能已由 Bootstrap JS 处理
+            // 可以在此添加模态框的额外事件监听
+            const editModal = new bootstrap.Modal(document.getElementById('edit-modal'));
+            
+            // 表单提交前的验证
+            const profileForm = document.getElementById('profile-form');
+            profileForm.addEventListener('submit', function(e) {
+                // 表单验证逻辑
+                const name = document.getElementById('name').value;
+                const phone = document.getElementById('phone').value;
+                
+                if (!name.trim()) {
+                    alert('请输入姓名');
+                    e.preventDefault();
+                    return;
+                }
+                
+                if (!phone.trim() || !/^1[3-9]\d{9}$/.test(phone)) {
+                    alert('请输入正确的手机号码');
+                    e.preventDefault();
+                    return;
                 }
             });
-        }
+            
+            // 头像点击上传功能
+            const avatarContainer = document.querySelector('.avatar-container');
+            const avatarInput = document.getElementById('avatar-input');
+            const avatarForm = document.getElementById('avatar-upload-form');
+            
+            avatarContainer.addEventListener('click', function() {
+                avatarInput.click();
+            });
+            
+            avatarInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    // 验证文件类型和大小
+                    const file = this.files[0];
+                    const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                    
+                    if (!validTypes.includes(file.type)) {
+                        alert('请选择JPEG、PNG或GIF格式的图片');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('图片大小不能超过5MB');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    // 提交表单上传头像
+                    avatarForm.submit();
+                }
+            });
+        });
     </script>

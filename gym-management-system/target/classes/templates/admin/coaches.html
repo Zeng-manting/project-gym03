@@ -108,7 +108,7 @@
                 <a th:href="@{/admin/members}">会员管理</a>
                 <a th:href="@{/admin/coaches}" class="active">教练管理</a>
                 <a th:href="@{/admin/courses}">课程管理</a>
-                <a th:href="@{/admin/cards}">会员卡设置</a>
+                <a th:href="@{/admin/cards}">会员卡管理</a>
                 <a th:href="@{/logout}">退出登录</a>
             </div>
 
@@ -304,6 +304,18 @@
                             </tr>
                         </tbody>
                     </table>
+                    
+                    <!-- 分页控件 -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div id="paginationInfo" class="text-muted">显示 0-0 条，共 0 条</div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li class="page-item disabled"><a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item disabled"><a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
         </div>
@@ -327,10 +339,55 @@
         </div>
     </div>
 
+    <!-- 删除确认模态框 -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger" id="deleteConfirmModalLabel">确认删除</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="deleteConfirmMessage">确定要删除这个教练吗？此操作不可撤销。</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">确认删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // 初始化模态框
         const coachDetailModal = new bootstrap.Modal(document.getElementById('coachDetailModal'));
         const addCoachModal = new bootstrap.Modal(document.getElementById('addCoachModal'));
+        const deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        
+        // 当前要删除的教练ID
+        let currentDeleteCoachId = null;
+        
+        // 分页相关变量
+        let currentPage = 1;
+        const pageSize = 10;
+        let totalItems = 0;
+        let totalPages = 0;
+        let allCoaches = [];
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 保存原始教练数据用于分页
+            const coachRows = document.querySelectorAll('#coachTableBody tr');
+            allCoaches = Array.from(coachRows).map(row => ({ row }));
+            totalItems = allCoaches.length;
+            totalPages = Math.ceil(totalItems / pageSize);
+            
+            console.log('教练数据总数:', totalItems);
+            console.log('总页数:', totalPages);
+            
+            // 初始化分页
+            setupPagination();
+        });
         
         // 显示添加教练模态框
         function showAddCoachModal() {
@@ -352,35 +409,86 @@
             }
 
             // 获取表单数据
-            const formData = new FormData();
-            formData.append('name', document.getElementById('coachName').value);
-            formData.append('phone', document.getElementById('coachPhone').value);
-            formData.append('gender', document.getElementById('coachGender').value);
-            formData.append('age', document.getElementById('coachAge').value);
-            formData.append('title', document.getElementById('coachTitle').value);
-            formData.append('specialty', document.getElementById('coachSpecialty').value);
-            formData.append('salary', document.getElementById('coachSalary').value);
-            formData.append('status', document.getElementById('coachStatus').value);
-            formData.append('description', document.getElementById('coachDescription').value);
-            
-            // 添加头像文件
-            const avatarFile = document.getElementById('coachAvatar').files[0];
-            if (avatarFile) {
-                formData.append('avatar', avatarFile);
-            }
+            const coachData = {
+                name: document.getElementById('coachName').value,
+                phone: document.getElementById('coachPhone').value,
+                gender: document.getElementById('coachGender').value,
+                specialty: document.getElementById('coachSpecialty').value,
+                status: document.getElementById('coachStatus').value,
+                description: document.getElementById('coachDescription').value
+            };
 
-            // 这里可以通过AJAX请求保存数据
-            console.log('保存教练信息:', formData);
-            
-            // 模拟保存成功
-            alert('教练信息保存成功！');
-            resetForm();
-            hideAddCoachModal();
+            // 如果是编辑操作，使用PUT请求更新教练信息
+            if (currentEditCoachId) {
+                fetch(`/admin/coaches/${currentEditCoachId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(coachData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('教练信息更新成功！');
+                        resetForm();
+                        currentEditCoachId = null;
+                        // 刷新页面以显示更新后的信息
+                        location.reload();
+                    } else {
+                        alert('教练信息更新失败：' + (data.message || '未知错误'));
+                    }
+                })
+                .catch(error => {
+                    console.error('更新教练信息出错:', error);
+                    alert('更新教练信息时发生错误');
+                });
+            } else {
+                // 新增操作，使用POST请求创建教练
+                const formData = new FormData();
+                formData.append('name', coachData.name);
+                formData.append('phone', coachData.phone);
+                formData.append('gender', coachData.gender);
+                formData.append('age', document.getElementById('coachAge').value);
+                formData.append('title', document.getElementById('coachTitle').value);
+                formData.append('specialty', coachData.specialty);
+                formData.append('salary', document.getElementById('coachSalary').value);
+                formData.append('status', coachData.status);
+                formData.append('description', coachData.description);
+                
+                // 添加头像文件
+                const avatarFile = document.getElementById('coachAvatar').files[0];
+                if (avatarFile) {
+                    formData.append('avatar', avatarFile);
+                }
+
+                fetch('/admin/coaches', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message || '教练信息保存成功！');
+                        resetForm();
+                        hideAddCoachModal();
+                        // 刷新页面以显示新创建的教练
+                        location.reload();
+                    } else {
+                        alert('教练信息保存失败：' + (data.message || '未知错误'));
+                    }
+                })
+                .catch(error => {
+                    console.error('保存教练信息出错:', error);
+                    alert('保存教练信息时发生错误');
+                });
+            }
         }
 
         // 重置表单
         function resetForm() {
             document.getElementById('coachForm').reset();
+            currentEditCoachId = null;
         }
 
         // 表单验证
@@ -406,6 +514,96 @@
             }
 
             return true;
+        }
+        
+        // 设置分页控件
+        function setupPagination() {
+            var paginationContainer = document.querySelector('.pagination');
+            if (!paginationContainer) return;
+            
+            // 更新分页信息
+            var pageInfo = document.getElementById('paginationInfo');
+            if (pageInfo) {
+                var startItem = totalItems > 0 ? (currentPage - 1) * pageSize + 1 : 0;
+                var endItem = Math.min(currentPage * pageSize, totalItems);
+                pageInfo.textContent = '显示 ' + startItem + '-' + endItem + ' 条，共 ' + totalItems + ' 条';
+                console.log('分页信息更新为:', pageInfo.textContent);
+            }
+            
+            // 清空现有分页按钮
+            paginationContainer.innerHTML = '';
+            
+            // 添加上一页按钮
+            var prevButton = document.createElement('li');
+            prevButton.className = 'page-item' + (currentPage === 1 ? ' disabled' : '');
+            prevButton.innerHTML = '<a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>';
+            prevButton.onclick = function() {
+                if (currentPage > 1) {
+                    goToPage(currentPage - 1);
+                }
+                return false;
+            };
+            paginationContainer.appendChild(prevButton);
+            
+            // 添加页码按钮（最多显示10个页码）
+            var startPage = Math.max(1, currentPage - 4);
+            var endPage = Math.min(totalPages, startPage + 9);
+            
+            if (endPage - startPage < 9) {
+                startPage = Math.max(1, endPage - 9);
+            }
+            
+            for (var i = startPage; i <= endPage; i++) {
+                var pageButton = document.createElement('li');
+                pageButton.className = 'page-item' + (i === currentPage ? ' active' : '');
+                pageButton.innerHTML = '<a class="page-link" href="#">' + i + '</a>';
+                pageButton.onclick = (function(pageNum) {
+                    return function() {
+                        goToPage(pageNum);
+                        return false;
+                    };
+                })(i);
+                paginationContainer.appendChild(pageButton);
+            }
+            
+            // 添加下一页按钮
+            var nextButton = document.createElement('li');
+            nextButton.className = 'page-item' + (currentPage === totalPages ? ' disabled' : '');
+            nextButton.innerHTML = '<a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>';
+            nextButton.onclick = function() {
+                if (currentPage < totalPages) {
+                    goToPage(currentPage + 1);
+                }
+                return false;
+            };
+            paginationContainer.appendChild(nextButton);
+            
+            // 更新表格显示
+            updateTableDisplay();
+        }
+        
+        // 跳转到指定页
+        function goToPage(pageNum) {
+            currentPage = pageNum;
+            setupPagination();
+        }
+        
+        // 更新表格显示内容
+        function updateTableDisplay() {
+            var tbody = document.getElementById('coachTableBody');
+            tbody.innerHTML = '';
+            
+            var startIndex = (currentPage - 1) * pageSize;
+            var endIndex = Math.min(startIndex + pageSize, totalItems);
+            
+            for (var i = startIndex; i < endIndex; i++) {
+                tbody.appendChild(allCoaches[i].row);
+            }
+            
+            // 如果没有数据，显示空行
+            if (totalItems === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center">暂无教练数据</td></tr>';
+            }
         }
 
         // 查看教练详情
@@ -477,49 +675,98 @@
                     });
         }
 
+        // 当前编辑的教练ID
+        let currentEditCoachId = null;
+
         // 编辑教练
         function editCoach(id) {
             console.log('编辑教练:', id);
+            currentEditCoachId = id;
             
-            // 模拟获取教练信息并填充表单
-            document.getElementById('coachName').value = `教练${id}`;
-            document.getElementById('coachPhone').value = `13800138${String(id).padStart(3, '0')}`;
-            document.getElementById('coachGender').value = id % 2 === 0 ? '女' : '男';
-            document.getElementById('coachAge').value = 25 + id;
-            
-            // 滚动到表单顶部
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // 删除教练
-        function deleteCoach(id) {
-            // 使用更详细的确认信息，提醒用户删除操作的重要性
-            const userConfirmed = confirm(`确认要删除此教练信息吗？\n此操作无法撤销，删除后相关数据将无法恢复。\n教练ID: ${id}`);
-            
-            if (userConfirmed) {
-                console.log('用户确认删除教练:', id);
-                // 通过AJAX请求后端执行删除操作
-                fetch(`/admin/coaches/${id}`, {
-                    method: 'DELETE'
-                })
-                .then(response => {
-                    if (response.ok) {
-                        alert(`教练信息已成功删除`);
-                        // 刷新页面或更新教练列表
-                        location.reload();
+            // 从后端API获取真实的教练详情数据
+            fetch(`/admin/coaches/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        const coachDetails = data.data;
+                        
+                        // 填充表单数据
+                        document.getElementById('coachName').value = coachDetails.name || '';
+                        document.getElementById('coachPhone').value = coachDetails.phone || '';
+                        document.getElementById('coachGender').value = coachDetails.gender || '';
+                        // 注意：年龄字段可能需要根据生日计算，这里暂时不处理
+                        // 设置职称下拉框的值
+                        const titleSelect = document.getElementById('coachTitle');
+                        titleSelect.value = coachDetails.title || '初级教练';
+                        // 设置专长下拉框的值
+                        const specialtySelect = document.getElementById('coachSpecialty');
+                        specialtySelect.value = coachDetails.specialty || '力量训练';
+                        document.getElementById('coachStatus').value = coachDetails.status || 'active';
+                        document.getElementById('coachDescription').value = coachDetails.description || '';
+                        
+                        // 显示添加/编辑教练的模态框
+                        addCoachModal.show();
                     } else {
-                        alert('删除失败，请稍后重试');
+                        alert('获取教练信息失败：' + (data.message || '未知错误'));
                     }
                 })
                 .catch(error => {
+                    console.error('获取教练信息出错:', error);
+                    alert('获取教练信息时发生错误');
+                });
+        }
+
+        // 删除教练 - 显示确认模态框
+        function deleteCoach(id) {
+            // 保存当前要删除的教练ID
+            currentDeleteCoachId = id;
+            // 更新确认消息，显示具体的教练ID
+            document.getElementById('deleteConfirmMessage').textContent = `确定要删除ID为${id}的教练吗？此操作不可撤销。`;
+            // 显示确认模态框
+            deleteConfirmModal.show();
+        }
+        
+        // 确认删除教练 - 使用AJAX删除
+        function confirmDeleteCoach() {
+            if (currentDeleteCoachId) {
+                // 通过AJAX请求后端执行删除操作
+                fetch(`/admin/coaches/${currentDeleteCoachId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // 关闭模态框
+                    deleteConfirmModal.hide();
+                    
+                    if (data.success) {
+                        console.log('教练信息已成功删除:', currentDeleteCoachId);
+                        // 刷新页面或更新教练列表
+                        location.reload();
+                    } else {
+                        alert('删除失败: ' + (data.message || '未知错误'));
+                    }
+                    // 重置当前删除ID
+                    currentDeleteCoachId = null;
+                })
+                .catch(error => {
+                    // 关闭模态框
+                    deleteConfirmModal.hide();
                     console.error('删除教练时发生错误:', error);
                     alert('删除过程中发生错误，请稍后重试');
+                    // 重置当前删除ID
+                    currentDeleteCoachId = null;
                 });
-            } else {
-                console.log('用户取消删除教练:', id);
-                // 明确不执行任何操作，包括不显示任何提示
             }
         }
+        
+        // 页面加载完成后绑定事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 绑定确认删除按钮的点击事件
+            document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDeleteCoach);
+        });
 
         // 搜索教练
         function searchCoaches() {

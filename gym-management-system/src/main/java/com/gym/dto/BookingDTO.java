@@ -34,6 +34,11 @@ public class BookingDTO {
      * 教练ID
      */
     private Long trainerId;
+    
+    /**
+     * 教练姓名
+     */
+    private String trainerName;
 
     /**
      * 预约时间

@@ -352,22 +352,40 @@
         
         // 查看会员详情
         function viewMember(memberId) {
-            // 这里应该通过AJAX请求获取会员详情
-            // 为了演示，我们使用模拟数据
-            const memberModal = new bootstrap.Modal(document.getElementById('memberModal'));
-            
-            // 模拟数据填充
-            document.getElementById('memberName').textContent = '张三';
-            document.getElementById('memberPhone').textContent = '13800138000';
-            document.getElementById('memberGender').textContent = '男';
-            document.getElementById('memberBirthday').textContent = '1990-01-01';
-            document.getElementById('memberEmail').textContent = 'zhangsan@example.com';
-            document.getElementById('memberAddress').textContent = '北京市朝阳区';
-            document.getElementById('memberEmergencyContact').textContent = '李四';
-            document.getElementById('memberEmergencyPhone').textContent = '13900139000';
-            document.getElementById('memberHealthCondition').textContent = '健康，无特殊情况';
-            
-            memberModal.show();
+            // 通过AJAX请求获取会员详情
+            fetch(`/coach/members/${memberId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    const memberDetails = data.data;
+                    const memberModal = new bootstrap.Modal(document.getElementById('memberModal'));
+                    
+                    // 填充会员详情数据
+                    document.getElementById('memberModalLabel').textContent = `会员详情 - ${memberDetails.name || ''}`;
+                    document.getElementById('memberName').textContent = memberDetails.name || '';
+                    document.getElementById('memberPhone').textContent = memberDetails.phone || '';
+                    document.getElementById('memberGender').textContent = memberDetails.gender || '';
+                    document.getElementById('memberBirthday').textContent = memberDetails.birthDate || '';
+                    document.getElementById('memberEmail').textContent = memberDetails.email || '';
+                    document.getElementById('memberAddress').textContent = memberDetails.address || '';
+                    document.getElementById('memberEmergencyContact').textContent = memberDetails.emergencyContact || '';
+                    document.getElementById('memberEmergencyPhone').textContent = memberDetails.emergencyPhone || '';
+                    document.getElementById('memberHealthCondition').textContent = memberDetails.healthCondition || '';
+                    
+                    memberModal.show();
+                } else {
+                    alert('获取会员详情失败: ' + (data.message || '未知错误'));
+                }
+            })
+            .catch(error => {
+                console.error('获取会员详情失败:', error);
+                alert('获取会员详情失败，请稍后重试');
+            });
         }
     </script>
 </body>

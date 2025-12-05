@@ -4,6 +4,7 @@ import com.gym.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户服务接口
@@ -30,11 +31,11 @@ public interface UserService {
 
     /**
      * 搜索会员
-     * 模糊查询手机号或姓名
-     * @param keyword 搜索关键字
+     * 支持多条件搜索：姓名、手机号、状态、卡类型
+     * @param params 查询参数Map
      * @return 匹配的会员列表
      */
-    List<User> searchMembers(String keyword);
+    List<User> searchMembers(Map<String, Object> params);
 
     /**
      * 禁用用户

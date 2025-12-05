@@ -105,7 +105,7 @@
             <div class="col-md-2 sidebar">
                 <h4>会员中心</h4>
                 <a href="/member/index">首页</a>
-                <a href="/member/cards">会员卡管理</a>
+                <a href="/member/cards">会员卡</a>
                 <a href="/member/courses">课程预约</a>
                 <a href="/member/bookings" class="active">我的预约</a>
                 <a href="/member/profile">个人信息</a>
@@ -141,7 +141,7 @@
                                     <tr>
                                         <th><i class="bi bi-book me-2"></i>课程名称</th>
                                         <th><i class="bi bi-clock me-2"></i>上课时间</th>
-                                        <th><i class="bi bi-person-workspace me-2"></i>教练ID</th>
+                                        <th><i class="bi bi-person-workspace me-2"></i>教练姓名</th>
                                         <th><i class="bi bi-calendar-check me-2"></i>预约时间</th>
                                         <th><i class="bi bi-gear me-2"></i>操作</th>
                                     </tr>
@@ -150,7 +150,7 @@
                                     <tr th:each="booking : ${bookings}">
                                         <td th:text="${booking.courseName}">课程名称</td>
                                         <td th:text="${booking.scheduleTime}">上课时间</td>
-                                        <td th:text="${booking.trainerId}">教练ID</td>
+                                        <td th:text="${booking.trainerName}">教练姓名</td>
                                         <td th:text="${booking.bookingTime}">预约时间</td>
                                         <td>
                                             <form th:action="@{/member/cancel/{id}(id=${booking.id})}" method="post" style="display:inline;">
